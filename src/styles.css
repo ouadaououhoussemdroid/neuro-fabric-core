@@ -166,4 +166,14 @@
     50% { transform: translateY(-8px); }
   }
   .animate-float { animation: float 6s ease-in-out infinite; }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.06), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2.4s linear infinite;
+  }
+  .tabular-nums { font-variant-numeric: tabular-nums; }
 }
