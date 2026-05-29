@@ -4,6 +4,7 @@ import { ArrowRight, Brain, Database, Eye, Layers, Sparkles, Waves, Zap } from "
 import { SiteShell } from "@/components/site-shell";
 import { NeuralBackground } from "@/components/neural-bg";
 import { Eyebrow, GlassCard, Section, StatPill } from "@/components/ui-bits";
+import { LiveOpsBand, StreamingLatent } from "@/components/live-ops";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 
 export const Route = createFileRoute("/")({
@@ -31,6 +32,9 @@ function Index() {
   return (
     <SiteShell>
       <Hero />
+      <section className="-mt-10 pb-10 md:-mt-16 md:pb-16">
+        <LiveOpsBand />
+      </section>
       <Logos />
       <ProductsGrid />
       <PipelinePreview />
@@ -95,6 +99,24 @@ function Hero() {
           <StatPill label="Hours of EEG" value="62.3k" />
           <StatPill label="Embedding dim" value="768" />
           <StatPill label="API p50 latency" value="42 ms" />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="mt-10"
+        >
+          <GlassCard className="p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                <span className="h-1.5 w-1.5 rounded-full bg-neuro animate-pulse-glow" />
+                stream · latent[768] · subject_0421
+              </div>
+              <span className="hidden font-mono text-[10px] text-muted-foreground md:inline">nwf-7b-embed · v3.4.1</span>
+            </div>
+            <StreamingLatent cols={64} rows={4} />
+          </GlassCard>
         </motion.div>
       </div>
     </section>
