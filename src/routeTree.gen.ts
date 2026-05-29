@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SyntheticRouteImport } from './routes/synthetic'
 import { Route as ResearchRouteImport } from './routes/research'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as EmbeddingsRouteImport } from './routes/embeddings'
 import { Route as Eeg2imageRouteImport } from './routes/eeg2image'
@@ -26,6 +27,11 @@ const SyntheticRoute = SyntheticRouteImport.update({
 const ResearchRoute = ResearchRouteImport.update({
   id: '/research',
   path: '/research',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlaygroundRoute = PlaygroundRouteImport.update({
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
   '/playground': typeof PlaygroundRoute
+  '/pricing': typeof PricingRoute
   '/research': typeof ResearchRoute
   '/synthetic': typeof SyntheticRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
   '/playground': typeof PlaygroundRoute
+  '/pricing': typeof PricingRoute
   '/research': typeof ResearchRoute
   '/synthetic': typeof SyntheticRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
   '/playground': typeof PlaygroundRoute
+  '/pricing': typeof PricingRoute
   '/research': typeof ResearchRoute
   '/synthetic': typeof SyntheticRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/eeg2image'
     | '/embeddings'
     | '/playground'
+    | '/pricing'
     | '/research'
     | '/synthetic'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/eeg2image'
     | '/embeddings'
     | '/playground'
+    | '/pricing'
     | '/research'
     | '/synthetic'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/eeg2image'
     | '/embeddings'
     | '/playground'
+    | '/pricing'
     | '/research'
     | '/synthetic'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   Eeg2imageRoute: typeof Eeg2imageRoute
   EmbeddingsRoute: typeof EmbeddingsRoute
   PlaygroundRoute: typeof PlaygroundRoute
+  PricingRoute: typeof PricingRoute
   ResearchRoute: typeof ResearchRoute
   SyntheticRoute: typeof SyntheticRoute
 }
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/research'
       fullPath: '/research'
       preLoaderRoute: typeof ResearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/playground': {
@@ -202,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   Eeg2imageRoute: Eeg2imageRoute,
   EmbeddingsRoute: EmbeddingsRoute,
   PlaygroundRoute: PlaygroundRoute,
+  PricingRoute: PricingRoute,
   ResearchRoute: ResearchRoute,
   SyntheticRoute: SyntheticRoute,
 }
