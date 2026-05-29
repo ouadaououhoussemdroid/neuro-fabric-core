@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as EmbeddingsRouteImport } from './routes/embeddings'
+import { Route as Eeg2imageRouteImport } from './routes/eeg2image'
 import { Route as ArchitectureRouteImport } from './routes/architecture'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -22,6 +23,11 @@ const PlaygroundRoute = PlaygroundRouteImport.update({
 const EmbeddingsRoute = EmbeddingsRouteImport.update({
   id: '/embeddings',
   path: '/embeddings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Eeg2imageRoute = Eeg2imageRouteImport.update({
+  id: '/eeg2image',
+  path: '/eeg2image',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArchitectureRoute = ArchitectureRouteImport.update({
@@ -38,12 +44,14 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/architecture': typeof ArchitectureRoute
+  '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
   '/playground': typeof PlaygroundRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/architecture': typeof ArchitectureRoute
+  '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
   '/playground': typeof PlaygroundRoute
 }
@@ -51,20 +59,33 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/architecture': typeof ArchitectureRoute
+  '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
   '/playground': typeof PlaygroundRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/architecture' | '/embeddings' | '/playground'
+  fullPaths:
+    | '/'
+    | '/architecture'
+    | '/eeg2image'
+    | '/embeddings'
+    | '/playground'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/architecture' | '/embeddings' | '/playground'
-  id: '__root__' | '/' | '/architecture' | '/embeddings' | '/playground'
+  to: '/' | '/architecture' | '/eeg2image' | '/embeddings' | '/playground'
+  id:
+    | '__root__'
+    | '/'
+    | '/architecture'
+    | '/eeg2image'
+    | '/embeddings'
+    | '/playground'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArchitectureRoute: typeof ArchitectureRoute
+  Eeg2imageRoute: typeof Eeg2imageRoute
   EmbeddingsRoute: typeof EmbeddingsRoute
   PlaygroundRoute: typeof PlaygroundRoute
 }
@@ -83,6 +104,13 @@ declare module '@tanstack/react-router' {
       path: '/embeddings'
       fullPath: '/embeddings'
       preLoaderRoute: typeof EmbeddingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eeg2image': {
+      id: '/eeg2image'
+      path: '/eeg2image'
+      fullPath: '/eeg2image'
+      preLoaderRoute: typeof Eeg2imageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/architecture': {
@@ -105,6 +133,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArchitectureRoute: ArchitectureRoute,
+  Eeg2imageRoute: Eeg2imageRoute,
   EmbeddingsRoute: EmbeddingsRoute,
   PlaygroundRoute: PlaygroundRoute,
 }
