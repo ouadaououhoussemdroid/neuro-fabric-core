@@ -9,8 +9,68 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SyntheticRouteImport } from './routes/synthetic'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ResearchRouteImport } from './routes/research'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PlaygroundRouteImport } from './routes/playground'
+import { Route as EmbeddingsRouteImport } from './routes/embeddings'
+import { Route as Eeg2imageRouteImport } from './routes/eeg2image'
+import { Route as DevelopersRouteImport } from './routes/developers'
+import { Route as ArchitectureRouteImport } from './routes/architecture'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SyntheticRoute = SyntheticRouteImport.update({
+  id: '/synthetic',
+  path: '/synthetic',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchRoute = ResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlaygroundRoute = PlaygroundRouteImport.update({
+  id: '/playground',
+  path: '/playground',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmbeddingsRoute = EmbeddingsRouteImport.update({
+  id: '/embeddings',
+  path: '/embeddings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Eeg2imageRoute = Eeg2imageRouteImport.update({
+  id: '/eeg2image',
+  path: '/eeg2image',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevelopersRoute = DevelopersRouteImport.update({
+  id: '/developers',
+  path: '/developers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArchitectureRoute = ArchitectureRouteImport.update({
+  id: '/architecture',
+  path: '/architecture',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +79,172 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/architecture': typeof ArchitectureRoute
+  '/developers': typeof DevelopersRoute
+  '/eeg2image': typeof Eeg2imageRoute
+  '/embeddings': typeof EmbeddingsRoute
+  '/playground': typeof PlaygroundRoute
+  '/pricing': typeof PricingRoute
+  '/research': typeof ResearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/synthetic': typeof SyntheticRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/architecture': typeof ArchitectureRoute
+  '/developers': typeof DevelopersRoute
+  '/eeg2image': typeof Eeg2imageRoute
+  '/embeddings': typeof EmbeddingsRoute
+  '/playground': typeof PlaygroundRoute
+  '/pricing': typeof PricingRoute
+  '/research': typeof ResearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/synthetic': typeof SyntheticRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/architecture': typeof ArchitectureRoute
+  '/developers': typeof DevelopersRoute
+  '/eeg2image': typeof Eeg2imageRoute
+  '/embeddings': typeof EmbeddingsRoute
+  '/playground': typeof PlaygroundRoute
+  '/pricing': typeof PricingRoute
+  '/research': typeof ResearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/synthetic': typeof SyntheticRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/architecture'
+    | '/developers'
+    | '/eeg2image'
+    | '/embeddings'
+    | '/playground'
+    | '/pricing'
+    | '/research'
+    | '/sitemap.xml'
+    | '/synthetic'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/architecture'
+    | '/developers'
+    | '/eeg2image'
+    | '/embeddings'
+    | '/playground'
+    | '/pricing'
+    | '/research'
+    | '/sitemap.xml'
+    | '/synthetic'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/architecture'
+    | '/developers'
+    | '/eeg2image'
+    | '/embeddings'
+    | '/playground'
+    | '/pricing'
+    | '/research'
+    | '/sitemap.xml'
+    | '/synthetic'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  ArchitectureRoute: typeof ArchitectureRoute
+  DevelopersRoute: typeof DevelopersRoute
+  Eeg2imageRoute: typeof Eeg2imageRoute
+  EmbeddingsRoute: typeof EmbeddingsRoute
+  PlaygroundRoute: typeof PlaygroundRoute
+  PricingRoute: typeof PricingRoute
+  ResearchRoute: typeof ResearchRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SyntheticRoute: typeof SyntheticRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/synthetic': {
+      id: '/synthetic'
+      path: '/synthetic'
+      fullPath: '/synthetic'
+      preLoaderRoute: typeof SyntheticRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research': {
+      id: '/research'
+      path: '/research'
+      fullPath: '/research'
+      preLoaderRoute: typeof ResearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/playground': {
+      id: '/playground'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/embeddings': {
+      id: '/embeddings'
+      path: '/embeddings'
+      fullPath: '/embeddings'
+      preLoaderRoute: typeof EmbeddingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eeg2image': {
+      id: '/eeg2image'
+      path: '/eeg2image'
+      fullPath: '/eeg2image'
+      preLoaderRoute: typeof Eeg2imageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/developers': {
+      id: '/developers'
+      path: '/developers'
+      fullPath: '/developers'
+      preLoaderRoute: typeof DevelopersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/architecture': {
+      id: '/architecture'
+      path: '/architecture'
+      fullPath: '/architecture'
+      preLoaderRoute: typeof ArchitectureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +257,17 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  ArchitectureRoute: ArchitectureRoute,
+  DevelopersRoute: DevelopersRoute,
+  Eeg2imageRoute: Eeg2imageRoute,
+  EmbeddingsRoute: EmbeddingsRoute,
+  PlaygroundRoute: PlaygroundRoute,
+  PricingRoute: PricingRoute,
+  ResearchRoute: ResearchRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SyntheticRoute: SyntheticRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
