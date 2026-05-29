@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteShell } from "@/components/site-shell";
 import { GlassCard, PageHeader, Section } from "@/components/ui-bits";
+import { ReconstructionShowcase } from "@/components/recon-showcase";
 import { Line, LineChart, ResponsiveContainer } from "recharts";
 import { Sparkles } from "lucide-react";
 
@@ -106,6 +107,10 @@ function EEG2ImagePage() {
               </>
             )}
           </GlassCard>
+        </div>
+
+        <div className="mt-20">
+          <ReconstructionShowcase />
         </div>
       </Section>
     </SiteShell>
