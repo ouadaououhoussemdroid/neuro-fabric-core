@@ -42,7 +42,10 @@ function PlaygroundPage() {
           subject: "anon_0421",
           dim: 768,
           latency_ms: 41.2,
-          embedding: Array.from({ length: 8 }, () => +(Math.random() * 2 - 1).toFixed(4)).concat(["…+760 more"]),
+          embedding: [
+            ...Array.from({ length: 8 }, () => +(Math.random() * 2 - 1).toFixed(4)),
+            "…+760 more",
+          ],
         },
         reconstruct: {
           model: "nw-vision-v1",
