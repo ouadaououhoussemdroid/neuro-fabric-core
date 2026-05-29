@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SyntheticRouteImport } from './routes/synthetic'
 import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as EmbeddingsRouteImport } from './routes/embeddings'
 import { Route as Eeg2imageRouteImport } from './routes/eeg2image'
 import { Route as ArchitectureRouteImport } from './routes/architecture'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SyntheticRoute = SyntheticRouteImport.update({
+  id: '/synthetic',
+  path: '/synthetic',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlaygroundRoute = PlaygroundRouteImport.update({
   id: '/playground',
   path: '/playground',
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
   '/playground': typeof PlaygroundRoute
+  '/synthetic': typeof SyntheticRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
   '/playground': typeof PlaygroundRoute
+  '/synthetic': typeof SyntheticRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,6 +70,7 @@ export interface FileRoutesById {
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
   '/playground': typeof PlaygroundRoute
+  '/synthetic': typeof SyntheticRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -71,8 +80,15 @@ export interface FileRouteTypes {
     | '/eeg2image'
     | '/embeddings'
     | '/playground'
+    | '/synthetic'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/architecture' | '/eeg2image' | '/embeddings' | '/playground'
+  to:
+    | '/'
+    | '/architecture'
+    | '/eeg2image'
+    | '/embeddings'
+    | '/playground'
+    | '/synthetic'
   id:
     | '__root__'
     | '/'
@@ -80,6 +96,7 @@ export interface FileRouteTypes {
     | '/eeg2image'
     | '/embeddings'
     | '/playground'
+    | '/synthetic'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -88,10 +105,18 @@ export interface RootRouteChildren {
   Eeg2imageRoute: typeof Eeg2imageRoute
   EmbeddingsRoute: typeof EmbeddingsRoute
   PlaygroundRoute: typeof PlaygroundRoute
+  SyntheticRoute: typeof SyntheticRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/synthetic': {
+      id: '/synthetic'
+      path: '/synthetic'
+      fullPath: '/synthetic'
+      preLoaderRoute: typeof SyntheticRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/playground': {
       id: '/playground'
       path: '/playground'
@@ -136,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   Eeg2imageRoute: Eeg2imageRoute,
   EmbeddingsRoute: EmbeddingsRoute,
   PlaygroundRoute: PlaygroundRoute,
+  SyntheticRoute: SyntheticRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
