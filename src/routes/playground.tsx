@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { SiteShell } from "@/components/site-shell";
 import { GlassCard, PageHeader, Section } from "@/components/ui-bits";
 import { InferenceStages, LiveDot, StreamingJson, StreamingLatent } from "@/components/live-ops";
@@ -29,11 +29,6 @@ function PlaygroundPage() {
   const [output, setOutput] = useState<string>("");
   const [latencyMs, setLatencyMs] = useState<number | null>(null);
   const [seed, setSeed] = useState(0);
-
-  const latent = useMemo(
-    () => Array.from({ length: 64 }, () => Math.random() * 2 - 1),
-    [seed]
-  );
 
   const run = () => {
     setRunning(true);
