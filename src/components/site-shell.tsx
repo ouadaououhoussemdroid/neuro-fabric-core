@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 const NAV = [
   { to: "/", label: "Home" },
   { to: "/architecture", label: "Architecture" },
+  { to: "/studio", label: "Studio" },
   { to: "/playground", label: "Playground" },
   { to: "/embeddings", label: "Embeddings" },
   { to: "/eeg2image", label: "EEG2Image" },
