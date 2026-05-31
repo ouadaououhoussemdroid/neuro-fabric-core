@@ -87,9 +87,7 @@ const run = async () => {
               <ResponsiveContainer>
                 <LineChart data={SAMPLE_SIGNAL}>
                   <XAxis dataKey="t" hide />
-                  <YAxis hide domain={[-1.5, 1.5]} />
-                  <Line type="monotone" dataKey="v" stroke="oklch(0.85 0.18 195)" strokeWidth={1.2} dot={false} />
-                </LineChart>
+                
               </ResponsiveContainer>
             </div>
 
