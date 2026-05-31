@@ -82,8 +82,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@NeuroWeave" },
       { name: "twitter:title", content: "NeuroWeave — Foundation Models for Brain Signals" },
       { name: "twitter:description", content: "NeuroAI APIs for embeddings, cognitive decoding, synthetic neurodata, and EEG-to-image reconstruction." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/571b5317-bba0-479a-9283-2f77d0a7ed79/id-preview-8042c889--34104fa7-0de5-4fe0-9f54-5098f061599c.lovable.app-1780213833129.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/571b5317-bba0-479a-9283-2f77d0a7ed79/id-preview-8042c889--34104fa7-0de5-4fe0-9f54-5098f061599c.lovable.app-1780213833129.png" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2189688e-a8a5-427e-a09a-3010697af7d0/id-preview-3f0a94f8--34104fa7-0de5-4fe0-9f54-5098f061599c.lovable.app-1780223608702.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2189688e-a8a5-427e-a09a-3010697af7d0/id-preview-3f0a94f8--34104fa7-0de5-4fe0-9f54-5098f061599c.lovable.app-1780223608702.png" },
     ],
     links: [
       {
