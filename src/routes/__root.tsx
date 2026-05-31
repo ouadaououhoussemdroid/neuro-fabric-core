@@ -80,6 +80,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@NeuroWeave" },
+      { name: "twitter:title", content: "NeuroWeave — Foundation Models for Brain Signals" },
+      { name: "twitter:description", content: "NeuroAI APIs for embeddings, cognitive decoding, synthetic neurodata, and EEG-to-image reconstruction." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/571b5317-bba0-479a-9283-2f77d0a7ed79/id-preview-8042c889--34104fa7-0de5-4fe0-9f54-5098f061599c.lovable.app-1780213833129.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/571b5317-bba0-479a-9283-2f77d0a7ed79/id-preview-8042c889--34104fa7-0de5-4fe0-9f54-5098f061599c.lovable.app-1780213833129.png" },
     ],
     links: [
       {

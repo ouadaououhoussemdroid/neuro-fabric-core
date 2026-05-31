@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UploadRouteImport } from './routes/upload'
 import { Route as SyntheticRouteImport } from './routes/synthetic'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -23,6 +24,11 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiEegUploadRouteImport } from './routes/api/eeg/upload'
 
+const UploadRoute = UploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SyntheticRoute = SyntheticRouteImport.update({
   id: '/synthetic',
   path: '/synthetic',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
+  '/upload': typeof UploadRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
 }
 export interface FileRoutesByTo {
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
+  '/upload': typeof UploadRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
 }
 export interface FileRoutesById {
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
+  '/upload': typeof UploadRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
 }
 export interface FileRouteTypes {
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/studio'
     | '/synthetic'
+    | '/upload'
     | '/api/eeg/upload'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/studio'
     | '/synthetic'
+    | '/upload'
     | '/api/eeg/upload'
   id:
     | '__root__'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/studio'
     | '/synthetic'
+    | '/upload'
     | '/api/eeg/upload'
   fileRoutesById: FileRoutesById
 }
@@ -196,11 +208,19 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StudioRoute: typeof StudioRoute
   SyntheticRoute: typeof SyntheticRoute
+  UploadRoute: typeof UploadRoute
   ApiEegUploadRoute: typeof ApiEegUploadRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/upload': {
+      id: '/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof UploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/synthetic': {
       id: '/synthetic'
       path: '/synthetic'
@@ -308,6 +328,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StudioRoute: StudioRoute,
   SyntheticRoute: SyntheticRoute,
+  UploadRoute: UploadRoute,
   ApiEegUploadRoute: ApiEegUploadRoute,
 }
 export const routeTree = rootRouteImport
