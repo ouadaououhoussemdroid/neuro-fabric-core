@@ -30,48 +30,32 @@ function PlaygroundPage() {
   const [latencyMs, setLatencyMs] = useState<number | null>(null);
   const [seed, setSeed] = useState(0);
 
-  const run = () => {
-    setRunning(true);
-    setOutput("");
-    setLatencyMs(null);
-    const started = performance.now();
-    setTimeout(() => {
-      const payloads: Record<Endpoint, object> = {
-        embed: {
-          model: "nwf-7b-embed",
-          version: "v3.4.1",
-          subject: "anon_0421",
-          dim: 768,
-          latency_ms: +(performance.now() - started).toFixed(1),
-          gpu: "H100 · neuro-core-7",
-          embedding: [
-            ...Array.from({ length: 8 }, () => +(Math.random() * 2 - 1).toFixed(4)),
-            "…+760 more",
-          ],
-        },
-        reconstruct: {
-          model: "nw-vision-v1",
-          version: "v1.2.0",
-          alignment_score: 0.842,
-          confidence: 0.71,
-          caption: "a golden retriever sitting on green grass",
-          image_url: "ipfs://Qm…/reconstruction_421.png",
-        },
-        synthesize: {
-          model: "nw-synth-v2",
-          version: "v2.1.3",
-          condition: { attention: 0.7, stress: 0.2, workload: 0.4 },
-          n_samples: 1024,
-          dataset_uri: "s3://neuroweave-synth/datasets/run_0421.parquet",
-        },
-      };
-      setOutput(JSON.stringify(payloads[endpoint], null, 2));
-      setLatencyMs(+(performance.now() - started).toFixed(0));
-      setSeed((s) => s + 1);
-      setRunning(false);
-    }, 1100);
-  };
+ const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
+const run = async () => {
+  if (!uploadedFile) return;
+  setRunning(true);
+  setOutput("");
+  setLatencyMs(null);
+
+  const started = performance.now();
+  const form = new FormData();
+  form.append("file", uploadedFile);
+
+  try {
+    const res = await fetch("/api/eeg/upload", {
+      method: "POST",
+      body: form,
+    });
+    const data = await res.json();
+    setOutput(JSON.stringify(data, null, 2));
+    setLatencyMs(+(performance.now() - started).toFixed(0));
+  } catch (err: any) {
+    setOutput(`Error: ${err.message}`);
+  } finally {
+    setRunning(false);
+  }
+};
   return (
     <SiteShell>
       <Section>
@@ -87,9 +71,17 @@ function PlaygroundPage() {
               <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
                 <LiveDot /> sample.edf · 64ch · 250 Hz
               </div>
-              <button className="inline-flex items-center gap-2 rounded-md border border-border bg-card/40 px-3 py-1.5 text-xs hover:bg-card">
-                <Upload className="h-3.5 w-3.5" /> Upload EEG
-              </button>
+              <label className="inline-flex items-center gap-2 rounded-md border border-border bg-card/40 px-3 py-1.5 text-xs hover:bg-card cursor-pointer">
+  <Upload className="h-3.5 w-3.5" />
+  {uploadedFile ? uploadedFile.name : "Upload EEG"}
+  <input
+    type="file"
+    accept=".edf,.csv,.npy"
+    className="hidden"
+    onChange={(e) => setUploadedFile(e.target.files?.[0] ?? null)}
+  />
+</label>
+          
             </div>
             <div className="mt-4 h-44">
               <ResponsiveContainer>
