@@ -5,6 +5,7 @@ import { SiteShell } from "@/components/site-shell";
 import { NeuralBackground } from "@/components/neural-bg";
 import { Eyebrow, GlassCard, Section, StatPill } from "@/components/ui-bits";
 import { LiveOpsBand, StreamingLatent } from "@/components/live-ops";
+import { WaitlistDialog } from "@/components/waitlist-dialog";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 
 export const Route = createFileRoute("/")({
@@ -78,9 +79,11 @@ function Hero() {
           transition={{ duration: 0.7, delay: 0.22 }}
           className="mt-9 flex flex-wrap items-center gap-3"
         >
-          <Link to="/pricing" className="group inline-flex items-center gap-2 rounded-md bg-neuro-gradient px-5 py-3 text-sm font-medium text-background glow">
-            Request access <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
+          <WaitlistDialog>
+            <button type="button" className="group inline-flex items-center gap-2 rounded-md bg-neuro-gradient px-5 py-3 text-sm font-medium text-background glow">
+              Request access <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </button>
+          </WaitlistDialog>
           <Link to="/developers" className="inline-flex items-center gap-2 rounded-md border border-border bg-card/40 px-5 py-3 text-sm font-medium hover:bg-card">
             Explore APIs
           </Link>
@@ -259,7 +262,9 @@ function ClosingCta() {
       <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-semibold tracking-tight md:text-5xl">Bring brain signals into your software stack.</h2>
       <p className="mx-auto mt-4 max-w-xl text-muted-foreground">Join research labs and BCI startups building on the NeuroWeave foundation.</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <Link to="/pricing" className="rounded-md bg-neuro-gradient px-5 py-3 text-sm font-medium text-background glow">Request access</Link>
+        <WaitlistDialog>
+          <button type="button" className="rounded-md bg-neuro-gradient px-5 py-3 text-sm font-medium text-background glow">Request access</button>
+        </WaitlistDialog>
         <Link to="/playground" className="rounded-md border border-border bg-card/40 px-5 py-3 text-sm font-medium hover:bg-card">Try the playground</Link>
       </div>
     </Section>
