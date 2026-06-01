@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Brain, Github, Twitter } from "lucide-react";
 import { ReactNode } from "react";
+import { WaitlistDialog } from "@/components/waitlist-dialog";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -58,12 +59,14 @@ function Nav() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <Link to="/developers" className="hidden text-xs text-muted-foreground hover:text-foreground md:inline">Docs</Link>
-          <Link
-            to="/pricing"
-            className="rounded-md bg-neuro-gradient px-3 py-1.5 text-xs font-medium text-background glow transition-transform hover:scale-[1.02]"
-          >
-            Request access
-          </Link>
+          <WaitlistDialog>
+            <button
+              type="button"
+              className="rounded-md bg-neuro-gradient px-3 py-1.5 text-xs font-medium text-background glow transition-transform hover:scale-[1.02]"
+            >
+              Request access
+            </button>
+          </WaitlistDialog>
         </div>
       </div>
     </header>
