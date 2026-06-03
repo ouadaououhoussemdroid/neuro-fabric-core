@@ -14,6 +14,103 @@ export type Database = {
   }
   public: {
     Tables: {
+      enterprise_profiles: {
+        Row: {
+          company_name: string
+          company_size: string | null
+          created_at: string
+          id: string
+          industry: string | null
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          company_name: string
+          company_size?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          company_name?: string
+          company_size?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enterprise_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: []
+      }
+      researcher_profiles: {
+        Row: {
+          created_at: string
+          id: string
+          institution_name: string
+          publication_url: string | null
+          research_field: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          institution_name: string
+          publication_url?: string | null
+          research_field?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          institution_name?: string
+          publication_url?: string | null
+          research_field?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "researcher_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       waitlist: {
         Row: {
           created_at: string
@@ -43,7 +140,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      app_role: "individual" | "researcher" | "enterprise"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -170,6 +267,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["individual", "researcher", "enterprise"],
+    },
   },
 } as const
