@@ -1,12 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, Brain, Database, Eye, Layers, Sparkles, Waves, Zap } from "lucide-react";
+import { ArrowRight, Brain, Database, Eye, Layers, Lock, Network, Sparkles, Waves, Zap } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { NeuralBackground } from "@/components/neural-bg";
-import { Eyebrow, GlassCard, Section, StatPill } from "@/components/ui-bits";
-import { LiveOpsBand, StreamingLatent } from "@/components/live-ops";
-import { WaitlistDialog } from "@/components/waitlist-dialog";
-import { Area, AreaChart, ResponsiveContainer } from "recharts";
+import { Eyebrow, GlassCard, Section } from "@/components/ui-bits";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,13 +30,8 @@ function Index() {
   return (
     <SiteShell>
       <Hero />
-      <section className="-mt-10 pb-10 md:-mt-16 md:pb-16">
-        <LiveOpsBand />
-      </section>
-      <Logos />
       <ProductsGrid />
-      <PipelinePreview />
-      <MetricsBand />
+      <Capabilities />
       <ClosingCta />
     </SiteShell>
   );
@@ -79,66 +71,18 @@ function Hero() {
           transition={{ duration: 0.7, delay: 0.22 }}
           className="mt-9 flex flex-wrap items-center gap-3"
         >
-          <WaitlistDialog>
-            <button type="button" className="group inline-flex items-center gap-2 rounded-md bg-neuro-gradient px-5 py-3 text-sm font-medium text-background glow">
-              Request access <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </button>
-          </WaitlistDialog>
+          <Link to="/signup" className="group inline-flex items-center gap-2 rounded-md bg-neuro-gradient px-5 py-3 text-sm font-medium text-background glow">
+            Sign up <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+          <Link to="/signin" className="inline-flex items-center gap-2 rounded-md border border-border bg-card/40 px-5 py-3 text-sm font-medium hover:bg-card">
+            Sign in
+          </Link>
           <Link to="/developers" className="inline-flex items-center gap-2 rounded-md border border-border bg-card/40 px-5 py-3 text-sm font-medium hover:bg-card">
             Explore APIs
           </Link>
-          <div className="ml-2 hidden items-center gap-2 font-mono text-xs text-muted-foreground md:flex">
-            <Zap className="h-3.5 w-3.5 text-neuro" /> 42 ms p50 inference · SOC 2 · HIPAA-ready
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-16 grid grid-cols-2 gap-3 md:grid-cols-4"
-        >
-          <StatPill label="Subjects pretrained" value="18,421" />
-          <StatPill label="Hours of EEG" value="62.3k" />
-          <StatPill label="Embedding dim" value="768" />
-          <StatPill label="API p50 latency" value="42 ms" />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="mt-10"
-        >
-          <GlassCard className="p-4">
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                <span className="h-1.5 w-1.5 rounded-full bg-neuro animate-pulse-glow" />
-                stream · latent[768] · subject_0421
-              </div>
-              <span className="hidden font-mono text-[10px] text-muted-foreground md:inline">nwf-7b-embed · v3.4.1</span>
-            </div>
-            <StreamingLatent cols={64} rows={4} />
-          </GlassCard>
         </motion.div>
       </div>
     </section>
-  );
-}
-
-function Logos() {
-  const labs = ["MIT CSAIL", "Max Planck", "ETH Zürich", "Stanford NPC", "Inria", "RIKEN", "DeepMind", "Allen Institute"];
-  return (
-    <div className="border-y border-border/60 bg-background/40">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 px-4 py-8">
-        <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Trusted in research at</span>
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-3 opacity-70">
-          {labs.map((l) => (
-            <span key={l} className="text-sm tracking-tight text-muted-foreground">{l}</span>
-          ))}
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -175,82 +119,33 @@ function ProductsGrid() {
   );
 }
 
-function PipelinePreview() {
-  const data = Array.from({ length: 80 }, (_, i) => ({
-    x: i,
-    a: Math.sin(i / 5) * 0.6 + Math.sin(i / 2.3) * 0.3 + (Math.random() - 0.5) * 0.15,
-    b: Math.cos(i / 4) * 0.5 + Math.sin(i / 7) * 0.4 + (Math.random() - 0.5) * 0.1,
-  }));
+function Capabilities() {
+  const items = [
+    { icon: Network, title: "Open dataset loaders", desc: "Load PhysioNet, BCI Competition, and TUH EEG corpora directly from the playground." },
+    { icon: Zap, title: "Real preprocessing", desc: "Bandpass filtering, normalization, and windowing implemented in TypeScript — runs server-side on every upload." },
+    { icon: Brain, title: "Cognitive decoding", desc: "Lightweight estimators for attention, workload, and arousal computed from spectral features." },
+    { icon: Lock, title: "Per-user data scope", desc: "All uploads and embeddings are scoped to the authenticated user via row-level security." },
+  ];
   return (
     <Section>
-      <div className="grid items-center gap-10 lg:grid-cols-2">
-        <div>
-          <Eyebrow>Pipeline</Eyebrow>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">From raw signal to grounded intelligence.</h2>
-          <p className="mt-3 max-w-lg text-muted-foreground">
-            Stream 64-channel EEG into the NeuroWeave runtime. We preprocess, embed in a shared latent space, and route to embeddings, cognitive state, or vision reconstruction APIs — all with the same authenticated client.
-          </p>
-          <Link to="/architecture" className="mt-6 inline-flex items-center gap-2 text-sm text-neuro">View full architecture <ArrowRight className="h-4 w-4" /></Link>
-        </div>
-        <GlassCard className="p-0">
-          <div className="flex items-center justify-between border-b border-border/60 px-5 py-3">
-            <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
-              <span className="h-2 w-2 rounded-full bg-neuro animate-pulse-glow" />
-              live · stream://subject_0421
-            </div>
-            <span className="font-mono text-[10px] uppercase text-muted-foreground">Fp1 · Cz · O2</span>
-          </div>
-          <div className="h-44 w-full">
-            <ResponsiveContainer>
-              <AreaChart data={data}>
-                <defs>
-                  <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="oklch(0.78 0.16 200)" stopOpacity={0.6} />
-                    <stop offset="100%" stopColor="oklch(0.78 0.16 200)" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="oklch(0.7 0.22 295)" stopOpacity={0.5} />
-                    <stop offset="100%" stopColor="oklch(0.7 0.22 295)" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <Area type="monotone" dataKey="a" stroke="oklch(0.85 0.18 195)" strokeWidth={1.2} fill="url(#g1)" />
-                <Area type="monotone" dataKey="b" stroke="oklch(0.78 0.2 295)" strokeWidth={1.2} fill="url(#g2)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-3 divide-x divide-border/60 border-t border-border/60 text-center">
-            {[["SNR", "27.4 dB"], ["α/β ratio", "1.84"], ["Attention", "0.71"]].map(([k, v]) => (
-              <div key={k} className="px-3 py-3">
-                <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{k}</div>
-                <div className="mt-1 text-sm font-semibold">{v}</div>
+      <Eyebrow>Capabilities</Eyebrow>
+      <h2 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight md:text-4xl">What you can do today.</h2>
+      <p className="mt-3 max-w-2xl text-muted-foreground">
+        NeuroWeave is in active development. Below is what is wired up and runnable in the current build — no placeholder metrics.
+      </p>
+      <div className="mt-10 grid gap-4 md:grid-cols-2">
+        {items.map((it) => (
+          <GlassCard key={it.title} className="h-full">
+            <div className="flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center rounded-lg border border-border bg-muted/40">
+                <it.icon className="h-5 w-5 text-neuro" />
               </div>
-            ))}
-          </div>
-        </GlassCard>
+              <h3 className="text-base font-semibold tracking-tight">{it.title}</h3>
+            </div>
+            <p className="mt-3 text-sm text-muted-foreground">{it.desc}</p>
+          </GlassCard>
+        ))}
       </div>
-    </Section>
-  );
-}
-
-function MetricsBand() {
-  return (
-    <Section>
-      <GlassCard className="relative overflow-hidden p-10">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-neuro/20 blur-3xl" />
-        <div className="pointer-events-none absolute -left-10 -bottom-20 h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
-        <div className="relative grid items-center gap-10 md:grid-cols-2">
-          <div>
-            <h3 className="text-3xl font-semibold tracking-tight">Built like real infrastructure.</h3>
-            <p className="mt-3 text-muted-foreground">Multi-region inference, customer-managed encryption keys, audit logs, and a deterministic replay engine for clinical-grade reproducibility.</p>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <StatPill label="Inference regions" value="9" />
-            <StatPill label="Throughput" value="2.1M req/min" />
-            <StatPill label="Uptime SLA" value="99.99%" />
-            <StatPill label="Compliance" value="SOC 2 · HIPAA" />
-          </div>
-        </div>
-      </GlassCard>
     </Section>
   );
 }
@@ -262,9 +157,7 @@ function ClosingCta() {
       <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-semibold tracking-tight md:text-5xl">Bring brain signals into your software stack.</h2>
       <p className="mx-auto mt-4 max-w-xl text-muted-foreground">Join research labs and BCI startups building on the NeuroWeave foundation.</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <WaitlistDialog>
-          <button type="button" className="rounded-md bg-neuro-gradient px-5 py-3 text-sm font-medium text-background glow">Request access</button>
-        </WaitlistDialog>
+        <Link to="/signup" className="rounded-md bg-neuro-gradient px-5 py-3 text-sm font-medium text-background glow">Sign up</Link>
         <Link to="/playground" className="rounded-md border border-border bg-card/40 px-5 py-3 text-sm font-medium hover:bg-card">Try the playground</Link>
       </div>
     </Section>
