@@ -1,7 +1,15 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import { Brain, Github, Twitter } from "lucide-react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Brain, Github, LayoutDashboard, LogOut, Twitter, User as UserIcon } from "lucide-react";
 import { ReactNode } from "react";
-import { WaitlistDialog } from "@/components/waitlist-dialog";
+import { useSession } from "@/lib/auth-hooks";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -59,17 +67,53 @@ function Nav() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <Link to="/developers" className="hidden text-xs text-muted-foreground hover:text-foreground md:inline">Docs</Link>
-          <WaitlistDialog>
-            <button
-              type="button"
-              className="rounded-md bg-neuro-gradient px-3 py-1.5 text-xs font-medium text-background glow transition-transform hover:scale-[1.02]"
-            >
-              Request access
-            </button>
-          </WaitlistDialog>
+          <AuthControls />
         </div>
       </div>
     </header>
+  );
+}
+
+function AuthControls() {
+  const { session, loading } = useSession();
+  const navigate = useNavigate();
+  if (loading) return <div className="h-7 w-20" />;
+  if (!session) {
+    return (
+      <>
+        <Link to="/signin" className="rounded-md border border-border bg-card/40 px-3 py-1.5 text-xs font-medium hover:bg-card">
+          Sign in
+        </Link>
+        <Link to="/signup" className="rounded-md bg-neuro-gradient px-3 py-1.5 text-xs font-medium text-background glow transition-transform hover:scale-[1.02]">
+          Sign up
+        </Link>
+      </>
+    );
+  }
+  const email = session.user.email ?? "Account";
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="flex items-center gap-2 rounded-md border border-border bg-card/40 px-2.5 py-1.5 text-xs font-medium hover:bg-card">
+          <UserIcon className="h-3.5 w-3.5 text-neuro" />
+          <span className="max-w-[120px] truncate">{email}</span>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem asChild>
+          <Link to="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard</Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onSelect={async () => {
+            await supabase.auth.signOut();
+            navigate({ to: "/" });
+          }}
+        >
+          <LogOut className="mr-2 h-4 w-4" /> Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
