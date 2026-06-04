@@ -47,39 +47,36 @@ function SignUp() {
     if (role === "enterprise" && !companyName.trim()) return setError("Company name is required");
     setLoading(true);
     try {
+      // All profile/role data is forwarded via raw_user_meta_data so the
+      // database-side `on_auth_user_created` trigger can populate
+      // `profiles` + the role-specific table with SECURITY DEFINER.
+      const metadata: Record<string, string> = { full_name: fullName, role };
+      if (role === "researcher") {
+        metadata.institution_name = institution;
+        if (publicationUrl) metadata.publication_url = publicationUrl;
+        if (researchField) metadata.research_field = researchField;
+      } else if (role === "enterprise") {
+        metadata.company_name = companyName;
+        if (companySize) metadata.company_size = companySize;
+        if (website) metadata.website = website;
+        if (industry) metadata.industry = industry;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/dashboard`, data: { full_name: fullName } },
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: metadata,
+        },
       });
       if (error) throw error;
-      const userId = data.user?.id;
-      if (!userId) throw new Error("Account created. Please confirm your email, then sign in.");
 
-      // Insert profile (needs active session — will exist if email confirmation is off)
-      const { error: pErr } = await supabase.from("profiles").insert({ id: userId, role, full_name: fullName });
-      if (pErr) throw pErr;
-
-      if (role === "researcher") {
-        const { error: rErr } = await supabase.from("researcher_profiles").insert({
-          user_id: userId,
-          institution_name: institution,
-          publication_url: publicationUrl || null,
-          research_field: researchField || null,
-        });
-        if (rErr) throw rErr;
-      } else if (role === "enterprise") {
-        const { error: eErr } = await supabase.from("enterprise_profiles").insert({
-          user_id: userId,
-          company_name: companyName,
-          company_size: companySize || null,
-          website: website || null,
-          industry: industry || null,
-        });
-        if (eErr) throw eErr;
+      if (data.session) {
+        nav({ to: "/dashboard" });
+      } else {
+        setError("Account created. Check your email to confirm, then sign in.");
       }
-
-      nav({ to: "/dashboard" });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Sign up failed");
     } finally {
