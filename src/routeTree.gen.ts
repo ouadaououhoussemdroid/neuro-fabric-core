@@ -28,6 +28,9 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ApiEegUploadRouteImport } from './routes/api/eeg/upload'
+import { Route as AuthenticatedDashboardResearcherRouteImport } from './routes/_authenticated/dashboard.researcher'
+import { Route as AuthenticatedDashboardIndividualRouteImport } from './routes/_authenticated/dashboard.individual'
+import { Route as AuthenticatedDashboardEnterpriseRouteImport } from './routes/_authenticated/dashboard.enterprise'
 
 const UploadRoute = UploadRouteImport.update({
   id: '/upload',
@@ -123,6 +126,24 @@ const ApiEegUploadRoute = ApiEegUploadRouteImport.update({
   path: '/api/eeg/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardResearcherRoute =
+  AuthenticatedDashboardResearcherRouteImport.update({
+    id: '/researcher',
+    path: '/researcher',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardIndividualRoute =
+  AuthenticatedDashboardIndividualRouteImport.update({
+    id: '/individual',
+    path: '/individual',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardEnterpriseRoute =
+  AuthenticatedDashboardEnterpriseRouteImport.update({
+    id: '/enterprise',
+    path: '/enterprise',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -141,7 +162,10 @@ export interface FileRoutesByFullPath {
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
   '/upload': typeof UploadRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
+  '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
+  '/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
 }
 export interface FileRoutesByTo {
@@ -161,7 +185,10 @@ export interface FileRoutesByTo {
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
   '/upload': typeof UploadRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
+  '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
+  '/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
 }
 export interface FileRoutesById {
@@ -183,7 +210,10 @@ export interface FileRoutesById {
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
   '/upload': typeof UploadRoute
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/_authenticated/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
+  '/_authenticated/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
+  '/_authenticated/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
 }
 export interface FileRouteTypes {
@@ -206,6 +236,9 @@ export interface FileRouteTypes {
     | '/synthetic'
     | '/upload'
     | '/dashboard'
+    | '/dashboard/enterprise'
+    | '/dashboard/individual'
+    | '/dashboard/researcher'
     | '/api/eeg/upload'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -226,6 +259,9 @@ export interface FileRouteTypes {
     | '/synthetic'
     | '/upload'
     | '/dashboard'
+    | '/dashboard/enterprise'
+    | '/dashboard/individual'
+    | '/dashboard/researcher'
     | '/api/eeg/upload'
   id:
     | '__root__'
@@ -247,6 +283,9 @@ export interface FileRouteTypes {
     | '/synthetic'
     | '/upload'
     | '/_authenticated/dashboard'
+    | '/_authenticated/dashboard/enterprise'
+    | '/_authenticated/dashboard/individual'
+    | '/_authenticated/dashboard/researcher'
     | '/api/eeg/upload'
   fileRoutesById: FileRoutesById
 }
@@ -406,15 +445,57 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiEegUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard/researcher': {
+      id: '/_authenticated/dashboard/researcher'
+      path: '/researcher'
+      fullPath: '/dashboard/researcher'
+      preLoaderRoute: typeof AuthenticatedDashboardResearcherRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/individual': {
+      id: '/_authenticated/dashboard/individual'
+      path: '/individual'
+      fullPath: '/dashboard/individual'
+      preLoaderRoute: typeof AuthenticatedDashboardIndividualRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/enterprise': {
+      id: '/_authenticated/dashboard/enterprise'
+      path: '/enterprise'
+      fullPath: '/dashboard/enterprise'
+      preLoaderRoute: typeof AuthenticatedDashboardEnterpriseRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
   }
 }
 
+interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardEnterpriseRoute: typeof AuthenticatedDashboardEnterpriseRoute
+  AuthenticatedDashboardIndividualRoute: typeof AuthenticatedDashboardIndividualRoute
+  AuthenticatedDashboardResearcherRoute: typeof AuthenticatedDashboardResearcherRoute
+}
+
+const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
+  {
+    AuthenticatedDashboardEnterpriseRoute:
+      AuthenticatedDashboardEnterpriseRoute,
+    AuthenticatedDashboardIndividualRoute:
+      AuthenticatedDashboardIndividualRoute,
+    AuthenticatedDashboardResearcherRoute:
+      AuthenticatedDashboardResearcherRoute,
+  }
+
+const AuthenticatedDashboardRouteWithChildren =
+  AuthenticatedDashboardRoute._addFileChildren(
+    AuthenticatedDashboardRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
