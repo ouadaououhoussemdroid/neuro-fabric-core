@@ -28,6 +28,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ApiEegUploadRouteImport } from './routes/api/eeg/upload'
+import { Route as AuthenticatedDashboardIndividualRouteImport } from './routes/_authenticated/dashboard.individual'
 
 const UploadRoute = UploadRouteImport.update({
   id: '/upload',
@@ -123,6 +124,12 @@ const ApiEegUploadRoute = ApiEegUploadRouteImport.update({
   path: '/api/eeg/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardIndividualRoute =
+  AuthenticatedDashboardIndividualRouteImport.update({
+    id: '/individual',
+    path: '/individual',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -141,7 +148,8 @@ export interface FileRoutesByFullPath {
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
   '/upload': typeof UploadRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
 }
 export interface FileRoutesByTo {
@@ -161,7 +169,8 @@ export interface FileRoutesByTo {
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
   '/upload': typeof UploadRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
 }
 export interface FileRoutesById {
@@ -183,7 +192,8 @@ export interface FileRoutesById {
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
   '/upload': typeof UploadRoute
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/_authenticated/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
 }
 export interface FileRouteTypes {
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
     | '/synthetic'
     | '/upload'
     | '/dashboard'
+    | '/dashboard/individual'
     | '/api/eeg/upload'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/synthetic'
     | '/upload'
     | '/dashboard'
+    | '/dashboard/individual'
     | '/api/eeg/upload'
   id:
     | '__root__'
@@ -247,6 +259,7 @@ export interface FileRouteTypes {
     | '/synthetic'
     | '/upload'
     | '/_authenticated/dashboard'
+    | '/_authenticated/dashboard/individual'
     | '/api/eeg/upload'
   fileRoutesById: FileRoutesById
 }
@@ -406,15 +419,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiEegUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard/individual': {
+      id: '/_authenticated/dashboard/individual'
+      path: '/individual'
+      fullPath: '/dashboard/individual'
+      preLoaderRoute: typeof AuthenticatedDashboardIndividualRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
   }
 }
 
+interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardIndividualRoute: typeof AuthenticatedDashboardIndividualRoute
+}
+
+const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
+  {
+    AuthenticatedDashboardIndividualRoute:
+      AuthenticatedDashboardIndividualRoute,
+  }
+
+const AuthenticatedDashboardRouteWithChildren =
+  AuthenticatedDashboardRoute._addFileChildren(
+    AuthenticatedDashboardRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -443,3 +478,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
