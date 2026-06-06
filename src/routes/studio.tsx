@@ -123,7 +123,7 @@ function StudioPage() {
         <PageHeader
           eyebrow="Neural Processing Studio"
           title="EEG ingestion → representation → cognitive state."
-          sub="A production workspace for neuroscience teams: validate recordings, configure preprocessing, generate latent representations, and inspect decoded cognitive metrics."
+          sub="A production workspace for neuroscience teams."
         />
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -138,7 +138,7 @@ function StudioPage() {
         <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_320px]">
           <div className="min-w-0">
             {stage === "ingest" && <IngestionStage files={files} setFiles={setFiles} activeFile={activeFile} setActiveFile={setActiveFile} onNext={() => setStage("preprocess")} />}
-            {stage === "preprocess" && <PreprocessStage fileName={files.find((f) => f.id === activeFile)?.name ?? "—"} onRun={(summary) => { setJobs((j) => [{ id: `job_${10242 + j.length}`, kind: `Preprocess · ${summary}`, file: files.find((f) => f.id === activeFile)?.name ?? "—", status: "running", duration: "00:00:00", at: "now" }, ...j]); setStage("represent"); }} />}
+            {stage === "preprocess" && <PreprocessStage fileName={files.find((f) => f.id === activeFile)?.name ?? "—"} onRun={(summary) => { setJobs((j) => [{ id: `job_${Date.now()}`, kind: `Preprocess · ${summary}`, file: files.find((f) => f.id === activeFile)?.name ?? "—", status: "running", duration: "00:00:00", at: "now" }, ...j]); setStage("represent"); }} />}
             {stage === "represent" && <RepresentationStage fileName={files.find((f) => f.id === activeFile)?.name ?? "—"} onNext={() => setStage("cognitive")} />}
             {stage === "cognitive" && <CognitiveStage fileName={files.find((f) => f.id === activeFile)?.name ?? "—"} />}
           </div>
@@ -209,57 +209,4 @@ function IngestionStage({ files, setFiles, activeFile, setActiveFile, onNext }: 
         channels: 32 + Math.floor(Math.random() * 96),
         sfreq: [256, 500, 512, 1000][Math.floor(Math.random() * 4)],
         duration: `00:\( {String(10 + Math.floor(Math.random() * 50)).padStart(2, "0")}: \){String(Math.floor(Math.random() * 60)).padStart(2, "0")}`,
-        status: "uploading",
-        progress: 0,
-      };
-      setFiles((prev: any) => [entry, ...prev]);
-
-      let p = 0;
-      const t = setInterval(() => {
-        p += 8 + Math.random() * 18;
-        if (p >= 100) {
-          p = 100;
-          clearInterval(t);
-          setFiles((prev: any) => prev.map((x: any) => (x.id === id ? { ...x, progress: 100, status: "validated" } : x)));
-        } else {
-          setFiles((prev: any) => prev.map((x: any) => (x.id === id ? { ...x, progress: p } : x)));
-        }
-      }, 220);
-    });
-  };
-
-  return (
-    <div className="space-y-4">
-      <GlassCard>
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <div className="text-sm font-semibold">EEG Upload Workspace</div>
-            <p className="mt-1 text-xs text-muted-foreground">Drop EDF, BDF, or CSV recordings.</p>
-          </div>
-        </div>
-
-        <div
-          onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
-          onDragLeave={() => setDrag(false)}
-          onDrop={(e) => { e.preventDefault(); setDrag(false); onAdd(e.dataTransfer.files); }}
-          className={`mt-4 grid place-items-center rounded-xl border border-dashed px-6 py-10 text-center transition-colors ${drag ? "border-neuro/70 bg-neuro/5" : "border-border/70 bg-muted/10"}`}
-        >
-          <FileUp className="h-6 w-6 text-muted-foreground" />
-          <div className="mt-3 text-sm font-medium">Drop recordings here</div>
-          <input ref={inputRef} type="file" multiple accept=".edf,.bdf,.csv" className="hidden" onChange={(e) => onAdd(e.target.files)} />
-          <button onClick={() => inputRef.current?.click()} className="mt-4 inline-flex items-center gap-2 rounded-md bg-neuro-gradient px-3 py-1.5 text-xs font-medium text-background glow">
-            <Upload className="h-3.5 w-3.5" /> Select files
-          </button>
-        </div>
-      </GlassCard>
-    </div>
-  );
-}
-
-function PreprocessStage({ fileName, onRun }: any) { return <div>Preprocess Stage - Coming soon</div>; }
-function RepresentationStage({ fileName, onNext }: any) { return <div>Representation Stage - Coming soon</div>; }
-function CognitiveStage({ fileName }: any) { return <div>Cognitive Stage - Coming soon</div>; }
-function ActivityFeed() { return <GlassCard className="p-4">Activity Feed</GlassCard>; }
-function SessionManager() { return <GlassCard className="p-4">Session Manager</GlassCard>; }
-function ApiEndpoints({ stage }: any) { return <GlassCard className="p-4">API Endpoints</GlassCard>; }
-function JobHistory({ jobs }: any) { return <GlassCard className="p-4">Job History</GlassCard>; }
+        status: "u
