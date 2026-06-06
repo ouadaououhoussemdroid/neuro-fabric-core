@@ -2,34 +2,35 @@ import type { EEGSignal, EEGWindow, PreprocessingReport } from "../types";
 import { bandpass, notch } from "./filters";
 import { zscore } from "./normalize";
 import { segment } from "./segment";
+import { rejectArtifacts } from "./artifact-rejection";
+import type { ArtifactThresholds, ArtifactReport } from "./artifact-rejection";
 
-export { bandpass, notch, zscore, segment };
+export { bandpass, notch, zscore, segment, rejectArtifacts };
+export type { ArtifactThresholds, ArtifactReport };
 
 export interface PreprocessOptions {
   bandpass?: { low: number; high: number } | false;
   notch?: { fc: 50 | 60; q?: number } | false;
   normalize?: boolean;
   segment?: { windowSec: number; overlap: number } | false;
+  artifactRejection?: { enabled?: boolean; thresholds?: Partial<ArtifactThresholds>; maxContaminationPercent?: number } | false;
 }
 
 export interface PreprocessResult {
   signal: EEGSignal;
   windows: EEGWindow[];
   report: PreprocessingReport;
+  artifactReport?: ArtifactReport;
 }
 
-const DEFAULTS: Required<Omit<PreprocessOptions, "bandpass" | "notch" | "segment">> & {
-  bandpass: { low: number; high: number };
-  notch: { fc: 50 | 60; q: number };
-  segment: { windowSec: number; overlap: number };
-} = {
+const DEFAULTS = {
   bandpass: { low: 1, high: 40 },
-  notch: { fc: 60, q: 30 },
+  notch: { fc: 60 as const, q: 30 },
   normalize: true,
   segment: { windowSec: 2, overlap: 0.5 },
+  artifactRejection: { enabled: true, maxContaminationPercent: 40 },
 };
 
-/** Run the full preprocessing pipeline and produce timing report + windows. */
 export function preprocess(input: EEGSignal, opts: PreprocessOptions = {}): PreprocessResult {
   const steps: PreprocessingReport["steps"] = [];
   const t0 = performance.now();
@@ -64,6 +65,26 @@ export function preprocess(input: EEGSignal, opts: PreprocessOptions = {}): Prep
     steps.push({ name: "segment", params: { ...seg, count: windows.length }, durationMs: +(performance.now() - s).toFixed(2) });
   }
 
+  let artifactReport: ArtifactReport | undefined;
+  const arOpts = opts.artifactRejection;
+  const arEnabled = arOpts !== false && (arOpts?.enabled !== false);
+
+  if (arEnabled && windows.length > 0) {
+    const s = performance.now();
+    const arConfig = arOpts !== false ? arOpts : {};
+    const { windows: cleanWindows, report: arReport } = rejectArtifacts(windows, {
+      thresholds: arConfig?.thresholds,
+      maxContaminationPercent: arConfig?.maxContaminationPercent ?? DEFAULTS.artifactRejection.maxContaminationPercent,
+    });
+    artifactReport = arReport;
+    windows = cleanWindows;
+    steps.push({
+      name: "artifact-rejection",
+      params: { totalWindows: arReport.totalWindows, rejectedWindows: arReport.rejectedWindows, rejectedPercent: +arReport.rejectedPercent.toFixed(1), keptWindows: arReport.keptWindows },
+      durationMs: +(performance.now() - s).toFixed(2),
+    });
+  }
+
   const signal: EEGSignal = { ...input, data };
   const report: PreprocessingReport = {
     channels: data.length,
@@ -72,5 +93,6 @@ export function preprocess(input: EEGSignal, opts: PreprocessOptions = {}): Prep
     steps,
     totalDurationMs: +(performance.now() - t0).toFixed(2),
   };
-  return { signal, windows, report };
+
+  return { signal, windows, report, artifactReport };
 }
