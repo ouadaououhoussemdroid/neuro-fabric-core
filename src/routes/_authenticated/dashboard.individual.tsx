@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Activity, ArrowRight, Cpu, KeyRound, Sparkles, Zap } from "lucide-react";
+import { Activity, ArrowRight, Clock, FileAudio, History, Sparkles, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { EEGLive } from "@/components/eeg-live";
@@ -15,7 +15,12 @@ async function load() {
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user!;
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
-  return { user, profile };
+  const { data: analyses, count } = await supabase
+    .from("eeg_analyses")
+    .select("id, file_name, attention, workload, arousal, created_at", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .limit(3);
+  return { user, profile, analyses: analyses ?? [], totalAnalyses: count ?? 0 };
 }
 
 function IndividualDashboard() {
@@ -43,7 +48,7 @@ function IndividualDashboard() {
       </div>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-3">
-        <StatPill label="API calls today" value="1,284" />
+        <StatPill label="Analyses total" value={String(data.totalAnalyses)} />
         <StatPill label="Credits remaining" value="48,716" />
         <StatPill label="Latency avg" value="42 ms" />
       </div>
@@ -51,7 +56,33 @@ function IndividualDashboard() {
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         <QuickAction icon={Sparkles} title="Run embedding" desc="Generate a 768-d brain vector from a signal upload." to="/embeddings" />
         <QuickAction icon={Zap} title="Test API" desc="Send a request from the developer playground." to="/playground" />
+        <QuickAction icon={History} title="My analyses" desc={`View your ${data.totalAnalyses} saved analyses.`} to="/dashboard/analyses" />
+        <QuickAction icon={FileAudio} title="Upload EEG" desc="Upload a new EDF, CSV, or NPY file for analysis." to="/upload" />
       </div>
+
+      {data.analyses.length > 0 && (
+        <div className="mt-8">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold">Recent Analyses</h2>
+            <Link to="/dashboard/analyses" className="text-xs text-neuro hover:underline">View all →</Link>
+          </div>
+          <div className="flex flex-col gap-2">
+            {data.analyses.map((a) => (
+              <GlassCard key={a.id} className="flex items-center justify-between py-3">
+                <div className="flex items-center gap-2">
+                  <FileAudio className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium truncate max-w-[140px]">{a.file_name}</span>
+                </div>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  <span>A:{Math.round(a.attention * 100)}%</span>
+                  <span>W:{Math.round(a.workload * 100)}%</span>
+                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{new Date(a.created_at).toLocaleDateString()}</span>
+                </div>
+              </GlassCard>
+            ))}
+          </div>
+        </div>
+      )}
     </DashboardShell>
   );
 }
