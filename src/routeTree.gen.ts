@@ -27,6 +27,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as ApiEegUploadRouteImport } from './routes/api/eeg/upload'
 import { Route as AuthenticatedDashboardResearcherRouteImport } from './routes/_authenticated/dashboard.researcher'
 import { Route as AuthenticatedDashboardIndividualRouteImport } from './routes/_authenticated/dashboard.individual'
@@ -121,6 +122,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDashboardIndexRoute =
+  AuthenticatedDashboardIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const ApiEegUploadRoute = ApiEegUploadRouteImport.update({
   id: '/api/eeg/upload',
   path: '/api/eeg/upload',
@@ -167,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
+  '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -185,11 +193,11 @@ export interface FileRoutesByTo {
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
   '/upload': typeof UploadRoute
-  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
   '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
+  '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/_authenticated/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
+  '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -240,6 +249,7 @@ export interface FileRouteTypes {
     | '/dashboard/individual'
     | '/dashboard/researcher'
     | '/api/eeg/upload'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -258,11 +268,11 @@ export interface FileRouteTypes {
     | '/studio'
     | '/synthetic'
     | '/upload'
-    | '/dashboard'
     | '/dashboard/enterprise'
     | '/dashboard/individual'
     | '/dashboard/researcher'
     | '/api/eeg/upload'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/individual'
     | '/_authenticated/dashboard/researcher'
     | '/api/eeg/upload'
+    | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -438,6 +449,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/dashboard/': {
+      id: '/_authenticated/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/api/eeg/upload': {
       id: '/api/eeg/upload'
       path: '/api/eeg/upload'
@@ -473,6 +491,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardEnterpriseRoute: typeof AuthenticatedDashboardEnterpriseRoute
   AuthenticatedDashboardIndividualRoute: typeof AuthenticatedDashboardIndividualRoute
   AuthenticatedDashboardResearcherRoute: typeof AuthenticatedDashboardResearcherRoute
+  AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
@@ -483,6 +502,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
       AuthenticatedDashboardIndividualRoute,
     AuthenticatedDashboardResearcherRoute:
       AuthenticatedDashboardResearcherRoute,
+    AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   }
 
 const AuthenticatedDashboardRouteWithChildren =
