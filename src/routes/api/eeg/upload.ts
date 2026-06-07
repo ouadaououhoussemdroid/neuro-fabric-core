@@ -4,7 +4,6 @@ import { preprocess } from "@/lib/eeg/preprocessing";
 import { embedSignal } from "@/lib/embeddings";
 import { decodeCognitiveState } from "@/lib/decoder";
 import { log, startTimer } from "@/lib/logging";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { EEGSignal } from "@/lib/eeg/types";
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -37,9 +36,29 @@ export const Route = createFileRoute("/api/eeg/upload")({
           let userId: string;
           let supabase: any;
           try {
-            const ctx = await requireSupabaseAuth({ request, context } as never);
-            userId = (ctx as any).userId;
-            supabase = (ctx as any).supabase;
+            const authHeader = request.headers.get("authorization") ?? "";
+            if (!authHeader.startsWith("Bearer ")) {
+              return json({ error: "Unauthorized: missing Bearer token" }, 401);
+            }
+            const token = authHeader.slice("Bearer ".length).trim();
+            if (!token) return json({ error: "Unauthorized: empty token" }, 401);
+
+            const { createClient } = await import("@supabase/supabase-js");
+            const SUPABASE_URL = process.env.SUPABASE_URL!;
+            const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY!;
+            if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+              return json({ error: "Server misconfigured: Supabase env vars missing" }, 500);
+            }
+            const client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+              global: { headers: { Authorization: `Bearer ${token}` } },
+              auth: { persistSession: false, autoRefreshToken: false },
+            });
+            const { data: userData, error: userErr } = await client.auth.getUser(token);
+            if (userErr || !userData?.user) {
+              return json({ error: "Unauthorized: invalid token" }, 401);
+            }
+            userId = userData.user.id;
+            supabase = client;
           } catch (authErr) {
             return json({ error: (authErr as Error).message ?? "Unauthorized" }, 401);
           }
