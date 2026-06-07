@@ -71,7 +71,8 @@ export function preprocess(input: EEGSignal, opts: PreprocessOptions = {}): Prep
 
   if (arEnabled && windows.length > 0) {
     const s = performance.now();
-    const arConfig = arOpts !== false ? arOpts : {};
+    const arConfig: { thresholds?: Partial<ArtifactThresholds>; maxContaminationPercent?: number } =
+      arOpts && typeof arOpts === "object" ? arOpts : {};
     const { windows: cleanWindows, report: arReport } = rejectArtifacts(windows, {
       thresholds: arConfig?.thresholds,
       maxContaminationPercent: arConfig?.maxContaminationPercent ?? DEFAULTS.artifactRejection.maxContaminationPercent,
