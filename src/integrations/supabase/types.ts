@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      eeg_analyses: {
+        Row: {
+          arousal: number
+          attention: number
+          bandpass_high: number | null
+          bandpass_low: number | null
+          created_at: string
+          embedding: Json
+          embedding_dimensions: number
+          embedding_model: string
+          file_name: string
+          file_size_bytes: number
+          id: string
+          notch_frequency: number | null
+          num_channels: number
+          num_samples: number
+          processing_time_ms: number
+          sample_rate: number
+          user_id: string
+          workload: number
+        }
+        Insert: {
+          arousal?: number
+          attention?: number
+          bandpass_high?: number | null
+          bandpass_low?: number | null
+          created_at?: string
+          embedding?: Json
+          embedding_dimensions: number
+          embedding_model: string
+          file_name: string
+          file_size_bytes?: number
+          id?: string
+          notch_frequency?: number | null
+          num_channels: number
+          num_samples: number
+          processing_time_ms?: number
+          sample_rate: number
+          user_id: string
+          workload?: number
+        }
+        Update: {
+          arousal?: number
+          attention?: number
+          bandpass_high?: number | null
+          bandpass_low?: number | null
+          created_at?: string
+          embedding?: Json
+          embedding_dimensions?: number
+          embedding_model?: string
+          file_name?: string
+          file_size_bytes?: number
+          id?: string
+          notch_frequency?: number | null
+          num_channels?: number
+          num_samples?: number
+          processing_time_ms?: number
+          sample_rate?: number
+          user_id?: string
+          workload?: number
+        }
+        Relationships: []
+      }
       enterprise_profiles: {
         Row: {
           company_name: string
@@ -51,6 +114,83 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      experiment_runs: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          experiment_id: string
+          id: string
+          metrics: Json
+          name: string | null
+          notes: string | null
+          params: Json
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          experiment_id: string
+          id?: string
+          metrics?: Json
+          name?: string | null
+          notes?: string | null
+          params?: Json
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          experiment_id?: string
+          id?: string
+          metrics?: Json
+          name?: string | null
+          notes?: string | null
+          params?: Json
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experiment_runs_experiment_id_fkey"
+            columns: ["experiment_id"]
+            isOneToOne: false
+            referencedRelation: "experiments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      experiments: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          status: string
+          tags: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          status?: string
+          tags?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          status?: string
+          tags?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
