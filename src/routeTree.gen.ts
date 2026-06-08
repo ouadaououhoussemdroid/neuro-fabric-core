@@ -18,6 +18,7 @@ import { Route as ExperimentsRouteImport } from './routes/experiments'
 import { Route as EmbeddingsRouteImport } from './routes/embeddings'
 import { Route as Eeg2imageRouteImport } from './routes/eeg2image'
 import { Route as DevelopersRouteImport } from './routes/developers'
+import { Route as DatasetsRouteImport } from './routes/datasets'
 import { Route as ArchitectureRouteImport } from './routes/architecture'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -47,6 +48,7 @@ const ExperimentsRoute = ExperimentsRouteImport.update({ id: '/experiments', pat
 const EmbeddingsRoute = EmbeddingsRouteImport.update({ id: '/embeddings', path: '/embeddings', getParentRoute: () => rootRouteImport } as any)
 const Eeg2imageRoute = Eeg2imageRouteImport.update({ id: '/eeg2image', path: '/eeg2image', getParentRoute: () => rootRouteImport } as any)
 const DevelopersRoute = DevelopersRouteImport.update({ id: '/developers', path: '/developers', getParentRoute: () => rootRouteImport } as any)
+const DatasetsRoute = DatasetsRouteImport.update({ id: '/datasets', path: '/datasets', getParentRoute: () => rootRouteImport } as any)
 const ArchitectureRoute = ArchitectureRouteImport.update({ id: '/architecture', path: '/architecture', getParentRoute: () => rootRouteImport } as any)
 const AboutRoute = AboutRouteImport.update({ id: '/about', path: '/about', getParentRoute: () => rootRouteImport } as any)
 const IndexRoute = IndexRouteImport.update({ id: '/', path: '/', getParentRoute: () => rootRouteImport } as any)
@@ -63,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/architecture': typeof ArchitectureRoute
+  '/datasets': typeof DatasetsRoute
   '/developers': typeof DevelopersRoute
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
@@ -94,6 +97,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/architecture': typeof ArchitectureRoute
+  '/datasets': typeof DatasetsRoute
   '/developers': typeof DevelopersRoute
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
@@ -124,6 +128,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/architecture': typeof ArchitectureRoute
+  '/datasets': typeof DatasetsRoute
   '/developers': typeof DevelopersRoute
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
@@ -161,6 +166,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ArchitectureRoute: typeof ArchitectureRoute
+  DatasetsRoute: typeof DatasetsRoute
   DevelopersRoute: typeof DevelopersRoute
   Eeg2imageRoute: typeof Eeg2imageRoute
   EmbeddingsRoute: typeof EmbeddingsRoute
@@ -183,12 +189,12 @@ export interface RootRouteChildren {
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute, AboutRoute, ArchitectureRoute, DevelopersRoute,
-  Eeg2imageRoute, EmbeddingsRoute, ExperimentsRoute, MneRoute,
-  ModelsRoute, PlaygroundRoute, PricingRoute, ResearchRoute,
-  ResetPasswordRoute, SigninRoute, SignupRoute, SitemapDotxmlRoute,
-  StudioRoute, SyntheticRoute, TrainingRoute, UploadRoute,
-  ApiEegUploadRoute, AuthenticatedRouteRoute,
+  IndexRoute, AboutRoute, ArchitectureRoute, DatasetsRoute,
+  DevelopersRoute, Eeg2imageRoute, EmbeddingsRoute, ExperimentsRoute,
+  MneRoute, ModelsRoute, PlaygroundRoute, PricingRoute,
+  ResearchRoute, ResetPasswordRoute, SigninRoute, SignupRoute,
+  SitemapDotxmlRoute, StudioRoute, SyntheticRoute, TrainingRoute,
+  UploadRoute, ApiEegUploadRoute, AuthenticatedRouteRoute,
 }
 
 export const routeTree = rootRouteImport
