@@ -12,6 +12,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ResearchRouteImport } from './routes/research'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PlaygroundRouteImport } from './routes/playground'
+import { Route as OnnxRouteImport } from './routes/onnx'
 import { Route as MneRouteImport } from './routes/mne'
 import { Route as ModelsRouteImport } from './routes/models'
 import { Route as ExperimentsRouteImport } from './routes/experiments'
@@ -42,6 +43,7 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({ id: '/reset-passwor
 const ResearchRoute = ResearchRouteImport.update({ id: '/research', path: '/research', getParentRoute: () => rootRouteImport } as any)
 const PricingRoute = PricingRouteImport.update({ id: '/pricing', path: '/pricing', getParentRoute: () => rootRouteImport } as any)
 const PlaygroundRoute = PlaygroundRouteImport.update({ id: '/playground', path: '/playground', getParentRoute: () => rootRouteImport } as any)
+const OnnxRoute = OnnxRouteImport.update({ id: '/onnx', path: '/onnx', getParentRoute: () => rootRouteImport } as any)
 const MneRoute = MneRouteImport.update({ id: '/mne', path: '/mne', getParentRoute: () => rootRouteImport } as any)
 const ModelsRoute = ModelsRouteImport.update({ id: '/models', path: '/models', getParentRoute: () => rootRouteImport } as any)
 const ExperimentsRoute = ExperimentsRouteImport.update({ id: '/experiments', path: '/experiments', getParentRoute: () => rootRouteImport } as any)
@@ -72,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/experiments': typeof ExperimentsRoute
   '/mne': typeof MneRoute
   '/models': typeof ModelsRoute
+  '/onnx': typeof OnnxRoute
   '/playground': typeof PlaygroundRoute
   '/pricing': typeof PricingRoute
   '/research': typeof ResearchRoute
@@ -104,6 +107,7 @@ export interface FileRoutesByTo {
   '/experiments': typeof ExperimentsRoute
   '/mne': typeof MneRoute
   '/models': typeof ModelsRoute
+  '/onnx': typeof OnnxRoute
   '/playground': typeof PlaygroundRoute
   '/pricing': typeof PricingRoute
   '/research': typeof ResearchRoute
@@ -135,6 +139,7 @@ export interface FileRoutesById {
   '/experiments': typeof ExperimentsRoute
   '/mne': typeof MneRoute
   '/models': typeof ModelsRoute
+  '/onnx': typeof OnnxRoute
   '/playground': typeof PlaygroundRoute
   '/pricing': typeof PricingRoute
   '/research': typeof ResearchRoute
@@ -173,6 +178,7 @@ export interface RootRouteChildren {
   ExperimentsRoute: typeof ExperimentsRoute
   MneRoute: typeof MneRoute
   ModelsRoute: typeof ModelsRoute
+  OnnxRoute: typeof OnnxRoute
   PlaygroundRoute: typeof PlaygroundRoute
   PricingRoute: typeof PricingRoute
   ResearchRoute: typeof ResearchRoute
@@ -191,7 +197,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute, AboutRoute, ArchitectureRoute, DatasetsRoute,
   DevelopersRoute, Eeg2imageRoute, EmbeddingsRoute, ExperimentsRoute,
-  MneRoute, ModelsRoute, PlaygroundRoute, PricingRoute,
+  MneRoute, ModelsRoute, OnnxRoute, PlaygroundRoute, PricingRoute,
   ResearchRoute, ResetPasswordRoute, SigninRoute, SignupRoute,
   SitemapDotxmlRoute, StudioRoute, SyntheticRoute, TrainingRoute,
   UploadRoute, ApiEegUploadRoute, AuthenticatedRouteRoute,
