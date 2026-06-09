@@ -30,31 +30,7 @@ interface MNEResult {
   arousal: number; mne_version: string; duration_ms: number;
 }
 
-function MnePage() {
-  const { data: profile } = useQuery({ queryKey: ["profile"], queryFn: loadProfile });
-  const { data: experiments } = useQuery({ queryKey: ["experiments-list"], queryFn: loadExperiments });
-  const name = profile?.full_name ?? "User";
-  const role = (profile?.role ?? "individual") as "individual" | "researcher" | "enterprise";
-  const { state, initialize, runPython, setGlobal } = usePyodide();
-  const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<MNEResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [sampleRate, setSampleRate] = useState("256");
-  const [saving, setSaving] = useState(false);
-  const [savedId, setSavedId] = useState<string | null>(null);
-  const [selectedExp, setSelectedExp] = useState<string>("");
-  const [runName, setRunName] = useState("");
-
-  const handleAnalyze = useCallback(async () => {
-    if (!file) return;
-    setError(null); setResult(null); setSavedId(null);
-    const t0 = performance.now();
-    try {
-      const buffer = await file.arrayBuffer();
-      setGlobal("eeg_bytes", Array.from(new Uint8Array(buffer)));
-      setGlobal("eeg_filename", file.name);
-      setGlobal("eeg_sfreq", Number(sampleRate));
-      const res = await runPython(`
+const PYTHON_CODE = `
 import numpy as np, mne, json
 from io import BytesIO, StringIO
 import csv as csv_mod
@@ -118,7 +94,33 @@ json.dumps({'n_channels':raw.info['nchan'],'n_times':raw.n_times,'sfreq':float(s
   'epochs_count':len(clean),'artifacts_rejected':int(rejected),
   'attention':round(attention,4),'workload':round(workload,4),'arousal':round(arousal,4),
   'mne_version':mne.__version__})
-      `) as string;
+`;
+
+function MnePage() {
+  const { data: profile } = useQuery({ queryKey: ["profile"], queryFn: loadProfile });
+  const { data: experiments } = useQuery({ queryKey: ["experiments-list"], queryFn: loadExperiments });
+  const name = profile?.full_name ?? "User";
+  const role = (profile?.role ?? "individual") as "individual" | "researcher" | "enterprise";
+  const { state, initialize, runPython, setGlobal } = usePyodide();
+  const [file, setFile] = useState<File | null>(null);
+  const [result, setResult] = useState<MNEResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [sampleRate, setSampleRate] = useState("256");
+  const [saving, setSaving] = useState(false);
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [selectedExp, setSelectedExp] = useState<string>("");
+  const [runName, setRunName] = useState("");
+
+  const handleAnalyze = useCallback(async () => {
+    if (!file) return;
+    setError(null); setResult(null); setSavedId(null);
+    const t0 = performance.now();
+    try {
+      const buffer = await file.arrayBuffer();
+      setGlobal("eeg_bytes", Array.from(new Uint8Array(buffer)));
+      setGlobal("eeg_filename", file.name);
+      setGlobal("eeg_sfreq", Number(sampleRate));
+      const res = await runPython(PYTHON_CODE) as string;
       const duration_ms = Math.round(performance.now() - t0);
       setResult({ ...JSON.parse(res), duration_ms });
     } catch (err) { setError((err as Error).message); }
@@ -180,7 +182,7 @@ json.dumps({'n_channels':raw.info['nchan'],'n_times':raw.n_times,'sfreq':float(s
         <GlassCard className="mt-6">
           <div className="flex items-center gap-2 mb-3"><Loader2 className="h-4 w-4 animate-spin text-neuro" /><span className="text-sm font-semibold text-neuro">{state.message}</span></div>
           <div className="h-2 rounded-full bg-muted/60"><div className="h-full rounded-full bg-neuro transition-all duration-500" style={{ width: `${state.progress}%` }} /></div>
-          <p className="mt-2 text-[11px] text-muted-foreground">{state.progress}% — قد يستغرق دقيقة أو دقيقتين</p>
+          <p className="mt-2 text-[11px] text-muted-foreground">{state.progress}%</p>
         </GlassCard>
       )}
 
@@ -232,7 +234,7 @@ json.dumps({'n_channels':raw.info['nchan'],'n_times':raw.n_times,'sfreq':float(s
                 ))}
               </GlassCard>
               <GlassCard>
-                <p className="text-xs font-semibold text-muted-foreground mb-3">📊 Band Powers (Welch PSD)</p>
+                <p className="text-xs font-semibold text-muted-foreground mb-3">📊 Band Powers</p>
                 {Object.entries(result.band_powers).map(([band, values]) => {
                   const avg = values.reduce((s,v)=>s+v,0)/Math.max(1,values.length);
                   const maxVal = Math.max(...Object.values(result.band_powers).map(v=>v.reduce((s,x)=>s+x,0)/Math.max(1,v.length)));
