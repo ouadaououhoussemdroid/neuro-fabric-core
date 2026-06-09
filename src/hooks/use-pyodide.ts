@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 
 export type PyodideStatus =
   | "idle"
@@ -13,20 +13,6 @@ export interface PyodideState {
   message: string;
   progress: number;
   error: string | null;
-}
-
-declare global {
-  interface Window {
-    loadPyodide: (options: { indexURL: string }) => Promise<PyodideInstance>;
-    pyodideInstance?: PyodideInstance;
-  }
-}
-
-interface PyodideInstance {
-  loadPackage: (pkgs: string | string[]) => Promise<void>;
-  runPythonAsync: (code: string) => Promise<unknown>;
-  globals: { get: (key: string) => unknown; set: (key: string, value: unknown) => void };
-  toPy: (obj: unknown) => unknown;
 }
 
 const PYODIDE_CDN = "https://cdn.jsdelivr.net/pyodide/v0.27.0/full/";
@@ -47,7 +33,6 @@ export function usePyodide() {
     status: "idle", message: "Not started", progress: 0, error: null,
   });
   const pyRef = useRef<PyodideInstance | null>(null);
-
   const set = (s: Partial<PyodideState>) => setState(prev => ({ ...prev, ...s }));
 
   const initialize = useCallback(async () => {
