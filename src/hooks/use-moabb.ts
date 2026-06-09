@@ -30,7 +30,7 @@ export function useMOABB() {
 
   const loadDataset = useCallback(async (datasetId: string, subjects: number[] = [1]) => {
     const py = window.pyodideInstance;
-    if (!py) throw new Error("Pyodide not loaded — load MNE-Python first");
+    if (!py) throw new Error("Pyodide not loaded — open /mne first");
     setEpochs([]);
     set({ phase: "loading-moabb", message: "Installing MOABB…", progress: 5 });
     try {
@@ -44,17 +44,15 @@ moabb.set_log_level("WARNING")
       py.globals.set("_dataset_id", datasetId);
       py.globals.set("_subjects", py.toPy(subjects));
       const result = await py.runPythonAsync(`
-import json, numpy as np
+import json, numpy as np, importlib
 dataset_classes = {
-    "BNCI2014_001": ("moabb.datasets", "BNCI2014_001"),
-    "BNCI2014_004": ("moabb.datasets", "BNCI2014_004"),
-    "Cho2017": ("moabb.datasets", "Cho2017"),
-    "PhysionetMI": ("moabb.datasets", "PhysionetMI"),
+    "BNCI2014_001":("moabb.datasets","BNCI2014_001"),
+    "BNCI2014_004":("moabb.datasets","BNCI2014_004"),
+    "Cho2017":("moabb.datasets","Cho2017"),
+    "PhysionetMI":("moabb.datasets","PhysionetMI"),
 }
-mod_name, cls_name = dataset_classes[_dataset_id]
-import importlib
-mod = importlib.import_module(mod_name)
-DatasetClass = getattr(mod, cls_name)
+mod_name,cls_name = dataset_classes[_dataset_id]
+DatasetClass = getattr(importlib.import_module(mod_name), cls_name)
 dataset = DatasetClass()
 dataset.subject_list = list(_subjects)
 from moabb.paradigms import MotorImagery
@@ -83,4 +81,4 @@ json.dumps({"epochs": epochs_out, "n_total": X.shape[0], "n_channels": X.shape[1
   }, []);
 
   return { progress, epochs, loadDataset, MOABB_DATASETS };
-}
+  }
