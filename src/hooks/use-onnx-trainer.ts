@@ -13,15 +13,6 @@ export interface InferenceResult {
 
 const ORT_CDN = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.js";
 
-declare global {
-  interface Window {
-    ort?: {
-      InferenceSession: { create: (buffer: ArrayBuffer, options?: object) => Promise<any> };
-      Tensor: new (type: string, data: Float32Array, dims: number[]) => any;
-    };
-  }
-}
-
 async function loadOrtScript(): Promise<void> {
   if (window.ort) return;
   return new Promise((resolve, reject) => {
@@ -153,4 +144,4 @@ json.dumps({"accuracy":round(float(np.mean(cv)),4),"cv_scores":[round(float(s),4
   }, []);
 
   return { state, trainAndExport, infer, downloadOnnx, labels: labelsRef.current };
-}
+                                             }
