@@ -85,5 +85,4 @@ export function getModel(id: string): ModelVersion | undefined {
 
 // Active: baseline-spectral-v1 is the only scientifically honest decoder
 // tfjs-eeg-v1 is experimental with synthetic weights — not used by default
-export const ACTIVE_DECODER: DecoderModelId = "baseline-spectral-v1";
 export const ACTIVE_EMBEDDER: EmbedderModelId = "linear-ae";
