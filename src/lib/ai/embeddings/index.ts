@@ -11,7 +11,6 @@ import {
   validateEmbedding,
   EmbeddingValidationError,
 } from "../validation";
-import { getArtifact } from "../artifacts";
 
 export interface EmbedOptions {
   modelId?: string;
@@ -85,10 +84,8 @@ function finalize(
   normalize: boolean,
   expectedDim: number | undefined,
 ): EmbedResult {
-  const artifactDim = getArtifact(out.modelId)?.output.embeddingDim;
-  const dim = expectedDim ?? artifactDim;
   try {
-    validateEmbedding(out.vector, { expectedDim: dim });
+    validateEmbedding(out.vector, { expectedDim });
   } catch (e) {
     if (e instanceof EmbeddingValidationError) {
       log("error", "ai.embed.invalid", { modelId: out.modelId, code: e.code });
