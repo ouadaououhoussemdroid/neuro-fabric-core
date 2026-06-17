@@ -77,3 +77,23 @@ registerArtifact({
   isExperimental: false,
   createdAt: "2026-05-25",
 });
+
+registerArtifact({
+  id: "braindecode-eegnetv4-default",
+  kind: "braindecode",
+  task: "classification",
+  runtime: "pyodide",
+  name: "Braindecode • EEGNetv4 (default)",
+  version: "0.1.0",
+  description:
+    "EEGNetv4 over a 22-channel 2 s @ 128 Hz window. Requires a Braindecode bridge.",
+  input: { kind: "raw", channels: 22, samples: 256, sampleRate: 128 },
+  output: { embeddingDim: 16, normalized: false },
+  source: { kind: "inline", description: "Pyodide+PyTorch bridge (deferred)" },
+  provenance: {
+    paper: "Lawhern et al. 2018 (EEGNet)",
+    library: "braindecode>=0.8",
+  },
+  isExperimental: true,
+  createdAt: "2026-06-17",
+});
