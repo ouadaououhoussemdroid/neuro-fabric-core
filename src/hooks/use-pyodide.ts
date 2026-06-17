@@ -46,6 +46,7 @@ export function usePyodide() {
       set({ status: "loading-pyodide", message: "Loading Pyodide runtime…", progress: 5 });
       await loadPyodideScript();
       set({ message: "Initializing Python…", progress: 15 });
+      if (!window.loadPyodide) throw new Error("Pyodide script did not register window.loadPyodide");
       const py = await window.loadPyodide({ indexURL: PYODIDE_CDN });
       window.pyodideInstance = py;
       pyRef.current = py;
