@@ -1,0 +1,5 @@
+cache/
+artefacts/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
