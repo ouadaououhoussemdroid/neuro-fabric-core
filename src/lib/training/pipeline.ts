@@ -151,11 +151,12 @@ export async function runTrainingPipeline(options:{maxSubjects?:number;runsPerSu
         const {windows}=preprocess(signal,{bandpass:{low:1,high:40},notch:{fc:60},normalize:true,segment:{windowSec:2,overlap:0.5},artifactRejection:{enabled:true}});
         if(windows.length===0)continue;
         const features=extractMeanBandPower(windows);
-        const labels=taskLabels(record.task,features);
+        const task=record.task??"baseline";
+        const labels=taskLabels(task,features);
         for(let aug=0;aug<5;aug++){
           const noisy=features.map(f=>Math.max(0,f+(Math.random()-0.5)*0.02));
           const total=noisy.reduce((s,v)=>s+v,0)+1e-9;
-          samples.push({features:noisy.map(v=>v/total),labels:labels.map(l=>Math.min(1,Math.max(0,l+(Math.random()-0.5)*0.05))),subject,task:record.task});
+          samples.push({features:noisy.map(v=>v/total),labels:labels.map(l=>Math.min(1,Math.max(0,l+(Math.random()-0.5)*0.05))),subject,task});
         }
       } catch(err){rep({phase:"fetching",subject:record.id,message:`Skipped ${record.id}: ${(err as Error).message}`});}
     }
