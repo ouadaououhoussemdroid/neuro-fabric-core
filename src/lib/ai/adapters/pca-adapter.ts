@@ -4,7 +4,7 @@
  * callers.
  */
 import { embedSignal } from "../../embeddings";
-import { segmentWindows } from "../../eeg/preprocessing/segment";
+import { segment } from "../../eeg/preprocessing/segment";
 import type { EEGModelAdapter } from "./types";
 import type { EmbeddingOutput, ModelDescriptor, ModelInput } from "../types";
 
@@ -48,7 +48,7 @@ export class PCAEmbeddingAdapter implements EEGModelAdapter {
       input.kind === "windows"
         ? input.windows
         : input.kind === "signal"
-          ? segmentWindows(input.signal, { windowSec: 2, hopSec: 1 })
+          ? segment(input.signal, { windowSec: 2, hopSec: 1 })
           : (() => {
               throw new Error("PCAEmbeddingAdapter: feature input not supported");
             })();
