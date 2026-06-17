@@ -1,16 +1,15 @@
-interface PyodideInstance {
-  loadPackage: (pkgs: string | string[]) => Promise<void>;
-  runPythonAsync: (code: string) => Promise<unknown>;
-  globals: {
-    get: (key: string) => unknown;
-    set: (key: string, value: unknown) => void;
-  };
-  toPy: (obj: unknown) => unknown;
-}
-
 declare global {
+  interface PyodideInstance {
+    loadPackage: (pkgs: string | string[]) => Promise<void>;
+    runPythonAsync: (code: string) => Promise<unknown>;
+    globals: {
+      get: (key: string) => unknown;
+      set: (key: string, value: unknown) => void;
+    };
+    toPy: (obj: unknown) => unknown;
+  }
   interface Window {
-    loadPyodide: (options: { indexURL: string }) => Promise<PyodideInstance>;
+    loadPyodide?: (options: { indexURL: string }) => Promise<PyodideInstance>;
     pyodideInstance?: PyodideInstance;
     ort?: {
       InferenceSession: {

@@ -137,7 +137,7 @@ json.dumps({"accuracy":round(float(np.mean(cv)),4),"cv_scores":[round(float(s),4
 
   const downloadOnnx = useCallback((filename = "eeg-classifier.onnx") => {
     if (!onnxBytesRef.current) return;
-    const blob = new Blob([onnxBytesRef.current], { type: "application/octet-stream" });
+    const blob = new Blob([onnxBytesRef.current as BlobPart], { type: "application/octet-stream" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href=url; a.download=filename; a.click();
     URL.revokeObjectURL(url);
