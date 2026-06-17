@@ -10,6 +10,10 @@ import { PCAEmbeddingAdapter } from "../adapters/pca-adapter";
 import { PyTorchExportAdapter } from "../adapters/pytorch-export-adapter";
 import { BraindecodeAdapter } from "../adapters/braindecode-adapter";
 import { EEGPTAdapter } from "../adapters/eegpt-adapter";
+import {
+  createONNXBraindecodeBridge,
+  type ONNXBraindecodeBridgeOptions,
+} from "../adapters/braindecode-onnx-bridge";
 
 interface RegistryEntry {
   descriptor: ModelDescriptor;
@@ -64,3 +68,28 @@ registerModel(
 
 /** Default embedder used when callers do not pin a model id. */
 export const DEFAULT_EMBEDDER_ID = "pca-legacy-v1";
+
+/**
+ * Register a production Braindecode model backed by an exported ONNX file.
+ * After calling this, `embedEEG()` will route to it before falling back to
+ * any generic ONNX model and finally PCA.
+ */
+export function registerBraindecodeONNX(
+  opts: ONNXBraindecodeBridgeOptions & { id?: string },
+): string {
+  const id = opts.id ?? "braindecode-eegnetv4-onnx";
+  registerModel(
+    () =>
+      new BraindecodeAdapter({
+        id,
+        architecture: opts.architecture,
+        channels: opts.channels,
+        sampleRate: opts.sampleRate,
+        windowSamples: opts.windowSamples,
+        version: "0.1.0-onnx",
+        bridge: () => createONNXBraindecodeBridge(opts),
+        isExperimental: false,
+      }),
+  );
+  return id;
+}
