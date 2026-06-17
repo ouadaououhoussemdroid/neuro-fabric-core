@@ -108,7 +108,7 @@ registerArtifact({
   id: "braindecode-eegconformer-prod",
   kind: "braindecode",
   task: "embedding",
-  runtime: "onnx",
+  runtime: "wasm",
   name: "Braindecode • EEGConformer (production, ONNX)",
   version: "1.0.0",
   description:
