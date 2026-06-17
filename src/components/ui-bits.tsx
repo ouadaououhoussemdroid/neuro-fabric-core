@@ -13,8 +13,8 @@ export function Eyebrow({ children }: { children: ReactNode }) {
   );
 }
 
-export function GlassCard({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`glass rounded-xl p-6 ${className}`}>{children}</div>;
+export function GlassCard({ children, className = "", onClick }: { children: ReactNode; className?: string; onClick?: () => void }) {
+  return <div className={`glass rounded-xl p-6 ${className}`} onClick={onClick}>{children}</div>;
 }
 
 export function StatPill({ label, value }: { label: string; value: string }) {
