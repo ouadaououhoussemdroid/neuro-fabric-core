@@ -48,7 +48,7 @@ export class PCAEmbeddingAdapter implements EEGModelAdapter {
       input.kind === "windows"
         ? input.windows
         : input.kind === "signal"
-          ? segment(input.signal, { windowSec: 2, hopSec: 1 })
+          ? segment(input.signal.data, input.signal.sampleRate, 2, 0.5)
           : (() => {
               throw new Error("PCAEmbeddingAdapter: feature input not supported");
             })();
