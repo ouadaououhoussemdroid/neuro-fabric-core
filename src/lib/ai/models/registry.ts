@@ -31,6 +31,14 @@ export function getDescriptor(id: string): ModelDescriptor | undefined {
   return entries.get(id)?.descriptor;
 }
 
+export function hasModel(id: string): boolean {
+  return entries.has(id);
+}
+
+export function unregisterModel(id: string): boolean {
+  return entries.delete(id);
+}
+
 export function createAdapter(id: string): EEGModelAdapter {
   const entry = entries.get(id);
   if (!entry) throw new Error(`Unknown model id: ${id}`);
