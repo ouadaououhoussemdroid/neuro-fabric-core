@@ -8,3 +8,7 @@ export * as adapters from "./adapters";
 export * as models from "./models";
 export * as embeddings from "./embeddings";
 export * as inference from "./inference";
+export * as artifacts from "./artifacts";
+export * as validation from "./validation";
+export * as benchmark from "./benchmark";
+export * as vectorBridge from "./vector-bridge";
