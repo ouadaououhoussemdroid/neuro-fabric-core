@@ -11,5 +11,14 @@ export {
   type OrtTensorLike,
 } from "./onnx-adapter";
 export { PyTorchExportAdapter } from "./pytorch-export-adapter";
-export { BraindecodeAdapter } from "./braindecode-adapter";
+export {
+  BraindecodeAdapter,
+  BRAINDECODE_MODELS,
+  isBraindecodeAvailable,
+  setBraindecodeBridge,
+  type BraindecodeAdapterOptions,
+  type BraindecodeBridge,
+  type BraindecodeForwardResult,
+  type BraindecodeModelName,
+} from "./braindecode-adapter";
 export { EEGPTAdapter } from "./eegpt-adapter";
