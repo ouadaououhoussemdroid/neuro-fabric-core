@@ -1,0 +1,79 @@
+/**
+ * Model artifact system. An "artifact" is everything required to instantiate
+ * an adapter: identity, metadata, input/output schema, and a resolver for the
+ * underlying bytes (URL, ArrayBuffer, or in-memory bytes).
+ *
+ * Artifacts are pure metadata containers — they do NOT load the model. The
+ * registry uses them to mint adapter factories; the adapter does the actual
+ * load when `load()` is called.
+ */
+import type { ModelKind, ModelTask, ModelRuntime } from "../types";
+
+export interface ArtifactInputSchema {
+  /** "features" = [1, dim] band-power vector. "raw" = [1, C, T] window. */
+  kind: "features" | "raw";
+  dim?: number;
+  channels?: number;
+  samples?: number;
+  sampleRate?: number;
+}
+
+export interface ArtifactOutputSchema {
+  embeddingDim?: number;
+  numClasses?: number;
+  /** Whether outputs are L2-normalised by the model itself. */
+  normalized?: boolean;
+}
+
+export type ArtifactSource =
+  | { kind: "url"; url: string }
+  | { kind: "bytes"; bytes: Uint8Array | ArrayBuffer }
+  | { kind: "inline"; description: string };
+
+export interface ModelArtifact {
+  id: string;
+  kind: ModelKind;
+  task: ModelTask;
+  runtime: ModelRuntime;
+  name: string;
+  version: string;
+  description: string;
+  input: ArtifactInputSchema;
+  output: ArtifactOutputSchema;
+  source: ArtifactSource;
+  /** Free-form provenance: training corpus, license, citation, sha. */
+  provenance?: Record<string, string>;
+  isExperimental?: boolean;
+  createdAt?: string;
+}
+
+const artifacts = new Map<string, ModelArtifact>();
+
+export function registerArtifact(a: ModelArtifact): void {
+  artifacts.set(a.id, a);
+}
+export function listArtifacts(): ModelArtifact[] {
+  return Array.from(artifacts.values());
+}
+export function getArtifact(id: string): ModelArtifact | undefined {
+  return artifacts.get(id);
+}
+export function unregisterArtifact(id: string): boolean {
+  return artifacts.delete(id);
+}
+
+/** Built-in artifact describing the legacy PCA pipeline. */
+registerArtifact({
+  id: "pca-legacy-v1",
+  kind: "linear-ae",
+  task: "embedding",
+  runtime: "js",
+  name: "PCA / Linear Autoencoder (Legacy)",
+  version: "1.0.0",
+  description: "Closed-form linear AE over band-power features. Fallback embedder.",
+  input: { kind: "features" },
+  output: { embeddingDim: 64, normalized: false },
+  source: { kind: "inline", description: "in-process JS" },
+  isExperimental: false,
+  createdAt: "2026-05-25",
+});
