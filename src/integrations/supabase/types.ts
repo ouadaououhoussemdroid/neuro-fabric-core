@@ -117,6 +117,8 @@ export type Database = {
       }
       experiment_runs: {
         Row: {
+          analysis_id: string | null
+          completed_at: string | null
           created_at: string
           duration_ms: number | null
           experiment_id: string
@@ -126,8 +128,11 @@ export type Database = {
           notes: string | null
           params: Json
           status: string
+          user_id: string | null
         }
         Insert: {
+          analysis_id?: string | null
+          completed_at?: string | null
           created_at?: string
           duration_ms?: number | null
           experiment_id: string
@@ -137,8 +142,11 @@ export type Database = {
           notes?: string | null
           params?: Json
           status?: string
+          user_id?: string | null
         }
         Update: {
+          analysis_id?: string | null
+          completed_at?: string | null
           created_at?: string
           duration_ms?: number | null
           experiment_id?: string
@@ -148,8 +156,16 @@ export type Database = {
           notes?: string | null
           params?: Json
           status?: string
+          user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "experiment_runs_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "eeg_analyses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "experiment_runs_experiment_id_fkey"
             columns: ["experiment_id"]
