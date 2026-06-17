@@ -21,4 +21,8 @@ export {
   type BraindecodeForwardResult,
   type BraindecodeModelName,
 } from "./braindecode-adapter";
+export {
+  createONNXBraindecodeBridge,
+  type ONNXBraindecodeBridgeOptions,
+} from "./braindecode-onnx-bridge";
 export { EEGPTAdapter } from "./eegpt-adapter";
