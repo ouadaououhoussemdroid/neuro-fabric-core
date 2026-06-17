@@ -93,3 +93,41 @@ export function registerBraindecodeONNX(
   );
   return id;
 }
+
+/**
+ * Register the **selected production EEG foundation model**: Braindecode
+ * EEGConformer, exported to ONNX. EEGConformer (Song et al. 2022) is a
+ * Conv+Transformer hybrid whose attention-pooled representations are the
+ * strongest general-purpose embeddings available in the Braindecode
+ * catalogue for similarity search / representation learning — see
+ * docs/audits/2026-06-17_braindecode-model-selection.md.
+ *
+ * Defaults match the reference recipe (22 channels, 4 s @ 250 Hz, 32-D
+ * embedding head). Override via opts for custom artefacts.
+ */
+export function registerBraindecodeEEGConformer(opts: {
+  artifact: ONNXBraindecodeBridgeOptions["artifact"];
+  id?: string;
+  channels?: number;
+  sampleRate?: number;
+  windowSamples?: number;
+  embeddingDim?: number;
+  embeddingOutputName?: string;
+  logitsOutputName?: string;
+  executionProviders?: ONNXBraindecodeBridgeOptions["executionProviders"];
+  runtime?: ONNXBraindecodeBridgeOptions["runtime"];
+}): string {
+  return registerBraindecodeONNX({
+    id: opts.id ?? "braindecode-eegconformer-prod",
+    artifact: opts.artifact,
+    architecture: "EEGConformer",
+    channels: opts.channels ?? 22,
+    sampleRate: opts.sampleRate ?? 250,
+    windowSamples: opts.windowSamples ?? 1000,
+    embeddingDim: opts.embeddingDim ?? 32,
+    embeddingOutputName: opts.embeddingOutputName ?? "embedding",
+    logitsOutputName: opts.logitsOutputName,
+    executionProviders: opts.executionProviders,
+    runtime: opts.runtime,
+  });
+}

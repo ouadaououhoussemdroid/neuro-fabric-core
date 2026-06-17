@@ -97,3 +97,31 @@ registerArtifact({
   isExperimental: true,
   createdAt: "2026-06-17",
 });
+
+/**
+ * Selected production EEG foundation model: Braindecode EEGConformer
+ * exported to ONNX. See docs/audits/2026-06-17_braindecode-model-selection.md
+ * for the selection rationale and docs/braindecode-deployment-guide.md for
+ * the artefact preparation workflow.
+ */
+registerArtifact({
+  id: "braindecode-eegconformer-prod",
+  kind: "braindecode",
+  task: "embedding",
+  runtime: "wasm",
+  name: "Braindecode • EEGConformer (production, ONNX)",
+  version: "1.0.0",
+  description:
+    "EEGConformer (Conv + Transformer) over a 22-channel 4 s @ 250 Hz window, " +
+    "exported to ONNX and executed via onnxruntime-web. 32-D attention-pooled embedding.",
+  input: { kind: "raw", channels: 22, samples: 1000, sampleRate: 250 },
+  output: { embeddingDim: 32, normalized: false },
+  source: { kind: "inline", description: "operator-provided ONNX file via registerBraindecodeEEGConformer()" },
+  provenance: {
+    paper: "Song et al. 2022 (EEG Conformer)",
+    library: "braindecode>=0.8",
+    exporter: "torch.onnx.export, opset 17",
+  },
+  isExperimental: false,
+  createdAt: "2026-06-17",
+});
