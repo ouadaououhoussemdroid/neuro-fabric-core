@@ -47,8 +47,20 @@ export function createAdapter(id: string): EEGModelAdapter {
 
 registerModel(() => new PCAEmbeddingAdapter());
 registerModel(() => new PyTorchExportAdapter());
-registerModel(() => new BraindecodeAdapter());
 registerModel(() => new EEGPTAdapter());
+// Default Braindecode entry — EEGNetv4 over a 22-channel 2 s @ 128 Hz window.
+// Until a bridge is injected via setBraindecodeBridge(), load() throws and the
+// embed() facade falls back to ONNX → PCA.
+registerModel(
+  () =>
+    new BraindecodeAdapter({
+      id: "braindecode-eegnetv4-default",
+      architecture: "EEGNetv4",
+      channels: 22,
+      sampleRate: 128,
+      windowSamples: 256,
+    }),
+);
 
 /** Default embedder used when callers do not pin a model id. */
 export const DEFAULT_EMBEDDER_ID = "pca-legacy-v1";

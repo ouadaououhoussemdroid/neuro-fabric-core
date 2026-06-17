@@ -20,6 +20,13 @@ export interface EmbedOptions {
   normalize?: boolean;
   /** Override the validation contract; falls back to artifact metadata. */
   expectedDim?: number;
+  /**
+   * Explicit fallback chain tried in order if `modelId` fails. When omitted,
+   * the chain defaults to `[ "pca-legacy-v1" ]` (preserves previous
+   * behaviour). Pass e.g. `[ "onnx-...", "pca-legacy-v1" ]` to cascade
+   * Braindecode → ONNX → PCA.
+   */
+  fallbackChain?: string[];
 }
 
 export interface EmbedResult extends EmbeddingOutput {
@@ -35,15 +42,16 @@ export async function embed(
   const id = opts.modelId ?? DEFAULT_EMBEDDER_ID;
   const fallback = opts.fallbackToPCA !== false;
   const normalize = opts.normalize !== false;
+  const chain = opts.fallbackChain ?? [DEFAULT_EMBEDDER_ID];
   log("info", "ai.embed.start", { modelId: id, normalize, fallback });
   if (!hasModel(id)) {
     if (!fallback) throw new Error(`Unknown model id: ${id}`);
-    return runFallback(input, `unknown model "${id}"`, normalize, opts.expectedDim);
+    return runFallbackChain(input, `unknown model "${id}"`, normalize, opts.expectedDim, chain);
   }
   const adapter = createAdapter(id);
   if (!adapter.embed) {
     if (!fallback) throw new Error(`Adapter "${id}" does not support embeddings`);
-    return runFallback(input, `adapter "${id}" has no embed()`, normalize, opts.expectedDim);
+    return runFallbackChain(input, `adapter "${id}" has no embed()`, normalize, opts.expectedDim, chain);
   }
   try {
     log("info", "ai.embed.load", { modelId: id });
@@ -54,10 +62,47 @@ export async function embed(
     const reason = (err as Error).message;
     log("warn", "ai.embed.fail", { modelId: id, reason });
     if (!fallback) throw err;
-    return runFallback(input, reason, normalize, opts.expectedDim);
+    return runFallbackChain(input, reason, normalize, opts.expectedDim, chain);
   } finally {
     try { await adapter.unload(); } catch { /* noop */ }
   }
+}
+
+async function runFallbackChain(
+  input: ModelInput,
+  initialReason: string,
+  normalize: boolean,
+  expectedDim: number | undefined,
+  chain: string[],
+): Promise<EmbedResult> {
+  const reasons: string[] = [initialReason];
+  const tried = new Set<string>();
+  // Always guarantee PCA at the tail so the chain terminates.
+  const ordered = [...chain.filter((id) => id !== DEFAULT_EMBEDDER_ID), DEFAULT_EMBEDDER_ID];
+  for (const id of ordered) {
+    if (tried.has(id)) continue;
+    tried.add(id);
+    log("warn", "ai.embed.fallback.try", { modelId: id, prevReason: reasons.at(-1) });
+    if (!hasModel(id)) {
+      reasons.push(`unknown model "${id}"`);
+      continue;
+    }
+    const adapter = createAdapter(id);
+    if (!adapter.embed) {
+      reasons.push(`adapter "${id}" has no embed()`);
+      continue;
+    }
+    try {
+      await adapter.load();
+      const out = await adapter.embed(input);
+      return finalize(out, true, reasons.join(" → "), normalize, expectedDim);
+    } catch (err) {
+      reasons.push(`${id}: ${(err as Error).message}`);
+    } finally {
+      try { await adapter.unload(); } catch { /* noop */ }
+    }
+  }
+  throw new Error(`embed: all adapters failed (${reasons.join(" → ")})`);
 }
 
 async function runFallback(
