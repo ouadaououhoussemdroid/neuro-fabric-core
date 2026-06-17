@@ -223,12 +223,12 @@ export class ONNXAdapter implements EEGModelAdapter {
 function firstWindowFromInput(input: ModelInput): number[][] {
   if (input.kind === "windows") {
     if (input.windows.length === 0) throw new Error("ONNXAdapter: empty windows");
-    return input.windows[0].channels;
+    return input.windows[0].data;
   }
   if (input.kind === "signal") {
     const w = segment(input.signal.data, input.signal.sampleRate, 2, 0.5);
     if (w.length === 0) throw new Error("ONNXAdapter: signal too short to window");
-    return w[0].channels;
+    return w[0].data;
   }
   throw new Error("ONNXAdapter: feature input cannot be used as raw window");
 }
