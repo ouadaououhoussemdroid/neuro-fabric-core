@@ -1,0 +1,12 @@
+# Pinned to match scripts/export_braindecode_eegconformer.py contract.
+torch==2.3.*
+braindecode>=0.8,<0.9
+moabb>=1.1,<2.0
+mne>=1.7
+numpy>=1.26
+scipy>=1.11
+scikit-learn>=1.4
+onnx>=1.16
+onnxruntime>=1.18
+pyyaml>=6.0
+tqdm>=4.66
