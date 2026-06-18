@@ -11,23 +11,47 @@ import importlib
 import sys
 from typing import Iterable
 
+try:
+    from importlib.metadata import version as _pkg_version, PackageNotFoundError
+except ImportError:  # pragma: no cover
+    from importlib_metadata import version as _pkg_version, PackageNotFoundError  # type: ignore
+
 # (module, expected_version, hard) — hard=True means mismatch aborts.
 EXPECTED: list[tuple[str, str, bool]] = [
-    ("torch",         "2.4.1",   True),
-    ("braindecode",   "1.1.1",   True),
-    ("moabb",         "1.1.1",   True),
-    ("mne",           "1.7.1",   True),
-    ("numpy",         "1.26.4",  True),
-    ("scipy",         "1.13.1",  False),
+    ("torch",         "2.5.1",   True),
+    ("torchaudio",    "2.5.1",   True),
+    ("braindecode",   "1.1.0",   True),
+    ("moabb",         "1.4.0",   True),
+    ("mne",           "1.10.1",  True),
+    ("numpy",         "2.0.2",   True),
+    ("scipy",         "1.14.1",  False),
     ("sklearn",       "1.5.2",   False),  # package name: scikit-learn
-    ("onnx",          "1.16.2",  False),
-    ("onnxruntime",   "1.19.2",  False),
+    ("onnx",          "1.17.0",  False),
+    ("onnxruntime",   "1.20.1",  False),
 ]
 
 
+# Map import name → distribution name for `importlib.metadata`.
+_DIST_NAME = {"sklearn": "scikit-learn"}
+
+
 def _ver(mod: str) -> str:
-    m = importlib.import_module(mod)
-    return getattr(m, "__version__", "?")
+    """Return the *installed distribution* version, not module __version__.
+
+    Some packages (notably moabb 1.4.0) do not update their in-package
+    `__version__` constant, so we trust pip's metadata instead. Torch wheels
+    add a local-version suffix like `2.5.1+cu124`; we strip it for
+    comparison.
+    """
+    dist = _DIST_NAME.get(mod, mod)
+    try:
+        v = _pkg_version(dist)
+    except PackageNotFoundError:
+        # Fall back to the imported module if the dist name differs.
+        m = importlib.import_module(mod)
+        v = getattr(m, "__version__", "?")
+    # Strip PEP 440 local version (e.g. "2.5.1+cu124" → "2.5.1").
+    return v.split("+", 1)[0]
 
 
 def _check_versions() -> list[str]:
