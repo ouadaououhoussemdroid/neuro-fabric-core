@@ -8,22 +8,21 @@ import { Eyebrow, GlassCard, Section } from "@/components/ui-bits";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "NeuroWeave — Foundation Models for Brain Signals" },
-      { name: "description", content: "NeuroAI APIs for embeddings, cognitive decoding, synthetic neurodata, and EEG-to-image reconstruction." },
-      { property: "og:title", content: "NeuroWeave — Foundation Models for Brain Signals" },
-      { property: "og:description", content: "NeuroAI APIs for embeddings, cognitive decoding, synthetic neurodata, and EEG-to-image reconstruction." },
+      { title: "NeuroWeave — EEG Signal Processing Platform" },
+      { name: "description", content: "EEG signal processing, model embeddings, and synthetic data tools for researchers working with brain signals." },
+      { property: "og:title", content: "NeuroWeave — EEG Signal Processing Platform" },
+      { property: "og:description", content: "EEG signal processing, model embeddings, and synthetic data tools for researchers working with brain signals." },
     ],
   }),
   component: Index,
 });
 
 const PRODUCTS = [
-  { icon: Waves, title: "EEG Embeddings API", desc: "768-d brain-signal vectors for search, clustering, and downstream ML. Sub-50 ms latency." , tag: "embed.v3" },
-  { icon: Sparkles, title: "Synthetic Neurodata Engine", desc: "Generate consented, label-rich EEG datasets conditioned on cognitive state.", tag: "synth.v2" },
-  { icon: Brain, title: "Cognitive State Intelligence", desc: "Decode attention, stress, workload, and intent with calibrated confidence.", tag: "cog.v4" },
-  { icon: Eye, title: "EEG2Image Reconstruction", desc: "Latent-aligned diffusion that turns visual-cortex signals into images.", tag: "vision.v1" },
-  { icon: Layers, title: "Neuro Foundation Models", desc: "Pretrained transformers across 18k+ subjects, fine-tunable in a single API call.", tag: "nwf.7B" },
-  { icon: Database, title: "Neurodata Lakehouse", desc: "Versioned, governance-ready storage for raw signal, labels, and derived embeddings.", tag: "lake" },
+  { icon: Waves, title: "EEG Embeddings API", desc: "32-d embeddings via a pluggable ONNX adapter registry, with automatic capability detection and graceful fallback across backends.", tag: "embed.v3" },
+  { icon: Sparkles, title: "Synthetic Neurodata Engine", desc: "Generate synthetic, band-mixed EEG signals for testing and prototyping pipelines.", tag: "synth.v2" },
+  { icon: Brain, title: "Cognitive State Intelligence", desc: "Decode attention, stress, and workload from EEG spectral band ratios.", tag: "cog.v4" },
+  { icon: Layers, title: "Pluggable Model Registry", desc: "ONNX & Braindecode-exported models (EEGConformer, EEGNet) behind one unified API.", tag: "registry.v1" },
+  { icon: Database, title: "Neurodata Lakehouse", desc: "Postgres-backed storage for raw signal, labels, and derived embeddings — versioned per experiment, secured with row-level access control.", tag: "lake" },
 ];
 
 function Index() {
@@ -46,7 +45,7 @@ function Hero() {
       </div>
       <div className="relative mx-auto max-w-7xl px-4 pt-24 pb-28 md:pt-32 md:pb-36">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <Eyebrow>NeuroAI Infrastructure · Series A</Eyebrow>
+          <Eyebrow>EEG Signal Intelligence Platform</Eyebrow>
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
@@ -54,7 +53,7 @@ function Hero() {
           transition={{ duration: 0.7, delay: 0.05 }}
           className="mt-5 max-w-4xl text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl"
         >
-          Foundation Models for{" "}
+          A Developer Platform for{" "}
           <span className="text-gradient">Brain Signals</span>
         </motion.h1>
         <motion.p
@@ -63,7 +62,7 @@ function Hero() {
           transition={{ duration: 0.7, delay: 0.15 }}
           className="mt-6 max-w-2xl text-lg text-muted-foreground"
         >
-          NeuroAI APIs for embeddings, cognitive decoding, synthetic neurodata, and EEG-to-image reconstruction — built for researchers, startups, and sovereign labs.
+          EEG signal processing, model embeddings, and synthetic data tools — built for researchers and startups working with brain signals.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -121,7 +120,7 @@ function ProductsGrid() {
 
 function Capabilities() {
   const items = [
-    { icon: Network, title: "Open dataset loaders", desc: "Load PhysioNet, BCI Competition, and TUH EEG corpora directly from the playground." },
+    { icon: Network, title: "Open dataset loaders", desc: "Load PhysioNet and BCI Competition EEG corpora directly from the playground." },
     { icon: Zap, title: "Real preprocessing", desc: "Bandpass filtering, normalization, and windowing implemented in TypeScript — runs server-side on every upload." },
     { icon: Brain, title: "Cognitive decoding", desc: "Lightweight estimators for attention, workload, and arousal computed from spectral features." },
     { icon: Lock, title: "Per-user data scope", desc: "All uploads and embeddings are scoped to the authenticated user via row-level security." },
@@ -155,7 +154,7 @@ function ClosingCta() {
     <Section className="text-center">
       <Eyebrow>Get started</Eyebrow>
       <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-semibold tracking-tight md:text-5xl">Bring brain signals into your software stack.</h2>
-      <p className="mx-auto mt-4 max-w-xl text-muted-foreground">Join research labs and BCI startups building on the NeuroWeave foundation.</p>
+      <p className="mx-auto mt-4 max-w-xl text-muted-foreground">Built for research labs and BCI startups working with brain signals.</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Link to="/signup" className="rounded-md bg-neuro-gradient px-5 py-3 text-sm font-medium text-background glow">Sign up</Link>
         <Link to="/playground" className="rounded-md border border-border bg-card/40 px-5 py-3 text-sm font-medium hover:bg-card">Try the playground</Link>
