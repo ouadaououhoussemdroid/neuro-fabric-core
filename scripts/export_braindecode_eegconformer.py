@@ -29,28 +29,33 @@ from braindecode.models import EEGConformer
 class EEGConformerExportWrapper(nn.Module):
     """Expose ('embedding', 'logits') as named ONNX outputs.
 
-    EEGConformer's forward returns logits; we tap the penultimate
-    attention-pooled features for the embedding head used by Neuro-Fabric
-    similarity search.
+    EEGConformer's forward returns logits only; Neuro-Fabric's similarity
+    search needs the 32-dim feature vector produced by the `fc`
+    (`_FullyConnected`) module just before the classification head.
+
+    We replicate EEGConformer.forward inline (mirroring braindecode's source:
+    unsqueeze → patch_embedding → transformer → fc → final_layer) and return
+    *both* tensors directly. Returning them as part of the function's tuple —
+    rather than smuggling the embedding out via a forward-hook side-effect —
+    is the only shape that survives `torch.onnx.export` with
+    `do_constant_folding=True`. The previous hook-based wrapper produced an
+    ONNX graph where the `embedding` output was wired to a folded/aliased
+    intermediate, yielding PyTorch↔ORT cosine ≈ 0.30 instead of >0.999.
     """
 
     def __init__(self, model: EEGConformer):
         super().__init__()
         self.model = model
-        self._embedding: torch.Tensor | None = None
-
-        # Braindecode EEGConformer exposes `final_layer` as the classifier
-        # head. We register a forward hook on the layer just before it.
-        target = self.model.fc  # fully-connected pooled features
-        target.register_forward_hook(self._capture_embedding)
-
-    def _capture_embedding(self, _module, _inp, out):
-        self._embedding = out
 
     def forward(self, x: torch.Tensor):
-        logits = self.model(x)
-        assert self._embedding is not None, "embedding hook did not fire"
-        return self._embedding, logits
+        # Mirror braindecode.models.eegconformer.EEGConformer.forward so the
+        # tracer sees a single, side-effect-free path to each output.
+        x = torch.unsqueeze(x, dim=1)
+        x = self.model.patch_embedding(x)
+        feature = self.model.transformer(x)
+        embedding = self.model.fc(feature)
+        logits = self.model.final_layer(embedding)
+        return embedding, logits
 
 
 def build_model(n_channels: int, n_times: int, n_classes: int) -> EEGConformer:
