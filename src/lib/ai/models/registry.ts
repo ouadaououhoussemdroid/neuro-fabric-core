@@ -66,6 +66,8 @@ registerModel(
     }),
 );
 
+// Production EEGConformer — ONNX artefact served from /models/
+registerBraindecodeEEGConformer({ artifact: { kind: "url", url: "/models/eegconformer.onnx" } });
 /** Default embedder used when callers do not pin a model id. */
 export const DEFAULT_EMBEDDER_ID = "pca-legacy-v1";
 
