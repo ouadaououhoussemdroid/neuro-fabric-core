@@ -11,6 +11,11 @@ import importlib
 import sys
 from typing import Iterable
 
+try:
+    from importlib.metadata import version as _pkg_version, PackageNotFoundError
+except ImportError:  # pragma: no cover
+    from importlib_metadata import version as _pkg_version, PackageNotFoundError  # type: ignore
+
 # (module, expected_version, hard) — hard=True means mismatch aborts.
 EXPECTED: list[tuple[str, str, bool]] = [
     ("torch",         "2.5.1",   True),
@@ -26,9 +31,27 @@ EXPECTED: list[tuple[str, str, bool]] = [
 ]
 
 
+# Map import name → distribution name for `importlib.metadata`.
+_DIST_NAME = {"sklearn": "scikit-learn"}
+
+
 def _ver(mod: str) -> str:
-    m = importlib.import_module(mod)
-    return getattr(m, "__version__", "?")
+    """Return the *installed distribution* version, not module __version__.
+
+    Some packages (notably moabb 1.4.0) do not update their in-package
+    `__version__` constant, so we trust pip's metadata instead. Torch wheels
+    add a local-version suffix like `2.5.1+cu124`; we strip it for
+    comparison.
+    """
+    dist = _DIST_NAME.get(mod, mod)
+    try:
+        v = _pkg_version(dist)
+    except PackageNotFoundError:
+        # Fall back to the imported module if the dist name differs.
+        m = importlib.import_module(mod)
+        v = getattr(m, "__version__", "?")
+    # Strip PEP 440 local version (e.g. "2.5.1+cu124" → "2.5.1").
+    return v.split("+", 1)[0]
 
 
 def _check_versions() -> list[str]:
