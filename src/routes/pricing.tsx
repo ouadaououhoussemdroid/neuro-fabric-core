@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site-shell";
 import { GlassCard, PageHeader, Section } from "@/components/ui-bits";
+import { EEGLive } from "@/components/eeg-live";
 import { Check } from "lucide-react";
 
 export const Route = createFileRoute("/pricing")({
@@ -44,11 +45,16 @@ function PricingPage() {
   return (
     <SiteShell>
       <Section>
-        <PageHeader
-          eyebrow="Pricing"
-          title="Plans for every stage of neural intelligence."
-          sub="From a lone PhD student to a sovereign research program — choose the right runtime."
-        />
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.12] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)]">
+            <EEGLive height={260} />
+          </div>
+          <PageHeader
+            eyebrow="Pricing"
+            title="Plans for every stage of neural intelligence."
+            sub="From a lone PhD student to a sovereign research program — choose the right runtime."
+          />
+        </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {TIERS.map((t) => (

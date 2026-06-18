@@ -6,10 +6,10 @@ import { useEffect, useRef } from "react";
  * frequency ranges, plus jitter — produces a realistic-looking trace.
  */
 const BANDS = [
-  { name: "Delta", hz: "1–4 Hz", color: "oklch(0.75 0.18 295)", base: 2, amp: 28 },
-  { name: "Theta", hz: "4–8 Hz", color: "oklch(0.78 0.16 260)", base: 6, amp: 22 },
-  { name: "Alpha", hz: "8–13 Hz", color: "oklch(0.82 0.18 200)", base: 10, amp: 16 },
-  { name: "Beta", hz: "13–30 Hz", color: "oklch(0.85 0.18 175)", base: 20, amp: 11 },
+  { name: "Delta", hz: "1–4 Hz", color: "oklch(0.6 0.15 30)", base: 2, amp: 28 },
+  { name: "Theta", hz: "4–8 Hz", color: "oklch(0.72 0.13 55)", base: 6, amp: 22 },
+  { name: "Alpha", hz: "8–13 Hz", color: "oklch(0.8 0.1 80)", base: 10, amp: 16 },
+  { name: "Beta", hz: "13–30 Hz", color: "oklch(0.7 0.07 160)", base: 20, amp: 11 },
 ] as const;
 
 export function EEGLive({ height = 260 }: { height?: number }) {
