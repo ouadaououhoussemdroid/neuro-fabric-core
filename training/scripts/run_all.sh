@@ -4,6 +4,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 cd "$HERE"
 
+python check_compat.py
 python acquire_dataset.py
 python preprocess.py
 python train.py
