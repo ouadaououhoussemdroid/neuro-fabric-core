@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site-shell";
 import { GlassCard, PageHeader, Section } from "@/components/ui-bits";
+import { EEGLive } from "@/components/eeg-live";
 import { Brain, Lock, Microscope, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/about")({
@@ -17,11 +18,16 @@ function AboutPage() {
   return (
     <SiteShell>
       <Section>
-        <PageHeader
-          eyebrow="About NeuroWeave"
-          title="Infrastructure for the human–AI interface."
-          sub="We build the foundation layer that turns brain signals into software primitives: embeddings, decoders, and synthetic data — shared across labs, startups, and sovereign programs."
-        />
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.12] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)]">
+            <EEGLive height={260} />
+          </div>
+          <PageHeader
+            eyebrow="About NeuroWeave"
+            title="Infrastructure for the human–AI interface."
+            sub="We build the foundation layer that turns brain signals into software primitives: embeddings, decoders, and synthetic data — shared across labs, startups, and sovereign programs."
+          />
+        </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[
