@@ -1,12 +1,30 @@
-# Pinned to match scripts/export_braindecode_eegconformer.py contract.
-torch==2.3.*
-braindecode>=0.8,<0.9
-moabb>=1.1,<2.0
-mne>=1.7
-numpy>=1.26
-scipy>=1.11
-scikit-learn>=1.4
-onnx>=1.16
-onnxruntime>=1.18
-pyyaml>=6.0
-tqdm>=4.66
+# Strictly pinned, reproducible training environment.
+# Verified on Google Colab (Python 3.10 / 3.11 / 3.12, CUDA 12).
+# See docs/audits/training-dependency-audit.md for the rationale.
+#
+# IMPORTANT — Braindecode <1.0 imports `BNCI2014001` (old MOABB alias),
+# which MOABB ≥1.6 removed. We therefore require Braindecode ≥1.1
+# (uses the new `BNCI2014_001` name) AND MOABB in the 1.1–1.5 range
+# (still ships the deprecated alias as a safety net).
+
+# --- Deep learning ---
+torch==2.4.1
+
+# --- EEG stack (compatible pair) ---
+braindecode==1.1.1
+moabb==1.1.1
+mne==1.7.1
+
+# --- Numerics (NumPy 2.x is incompatible with torch 2.4 on Colab) ---
+numpy==1.26.4
+scipy==1.13.1
+scikit-learn==1.5.2
+pandas==2.2.2
+
+# --- ONNX export & parity check ---
+onnx==1.16.2
+onnxruntime==1.19.2
+
+# --- Misc ---
+pyyaml==6.0.2
+tqdm==4.66.5
