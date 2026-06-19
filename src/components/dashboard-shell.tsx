@@ -3,6 +3,7 @@ import { Brain, LogOut } from "lucide-react";
 import { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { NeuralBackground } from "@/components/neural-bg";
+import { EmbedFallbackBadge } from "@/components/embed-fallback-badge";
 
 type Role = "individual" | "researcher" | "enterprise";
 
@@ -64,6 +65,7 @@ export function DashboardShell({
       </header>
 
       <main className="relative mx-auto max-w-7xl px-4 py-10">{children}</main>
+      <EmbedFallbackBadge />
     </div>
   );
 }
