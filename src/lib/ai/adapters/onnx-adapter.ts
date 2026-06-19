@@ -87,10 +87,27 @@ async function defaultRuntime(): Promise<OrtRuntime> {
   // import.meta.url and breaks under Vite's dev `?v=hash` proxy + the
   // sandboxed preview origin (manifested as "Aborted(both async and sync
   // fetching of the wasm failed)" → "no available backend found"). Pinning
-  // wasmPaths to the matching jsdelivr release is the canonical fix.
+  // `wasmPaths` to a stable release directory is the canonical fix.
+  //
+  // Resolution order:
+  //   1. `VITE_ORT_WASM_PATHS` build-time env override (operators can point
+  //      this at a self-hosted bucket / same-origin path once available).
+  //   2. `/ort/` if a same-origin loader is shipped under `public/ort/`
+  //      (see `public/ort/README.md`).
+  //   3. The pinned jsdelivr release matching the installed runtime.
+  //
+  // NOTE: We currently fall through to (3) by default — the WASM artefacts
+  // (~12 MB and ~25 MB) exceed the per-file repo commit limit and the asset
+  // CDN refuses `application/wasm`, so true same-origin self-hosting is
+  // pending platform support. See `public/ort/README.md`.
   if (mod?.env?.wasm && mod.env.wasm.wasmPaths == null) {
+    const envOverride =
+      typeof import.meta !== "undefined"
+        ? (import.meta as { env?: Record<string, string | undefined> }).env
+            ?.VITE_ORT_WASM_PATHS
+        : undefined;
     mod.env.wasm.wasmPaths =
-      "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/";
+      envOverride ?? "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/";
   }
   return mod as OrtRuntime;
 }
