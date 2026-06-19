@@ -65,6 +65,7 @@ export function DashboardShell({
       </header>
 
       <main className="relative mx-auto max-w-7xl px-4 py-10">{children}</main>
+      <EmbedFallbackBadge />
     </div>
   );
 }
