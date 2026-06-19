@@ -12,6 +12,35 @@ import {
   EmbeddingValidationError,
 } from "../validation";
 
+/**
+ * Loud, observable signal that the embedding pipeline degraded to the PCA
+ * baseline instead of the requested neural model. UIs can listen on
+ * `window` (CustomEvent of this name, `detail: { modelId, reason, requested }`)
+ * to render a visible badge so a fallback is never silent in production.
+ */
+export const EMBED_FALLBACK_EVENT = "neurofabric:embed-fallback";
+
+function announceFallback(detail: {
+  requestedModelId: string;
+  resolvedModelId: string;
+  reason: string;
+}) {
+  // Loud console signal — visible in production browser devtools and server logs.
+  // eslint-disable-next-line no-console
+  console.error(
+    `[neurofabric] EEG embedding fell back to PCA baseline (${detail.resolvedModelId}). ` +
+      `Requested "${detail.requestedModelId}". Reason: ${detail.reason}`,
+  );
+  log("error", "ai.embed.fallback.loud", detail);
+  if (typeof window !== "undefined" && typeof CustomEvent === "function") {
+    try {
+      window.dispatchEvent(new CustomEvent(EMBED_FALLBACK_EVENT, { detail }));
+    } catch {
+      /* ignore — non-DOM env */
+    }
+  }
+}
+
 export interface EmbedOptions {
   modelId?: string;
   /** When true and the requested adapter fails, fall back to PCA. Default: true. */
@@ -62,7 +91,7 @@ export async function embed(
     const reason = (err as Error).message;
     log("warn", "ai.embed.fail", { modelId: id, reason });
     if (!fallback) throw err;
-    return runFallbackChain(input, reason, normalize, opts.expectedDim, chain);
+    return runFallbackChain(input, reason, normalize, opts.expectedDim, chain, id);
   } finally {
     try { await adapter.unload(); } catch { /* noop */ }
   }
@@ -74,6 +103,7 @@ async function runFallbackChain(
   normalize: boolean,
   expectedDim: number | undefined,
   chain: string[],
+  requestedModelId: string = chain[0] ?? DEFAULT_EMBEDDER_ID,
 ): Promise<EmbedResult> {
   const reasons: string[] = [initialReason];
   const tried = new Set<string>();
@@ -95,7 +125,13 @@ async function runFallbackChain(
     try {
       await adapter.load();
       const out = await adapter.embed(input);
-      return finalize(out, true, reasons.join(" → "), normalize, expectedDim);
+      const joined = reasons.join(" → ");
+      announceFallback({
+        requestedModelId,
+        resolvedModelId: out.modelId,
+        reason: joined,
+      });
+      return finalize(out, true, joined, normalize, expectedDim);
     } catch (err) {
       reasons.push(`${id}: ${(err as Error).message}`);
     } finally {
