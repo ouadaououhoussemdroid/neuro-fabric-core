@@ -26,7 +26,6 @@ import { Route as MneRouteImport } from './routes/mne'
 import { Route as ExperimentsRouteImport } from './routes/experiments'
 import { Route as EmbeddingsRouteImport } from './routes/embeddings'
 import { Route as Eeg2imageRouteImport } from './routes/eeg2image'
-import { Route as DiagEegconformerRouteImport } from './routes/diag-eegconformer'
 import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as DatasetsRouteImport } from './routes/datasets'
 import { Route as ArchitectureRouteImport } from './routes/architecture'
@@ -126,11 +125,6 @@ const Eeg2imageRoute = Eeg2imageRouteImport.update({
   path: '/eeg2image',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DiagEegconformerRoute = DiagEegconformerRouteImport.update({
-  id: '/diag-eegconformer',
-  path: '/diag-eegconformer',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DevelopersRoute = DevelopersRouteImport.update({
   id: '/developers',
   path: '/developers',
@@ -207,7 +201,6 @@ export interface FileRoutesByFullPath {
   '/architecture': typeof ArchitectureRoute
   '/datasets': typeof DatasetsRoute
   '/developers': typeof DevelopersRoute
-  '/diag-eegconformer': typeof DiagEegconformerRoute
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
   '/experiments': typeof ExperimentsRoute
@@ -239,7 +232,6 @@ export interface FileRoutesByTo {
   '/architecture': typeof ArchitectureRoute
   '/datasets': typeof DatasetsRoute
   '/developers': typeof DevelopersRoute
-  '/diag-eegconformer': typeof DiagEegconformerRoute
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
   '/experiments': typeof ExperimentsRoute
@@ -272,7 +264,6 @@ export interface FileRoutesById {
   '/architecture': typeof ArchitectureRoute
   '/datasets': typeof DatasetsRoute
   '/developers': typeof DevelopersRoute
-  '/diag-eegconformer': typeof DiagEegconformerRoute
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
   '/experiments': typeof ExperimentsRoute
@@ -306,7 +297,6 @@ export interface FileRouteTypes {
     | '/architecture'
     | '/datasets'
     | '/developers'
-    | '/diag-eegconformer'
     | '/eeg2image'
     | '/embeddings'
     | '/experiments'
@@ -338,7 +328,6 @@ export interface FileRouteTypes {
     | '/architecture'
     | '/datasets'
     | '/developers'
-    | '/diag-eegconformer'
     | '/eeg2image'
     | '/embeddings'
     | '/experiments'
@@ -370,7 +359,6 @@ export interface FileRouteTypes {
     | '/architecture'
     | '/datasets'
     | '/developers'
-    | '/diag-eegconformer'
     | '/eeg2image'
     | '/embeddings'
     | '/experiments'
@@ -404,7 +392,6 @@ export interface RootRouteChildren {
   ArchitectureRoute: typeof ArchitectureRoute
   DatasetsRoute: typeof DatasetsRoute
   DevelopersRoute: typeof DevelopersRoute
-  DiagEegconformerRoute: typeof DiagEegconformerRoute
   Eeg2imageRoute: typeof Eeg2imageRoute
   EmbeddingsRoute: typeof EmbeddingsRoute
   ExperimentsRoute: typeof ExperimentsRoute
@@ -546,13 +533,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Eeg2imageRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/diag-eegconformer': {
-      id: '/diag-eegconformer'
-      path: '/diag-eegconformer'
-      fullPath: '/diag-eegconformer'
-      preLoaderRoute: typeof DiagEegconformerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/developers': {
       id: '/developers'
       path: '/developers'
@@ -690,7 +670,6 @@ const rootRouteChildren: RootRouteChildren = {
   ArchitectureRoute: ArchitectureRoute,
   DatasetsRoute: DatasetsRoute,
   DevelopersRoute: DevelopersRoute,
-  DiagEegconformerRoute: DiagEegconformerRoute,
   Eeg2imageRoute: Eeg2imageRoute,
   EmbeddingsRoute: EmbeddingsRoute,
   ExperimentsRoute: ExperimentsRoute,
