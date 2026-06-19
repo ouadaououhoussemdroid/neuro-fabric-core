@@ -27,7 +27,7 @@ export interface EmbedEEGOptions {
   expectedDim?: number;
 }
 
-const DEFAULT_PREFERRED = "braindecode-eegnetv4-onnx";
+const DEFAULT_PREFERRED = "braindecode-eegconformer-prod";
 
 export async function embedEEG(
   input: ModelInput,
