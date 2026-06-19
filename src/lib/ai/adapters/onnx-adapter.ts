@@ -80,8 +80,19 @@ export interface ONNXAdapterOptions {
 
 /** Lazily resolves onnxruntime-web; isolated so tests can stub it. */
 async function defaultRuntime(): Promise<OrtRuntime> {
-  const mod = (await import("onnxruntime-web")) as unknown as OrtRuntime;
-  return mod;
+  const mod = (await import("onnxruntime-web")) as unknown as OrtRuntime & {
+    env?: { wasm?: { wasmPaths?: string | Record<string, string> } };
+  };
+  // The default wasm-binary URL resolution in `onnxruntime-web` relies on
+  // import.meta.url and breaks under Vite's dev `?v=hash` proxy + the
+  // sandboxed preview origin (manifested as "Aborted(both async and sync
+  // fetching of the wasm failed)" → "no available backend found"). Pinning
+  // wasmPaths to the matching jsdelivr release is the canonical fix.
+  if (mod?.env?.wasm && mod.env.wasm.wasmPaths == null) {
+    mod.env.wasm.wasmPaths =
+      "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/";
+  }
+  return mod as OrtRuntime;
 }
 
 /**
