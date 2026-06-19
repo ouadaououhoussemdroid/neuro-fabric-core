@@ -3,6 +3,7 @@ import { Brain, LogOut } from "lucide-react";
 import { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { NeuralBackground } from "@/components/neural-bg";
+import { EmbedFallbackBadge } from "@/components/embed-fallback-badge";
 
 type Role = "individual" | "researcher" | "enterprise";
 
