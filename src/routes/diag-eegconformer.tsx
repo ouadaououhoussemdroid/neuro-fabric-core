@@ -5,7 +5,7 @@ import { hasModel, getDescriptor, listModels } from "@/lib/ai/models/registry";
 import { isONNXRuntimeAvailable } from "@/lib/ai/adapters/onnx-adapter";
 import type { ModelInput } from "@/lib/ai/types";
 
-export const Route = createFileRoute("/__diag-eegconformer")({
+export const Route = createFileRoute("/diag-eegconformer")({
   component: DiagPage,
 });
 
