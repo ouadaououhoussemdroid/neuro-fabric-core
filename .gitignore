@@ -7,6 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
 dist
 dist-ssr
@@ -16,11 +17,33 @@ dist-ssr
 .nitro
 *.local
 
+# Python & Virtual Environments
+venv/
+env/
+.venv/
+*.pyc
+__pycache__/
+.ipynb_checkpoints/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Training artifacts (can be large)
+training/cache/
+training/artefacts/
+training/data/
+training/.cache/
+
+# Jupyter
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
 
-# Editor directories and files
+# IDE
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -30,3 +53,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
