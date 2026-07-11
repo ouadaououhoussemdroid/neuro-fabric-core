@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/site-shell";
 import { GlassCard, PageHeader, Section } from "@/components/ui-bits";
 import { InferenceStages, LiveDot, StreamingJson, StreamingLatent } from "@/components/live-ops";
@@ -57,7 +58,16 @@ function PlaygroundPage() {
     form.append("file", uploadedFile);
 
     try {
-      const res = await fetch("/api/eeg/upload", { method: "POST", body: form });
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) {
+        throw new Error("Sign in to run inference against the live pipeline.");
+      }
+      const res = await fetch("/api/eeg/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: form,
+      });
       const data = (await res.json()) as ApiResponse & { error?: string };
       const elapsed = +(performance.now() - started).toFixed(0);
       setLatencyMs(elapsed);
