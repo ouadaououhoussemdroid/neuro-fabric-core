@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteShell } from "@/components/site-shell";
 import { GlassCard, PageHeader, Section, StatPill } from "@/components/ui-bits";
@@ -8,10 +8,14 @@ import { Copy, KeyRound, Plus } from "lucide-react";
 export const Route = createFileRoute("/developers")({
   head: () => ({
     meta: [
-      { title: "Developer Platform — NeuroWeave" },
-      { name: "description", content: "Docs, SDKs, API keys, and usage analytics for NeuroWeave." },
-      { property: "og:title", content: "Developer Platform — NeuroWeave" },
-      { property: "og:description", content: "Build on the NeuroWeave APIs." },
+      { title: "Developer Platform (concept) — NeuroWeave" },
+      {
+        name: "description",
+        content:
+          "Concept SDK design and API docs for NeuroWeave — the SDKs shown are not yet published.",
+      },
+      { property: "og:title", content: "Developer Platform (concept) — NeuroWeave" },
+      { property: "og:description", content: "Concept SDK design for the NeuroWeave APIs." },
     ],
   }),
   component: DevPage,
@@ -54,10 +58,21 @@ function DevPage() {
     <SiteShell>
       <Section>
         <PageHeader
-          eyebrow="Developer Platform"
+          eyebrow="Developer Platform · concept"
           title="Production APIs, batteries included."
-          sub="Authenticate, embed, decode, and reconstruct — with first-class SDKs in Python and TypeScript."
+          sub="A concept design for Python and TypeScript SDKs. Neither package is published yet — the working API today is the single REST endpoint documented below in the pipeline docs."
         />
+
+        <div className="mb-6 rounded-lg border border-neuro/30 bg-neuro/5 px-4 py-3 text-sm text-muted-foreground">
+          The <code className="rounded bg-muted px-1 py-0.5 text-xs">neuroweave</code> /{" "}
+          <code className="rounded bg-muted px-1 py-0.5 text-xs">@neuroweave/sdk</code> packages
+          below are a concept design, not published packages. The real, callable endpoint today is{" "}
+          <code className="rounded bg-muted px-1 py-0.5 text-xs">POST /api/eeg/upload</code> — see{" "}
+          <Link to="/playground" className="text-neuro hover:underline">
+            /playground
+          </Link>{" "}
+          to try it. The request stats below are illustrative sample data.
+        </div>
 
         <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
           <GlassCard className="p-0">
@@ -81,10 +96,10 @@ function DevPage() {
 
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
-              <StatPill label="Requests · 30d" value="1.24M" />
-              <StatPill label="Error rate" value="0.04%" />
-              <StatPill label="Avg latency" value="48 ms" />
-              <StatPill label="Quota used" value="62%" />
+              <StatPill label="Requests · 30d (demo)" value="1.24M" />
+              <StatPill label="Error rate (demo)" value="0.04%" />
+              <StatPill label="Avg latency (demo)" value="48 ms" />
+              <StatPill label="Quota used (demo)" value="62%" />
             </div>
             <GlassCard>
               <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Activity, Cpu, GitBranch, Radio, Sparkles, Waves } from "lucide-react";
-import { Area, AreaChart, Bar, BarChart, ResponsiveContainer } from "recharts";
+import { Activity, Radio, Waves } from "lucide-react";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { useTelemetry } from "@/hooks/use-telemetry";
 
 function useHistory(value: number, len = 28) {
@@ -68,7 +68,6 @@ export function LiveOpsBand() {
   const t = useTelemetry();
 
   const latSeries = useHistory(t.latencyMs);
-  const gpuSeries = useHistory(t.gpuUtil / 100);
   const tpsSeries = useHistory(t.throughputTps);
 
   return (
@@ -76,14 +75,11 @@ export function LiveOpsBand() {
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
           <LiveDot />
-          {t.isLive ? "Live · neuro-core-7 · us-east" : "Connecting…"}
-        </div>
-        <div className="hidden items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground md:flex">
-          <GitBranch className="h-3 w-3 text-neuro" /> nwf-7b-embed · v3.4.1 · canary 12%
+          {t.isLive ? "Live" : "Connecting…"}
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Widget
           icon={Activity}
           label="p50 latency"
@@ -107,24 +103,6 @@ export function LiveOpsBand() {
                 isAnimationActive={false}
               />
             </AreaChart>
-          </ResponsiveContainer>
-        </Widget>
-
-        <Widget
-          icon={Cpu}
-          label="GPU H100 util"
-          value={t.gpuUtil > 0 ? `${t.gpuUtil}%` : "—"}
-          sub="8× cluster · neuro-core-7"
-        >
-          <ResponsiveContainer>
-            <BarChart data={gpuSeries}>
-              <Bar
-                dataKey="v"
-                fill="oklch(0.7 0.22 295)"
-                isAnimationActive={false}
-                radius={[1, 1, 0, 0]}
-              />
-            </BarChart>
           </ResponsiveContainer>
         </Widget>
 
@@ -159,13 +137,6 @@ export function LiveOpsBand() {
           label="Active sessions"
           value={t.activeSessions > 0 ? t.activeSessions.toLocaleString() : "—"}
           sub="streaming embed channels"
-        />
-
-        <Widget
-          icon={Sparkles}
-          label="Synthetic samples"
-          value={t.syntheticSamples > 0 ? t.syntheticSamples.toLocaleString() : "—"}
-          sub="generated · all time"
         />
 
         <Widget

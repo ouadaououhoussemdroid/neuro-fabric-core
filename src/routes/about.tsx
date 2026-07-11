@@ -36,12 +36,12 @@ function AboutPage() {
             {
               icon: Brain,
               title: "Brain foundation models",
-              body: "Pretrained on 18k+ subjects across consented public and partner datasets.",
+              body: "Working toward pretraining across consented public and partner datasets — not yet trained at scale.",
             },
             {
               icon: Microscope,
               title: "NeuroAI infrastructure",
-              body: "Multi-region runtime, governance, and reproducibility for clinical-grade work.",
+              body: "Building toward multi-region runtime, governance, and reproducibility. Not validated for clinical use.",
             },
             {
               icon: Sparkles,

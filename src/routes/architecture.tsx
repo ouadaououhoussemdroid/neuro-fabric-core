@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site-shell";
 import { GlassCard, PageHeader, Section } from "@/components/ui-bits";
 import { ArrowRight, Cpu, Database, Eye, Layers, Shield, Waves } from "lucide-react";
@@ -6,13 +6,14 @@ import { ArrowRight, Cpu, Database, Eye, Layers, Shield, Waves } from "lucide-re
 export const Route = createFileRoute("/architecture")({
   head: () => ({
     meta: [
-      { title: "Architecture — NeuroWeave" },
+      { title: "Target Architecture — NeuroWeave" },
       {
         name: "description",
-        content: "From EEG ingestion to embeddings, latent space, and reconstruction APIs.",
+        content:
+          "Target design for EEG ingestion, embeddings, latent storage, and reconstruction APIs — not the current implementation.",
       },
-      { property: "og:title", content: "Architecture — NeuroWeave" },
-      { property: "og:description", content: "NeuroWeave platform architecture." },
+      { property: "og:title", content: "Target Architecture — NeuroWeave" },
+      { property: "og:description", content: "NeuroWeave target platform architecture (vision)." },
     ],
   }),
   component: ArchitecturePage,
@@ -32,10 +33,23 @@ function ArchitecturePage() {
     <SiteShell>
       <Section>
         <PageHeader
-          eyebrow="Product Architecture"
+          eyebrow="Target Architecture · vision, not current state"
           title="EEG to intelligence, end to end."
-          sub="A unified runtime for neural data: ingestion, preprocessing, embeddings, latent storage, and decoder APIs — all with a single auth layer and audit trail."
+          sub="The system we're building toward: ingestion, preprocessing, embeddings, latent storage, and decoder APIs under a single auth layer and audit trail. This page describes the target design — for what is actually implemented and running today, see the real architecture notes and the live model registry."
         />
+
+        <div className="mb-6 rounded-lg border border-neuro/30 bg-neuro/5 px-4 py-3 text-sm text-muted-foreground">
+          This page is a product vision, not a status report — most of the stages and infrastructure
+          described below are not built. For the current, real implementation see{" "}
+          <Link to="/models" className="text-neuro hover:underline">
+            /models
+          </Link>{" "}
+          and{" "}
+          <Link to="/developers" className="text-neuro hover:underline">
+            /developers
+          </Link>
+          .
+        </div>
 
         <div className="relative">
           <div className="grid gap-3 md:grid-cols-6">

@@ -187,7 +187,6 @@ function Footer() {
       <div className="border-t border-border/60">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 text-xs text-muted-foreground">
           <span>© {new Date().getFullYear()} NeuroWeave Labs, Inc.</span>
-          <span className="font-mono">us-east • neuro-core-7 • 99.99% SLA</span>
         </div>
       </div>
     </footer>

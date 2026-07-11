@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SiteShell } from "@/components/site-shell";
 import { GlassCard, PageHeader, Section, StatPill } from "@/components/ui-bits";
@@ -378,15 +378,15 @@ function EmbeddingsPage() {
     <SiteShell>
       <Section>
         <PageHeader
-          eyebrow="Neuro Embeddings Explorer · v2"
+          eyebrow="Neuro Embeddings Explorer · v2 · concept demo"
           title="A foundation-model view of the brain's latent space."
-          sub="Project 1024-d brain-signal embeddings into an interactive 3D manifold. Search by semantic similarity, overlay cognitive states, and watch new embeddings stream in real time."
+          sub="Illustrative visualization of what a 1024-d brain-signal latent space could look like — this page renders locally-generated demo points, not live production embeddings. The system's real, deployed embedder is documented on /models."
         />
 
         <div className="mb-6 grid gap-3 md:grid-cols-4">
-          <StatPill label="Total vectors" value="62.3M" />
+          <StatPill label="Demo vectors" value={String(points.length)} />
           <StatPill label="Latent dims" value="1,024" />
-          <StatPill label="ANN p99" value="9.4 ms" />
+          <StatPill label="ANN p99" value="9.4 ms (demo)" />
           <StatPill label="Brain-states" value="184" />
         </div>
 
@@ -437,8 +437,8 @@ function EmbeddingsPage() {
               {/* HUD top-left */}
               <div className="pointer-events-none absolute left-4 top-4 space-y-1.5">
                 <div className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/60 px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
-                  <span className="h-1.5 w-1.5 rounded-full bg-neuro animate-pulse-glow" />{" "}
-                  streaming embeddings · 412/s
+                  <span className="h-1.5 w-1.5 rounded-full bg-neuro animate-pulse-glow" /> demo
+                  animation · not live data
                 </div>
                 <div className="font-mono text-[10px] text-muted-foreground">
                   drag to rotate · scroll buttons to zoom
@@ -702,30 +702,38 @@ function EmbeddingsPage() {
 
           <GlassCard>
             <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-              <Zap className="h-3 w-3 text-neuro" /> Foundation model · neuroweave-1024
+              <Zap className="h-3 w-3 text-neuro" /> Concept model · neuroweave-1024 (illustrative)
             </div>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Backbone</span>
-                <span className="font-mono text-xs">NeuroFormer-L</span>
+                <span className="font-mono text-xs">concept design</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Parameters</span>
-                <span className="font-mono text-xs">1.4 B</span>
+                <span className="font-mono text-xs">not built</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Pretrain hours</span>
-                <span className="font-mono text-xs">84,200 h EEG</span>
+                <span className="font-mono text-xs">not trained</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Latent dim</span>
-                <span className="font-mono text-xs">1,024</span>
+                <span className="font-mono text-xs">1,024 (target)</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Probe accuracy</span>
-                <span className="font-mono text-xs text-neuro">94.2%</span>
+                <span className="font-mono text-xs text-muted-foreground">not measured</span>
               </div>
             </div>
+            <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+              This card describes a target design, not a deployed model. The real, currently active
+              embedder is listed on{" "}
+              <Link to="/models" className="text-neuro hover:underline">
+                /models
+              </Link>
+              .
+            </p>
             <div className="mt-4 rounded-md border border-border bg-background/40 p-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
               <span className="text-neuro">{"→"}</span> embed(signal){" "}
               <span className="text-muted-foreground/60">// returns 1024-d</span>

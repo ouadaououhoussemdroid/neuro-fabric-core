@@ -3,10 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface TelemetryState {
   latencyMs: number;
-  gpuUtil: number;
   throughputTps: number;
   activeSessions: number;
-  syntheticSamples: number;
   apiRequests: number;
   isLive: boolean;
 }
@@ -22,10 +20,8 @@ function p50(values: number[]): number {
 export function useTelemetry(): TelemetryState {
   const [state, setState] = useState<TelemetryState>({
     latencyMs: 0,
-    gpuUtil: 0,
     throughputTps: 0,
     activeSessions: 0,
-    syntheticSamples: 0,
     apiRequests: 0,
     isLive: false,
   });
@@ -89,22 +85,11 @@ export function useTelemetry(): TelemetryState {
 
       const apiRequests = todayCount ?? 0;
 
-      const { count: totalCount } = await supabase
-        .from("eeg_analyses")
-        .select("id", { count: "exact", head: true });
-
-      const syntheticSamples = (totalCount ?? 0) * 1_024;
-
-      const gpuUtil =
-        latencyMs > 0 ? Math.min(95, Math.max(20, Math.round(100 - latencyMs / 5))) : 0;
-
       setState((prev) => ({
         ...prev,
         latencyMs: latencyMs > 0 ? +latencyMs.toFixed(1) : prev.latencyMs,
-        gpuUtil,
         throughputTps,
         apiRequests,
-        syntheticSamples,
         isLive: true,
       }));
     }
