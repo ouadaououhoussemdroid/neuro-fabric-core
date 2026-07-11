@@ -6,7 +6,7 @@ import { GlassCard, Eyebrow } from "@/components/ui-bits";
 import { getModelsByType, ACTIVE_DECODER, ACTIVE_EMBEDDER } from "@/lib/model-registry";
 import { Brain, CheckCircle, FlaskConical, Sparkles } from "lucide-react";
 
-export const Route = createFileRoute("/models")({
+export const Route = createFileRoute("/_authenticated/models")({
   component: ModelsPage,
 });
 

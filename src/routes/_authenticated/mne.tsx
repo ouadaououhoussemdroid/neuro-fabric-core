@@ -16,7 +16,7 @@ import {
   Upload,
 } from "lucide-react";
 
-export const Route = createFileRoute("/mne")({
+export const Route = createFileRoute("/_authenticated/mne")({
   component: MnePage,
 });
 

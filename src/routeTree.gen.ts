@@ -9,8 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UploadRouteImport } from './routes/upload'
-import { Route as TrainingRouteImport } from './routes/training'
 import { Route as SyntheticRouteImport } from './routes/synthetic'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -20,18 +18,20 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ResearchRouteImport } from './routes/research'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PlaygroundRouteImport } from './routes/playground'
-import { Route as OnnxRouteImport } from './routes/onnx'
-import { Route as ModelsRouteImport } from './routes/models'
-import { Route as MneRouteImport } from './routes/mne'
-import { Route as ExperimentsRouteImport } from './routes/experiments'
 import { Route as EmbeddingsRouteImport } from './routes/embeddings'
 import { Route as Eeg2imageRouteImport } from './routes/eeg2image'
 import { Route as DevelopersRouteImport } from './routes/developers'
-import { Route as DatasetsRouteImport } from './routes/datasets'
 import { Route as ArchitectureRouteImport } from './routes/architecture'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
+import { Route as AuthenticatedTrainingRouteImport } from './routes/_authenticated/training'
+import { Route as AuthenticatedOnnxRouteImport } from './routes/_authenticated/onnx'
+import { Route as AuthenticatedModelsRouteImport } from './routes/_authenticated/models'
+import { Route as AuthenticatedMneRouteImport } from './routes/_authenticated/mne'
+import { Route as AuthenticatedExperimentsRouteImport } from './routes/_authenticated/experiments'
+import { Route as AuthenticatedDatasetsRouteImport } from './routes/_authenticated/datasets'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as ApiEegUploadRouteImport } from './routes/api/eeg/upload'
@@ -40,16 +40,6 @@ import { Route as AuthenticatedDashboardIndividualRouteImport } from './routes/_
 import { Route as AuthenticatedDashboardEnterpriseRouteImport } from './routes/_authenticated/dashboard.enterprise'
 import { Route as AuthenticatedDashboardAnalysesRouteImport } from './routes/_authenticated/dashboard.analyses'
 
-const UploadRoute = UploadRouteImport.update({
-  id: '/upload',
-  path: '/upload',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TrainingRoute = TrainingRouteImport.update({
-  id: '/training',
-  path: '/training',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SyntheticRoute = SyntheticRouteImport.update({
   id: '/synthetic',
   path: '/synthetic',
@@ -95,26 +85,6 @@ const PlaygroundRoute = PlaygroundRouteImport.update({
   path: '/playground',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OnnxRoute = OnnxRouteImport.update({
-  id: '/onnx',
-  path: '/onnx',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ModelsRoute = ModelsRouteImport.update({
-  id: '/models',
-  path: '/models',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MneRoute = MneRouteImport.update({
-  id: '/mne',
-  path: '/mne',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExperimentsRoute = ExperimentsRouteImport.update({
-  id: '/experiments',
-  path: '/experiments',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const EmbeddingsRoute = EmbeddingsRouteImport.update({
   id: '/embeddings',
   path: '/embeddings',
@@ -128,11 +98,6 @@ const Eeg2imageRoute = Eeg2imageRouteImport.update({
 const DevelopersRoute = DevelopersRouteImport.update({
   id: '/developers',
   path: '/developers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DatasetsRoute = DatasetsRouteImport.update({
-  id: '/datasets',
-  path: '/datasets',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArchitectureRoute = ArchitectureRouteImport.update({
@@ -153,6 +118,42 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedUploadRoute = AuthenticatedUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTrainingRoute = AuthenticatedTrainingRouteImport.update({
+  id: '/training',
+  path: '/training',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOnnxRoute = AuthenticatedOnnxRouteImport.update({
+  id: '/onnx',
+  path: '/onnx',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedModelsRoute = AuthenticatedModelsRouteImport.update({
+  id: '/models',
+  path: '/models',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMneRoute = AuthenticatedMneRouteImport.update({
+  id: '/mne',
+  path: '/mne',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedExperimentsRoute =
+  AuthenticatedExperimentsRouteImport.update({
+    id: '/experiments',
+    path: '/experiments',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDatasetsRoute = AuthenticatedDatasetsRouteImport.update({
+  id: '/datasets',
+  path: '/datasets',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -199,14 +200,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/architecture': typeof ArchitectureRoute
-  '/datasets': typeof DatasetsRoute
   '/developers': typeof DevelopersRoute
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
-  '/experiments': typeof ExperimentsRoute
-  '/mne': typeof MneRoute
-  '/models': typeof ModelsRoute
-  '/onnx': typeof OnnxRoute
   '/playground': typeof PlaygroundRoute
   '/pricing': typeof PricingRoute
   '/research': typeof ResearchRoute
@@ -216,9 +212,14 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
-  '/training': typeof TrainingRoute
-  '/upload': typeof UploadRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/datasets': typeof AuthenticatedDatasetsRoute
+  '/experiments': typeof AuthenticatedExperimentsRoute
+  '/mne': typeof AuthenticatedMneRoute
+  '/models': typeof AuthenticatedModelsRoute
+  '/onnx': typeof AuthenticatedOnnxRoute
+  '/training': typeof AuthenticatedTrainingRoute
+  '/upload': typeof AuthenticatedUploadRoute
   '/dashboard/analyses': typeof AuthenticatedDashboardAnalysesRoute
   '/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
   '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
@@ -230,14 +231,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/architecture': typeof ArchitectureRoute
-  '/datasets': typeof DatasetsRoute
   '/developers': typeof DevelopersRoute
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
-  '/experiments': typeof ExperimentsRoute
-  '/mne': typeof MneRoute
-  '/models': typeof ModelsRoute
-  '/onnx': typeof OnnxRoute
   '/playground': typeof PlaygroundRoute
   '/pricing': typeof PricingRoute
   '/research': typeof ResearchRoute
@@ -247,8 +243,13 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
-  '/training': typeof TrainingRoute
-  '/upload': typeof UploadRoute
+  '/datasets': typeof AuthenticatedDatasetsRoute
+  '/experiments': typeof AuthenticatedExperimentsRoute
+  '/mne': typeof AuthenticatedMneRoute
+  '/models': typeof AuthenticatedModelsRoute
+  '/onnx': typeof AuthenticatedOnnxRoute
+  '/training': typeof AuthenticatedTrainingRoute
+  '/upload': typeof AuthenticatedUploadRoute
   '/dashboard/analyses': typeof AuthenticatedDashboardAnalysesRoute
   '/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
   '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
@@ -262,14 +263,9 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/architecture': typeof ArchitectureRoute
-  '/datasets': typeof DatasetsRoute
   '/developers': typeof DevelopersRoute
   '/eeg2image': typeof Eeg2imageRoute
   '/embeddings': typeof EmbeddingsRoute
-  '/experiments': typeof ExperimentsRoute
-  '/mne': typeof MneRoute
-  '/models': typeof ModelsRoute
-  '/onnx': typeof OnnxRoute
   '/playground': typeof PlaygroundRoute
   '/pricing': typeof PricingRoute
   '/research': typeof ResearchRoute
@@ -279,9 +275,14 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/studio': typeof StudioRoute
   '/synthetic': typeof SyntheticRoute
-  '/training': typeof TrainingRoute
-  '/upload': typeof UploadRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/_authenticated/datasets': typeof AuthenticatedDatasetsRoute
+  '/_authenticated/experiments': typeof AuthenticatedExperimentsRoute
+  '/_authenticated/mne': typeof AuthenticatedMneRoute
+  '/_authenticated/models': typeof AuthenticatedModelsRoute
+  '/_authenticated/onnx': typeof AuthenticatedOnnxRoute
+  '/_authenticated/training': typeof AuthenticatedTrainingRoute
+  '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/dashboard/analyses': typeof AuthenticatedDashboardAnalysesRoute
   '/_authenticated/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
   '/_authenticated/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
@@ -295,14 +296,9 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/architecture'
-    | '/datasets'
     | '/developers'
     | '/eeg2image'
     | '/embeddings'
-    | '/experiments'
-    | '/mne'
-    | '/models'
-    | '/onnx'
     | '/playground'
     | '/pricing'
     | '/research'
@@ -312,9 +308,14 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/studio'
     | '/synthetic'
+    | '/dashboard'
+    | '/datasets'
+    | '/experiments'
+    | '/mne'
+    | '/models'
+    | '/onnx'
     | '/training'
     | '/upload'
-    | '/dashboard'
     | '/dashboard/analyses'
     | '/dashboard/enterprise'
     | '/dashboard/individual'
@@ -326,14 +327,9 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/architecture'
-    | '/datasets'
     | '/developers'
     | '/eeg2image'
     | '/embeddings'
-    | '/experiments'
-    | '/mne'
-    | '/models'
-    | '/onnx'
     | '/playground'
     | '/pricing'
     | '/research'
@@ -343,6 +339,11 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/studio'
     | '/synthetic'
+    | '/datasets'
+    | '/experiments'
+    | '/mne'
+    | '/models'
+    | '/onnx'
     | '/training'
     | '/upload'
     | '/dashboard/analyses'
@@ -357,14 +358,9 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/architecture'
-    | '/datasets'
     | '/developers'
     | '/eeg2image'
     | '/embeddings'
-    | '/experiments'
-    | '/mne'
-    | '/models'
-    | '/onnx'
     | '/playground'
     | '/pricing'
     | '/research'
@@ -374,9 +370,14 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/studio'
     | '/synthetic'
-    | '/training'
-    | '/upload'
     | '/_authenticated/dashboard'
+    | '/_authenticated/datasets'
+    | '/_authenticated/experiments'
+    | '/_authenticated/mne'
+    | '/_authenticated/models'
+    | '/_authenticated/onnx'
+    | '/_authenticated/training'
+    | '/_authenticated/upload'
     | '/_authenticated/dashboard/analyses'
     | '/_authenticated/dashboard/enterprise'
     | '/_authenticated/dashboard/individual'
@@ -390,14 +391,9 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   ArchitectureRoute: typeof ArchitectureRoute
-  DatasetsRoute: typeof DatasetsRoute
   DevelopersRoute: typeof DevelopersRoute
   Eeg2imageRoute: typeof Eeg2imageRoute
   EmbeddingsRoute: typeof EmbeddingsRoute
-  ExperimentsRoute: typeof ExperimentsRoute
-  MneRoute: typeof MneRoute
-  ModelsRoute: typeof ModelsRoute
-  OnnxRoute: typeof OnnxRoute
   PlaygroundRoute: typeof PlaygroundRoute
   PricingRoute: typeof PricingRoute
   ResearchRoute: typeof ResearchRoute
@@ -407,27 +403,11 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StudioRoute: typeof StudioRoute
   SyntheticRoute: typeof SyntheticRoute
-  TrainingRoute: typeof TrainingRoute
-  UploadRoute: typeof UploadRoute
   ApiEegUploadRoute: typeof ApiEegUploadRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/upload': {
-      id: '/upload'
-      path: '/upload'
-      fullPath: '/upload'
-      preLoaderRoute: typeof UploadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/training': {
-      id: '/training'
-      path: '/training'
-      fullPath: '/training'
-      preLoaderRoute: typeof TrainingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/synthetic': {
       id: '/synthetic'
       path: '/synthetic'
@@ -491,34 +471,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlaygroundRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/onnx': {
-      id: '/onnx'
-      path: '/onnx'
-      fullPath: '/onnx'
-      preLoaderRoute: typeof OnnxRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/models': {
-      id: '/models'
-      path: '/models'
-      fullPath: '/models'
-      preLoaderRoute: typeof ModelsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mne': {
-      id: '/mne'
-      path: '/mne'
-      fullPath: '/mne'
-      preLoaderRoute: typeof MneRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/experiments': {
-      id: '/experiments'
-      path: '/experiments'
-      fullPath: '/experiments'
-      preLoaderRoute: typeof ExperimentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/embeddings': {
       id: '/embeddings'
       path: '/embeddings'
@@ -538,13 +490,6 @@ declare module '@tanstack/react-router' {
       path: '/developers'
       fullPath: '/developers'
       preLoaderRoute: typeof DevelopersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/datasets': {
-      id: '/datasets'
-      path: '/datasets'
-      fullPath: '/datasets'
-      preLoaderRoute: typeof DatasetsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/architecture': {
@@ -574,6 +519,55 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/upload': {
+      id: '/_authenticated/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof AuthenticatedUploadRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/training': {
+      id: '/_authenticated/training'
+      path: '/training'
+      fullPath: '/training'
+      preLoaderRoute: typeof AuthenticatedTrainingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onnx': {
+      id: '/_authenticated/onnx'
+      path: '/onnx'
+      fullPath: '/onnx'
+      preLoaderRoute: typeof AuthenticatedOnnxRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/models': {
+      id: '/_authenticated/models'
+      path: '/models'
+      fullPath: '/models'
+      preLoaderRoute: typeof AuthenticatedModelsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mne': {
+      id: '/_authenticated/mne'
+      path: '/mne'
+      fullPath: '/mne'
+      preLoaderRoute: typeof AuthenticatedMneRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/experiments': {
+      id: '/_authenticated/experiments'
+      path: '/experiments'
+      fullPath: '/experiments'
+      preLoaderRoute: typeof AuthenticatedExperimentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/datasets': {
+      id: '/_authenticated/datasets'
+      path: '/datasets'
+      fullPath: '/datasets'
+      preLoaderRoute: typeof AuthenticatedDatasetsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -654,10 +648,24 @@ const AuthenticatedDashboardRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
+  AuthenticatedDatasetsRoute: typeof AuthenticatedDatasetsRoute
+  AuthenticatedExperimentsRoute: typeof AuthenticatedExperimentsRoute
+  AuthenticatedMneRoute: typeof AuthenticatedMneRoute
+  AuthenticatedModelsRoute: typeof AuthenticatedModelsRoute
+  AuthenticatedOnnxRoute: typeof AuthenticatedOnnxRoute
+  AuthenticatedTrainingRoute: typeof AuthenticatedTrainingRoute
+  AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
+  AuthenticatedDatasetsRoute: AuthenticatedDatasetsRoute,
+  AuthenticatedExperimentsRoute: AuthenticatedExperimentsRoute,
+  AuthenticatedMneRoute: AuthenticatedMneRoute,
+  AuthenticatedModelsRoute: AuthenticatedModelsRoute,
+  AuthenticatedOnnxRoute: AuthenticatedOnnxRoute,
+  AuthenticatedTrainingRoute: AuthenticatedTrainingRoute,
+  AuthenticatedUploadRoute: AuthenticatedUploadRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -668,14 +676,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   ArchitectureRoute: ArchitectureRoute,
-  DatasetsRoute: DatasetsRoute,
   DevelopersRoute: DevelopersRoute,
   Eeg2imageRoute: Eeg2imageRoute,
   EmbeddingsRoute: EmbeddingsRoute,
-  ExperimentsRoute: ExperimentsRoute,
-  MneRoute: MneRoute,
-  ModelsRoute: ModelsRoute,
-  OnnxRoute: OnnxRoute,
   PlaygroundRoute: PlaygroundRoute,
   PricingRoute: PricingRoute,
   ResearchRoute: ResearchRoute,
@@ -685,8 +688,6 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StudioRoute: StudioRoute,
   SyntheticRoute: SyntheticRoute,
-  TrainingRoute: TrainingRoute,
-  UploadRoute: UploadRoute,
   ApiEegUploadRoute: ApiEegUploadRoute,
 }
 export const routeTree = rootRouteImport

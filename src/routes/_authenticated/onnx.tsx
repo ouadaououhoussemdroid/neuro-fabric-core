@@ -8,7 +8,7 @@ import { useOnnxTrainer } from "@/hooks/use-onnx-trainer";
 import { usePyodide } from "@/hooks/use-pyodide";
 import { AlertTriangle, Brain, CheckCircle, Download, Loader2, Play, Zap } from "lucide-react";
 
-export const Route = createFileRoute("/onnx")({
+export const Route = createFileRoute("/_authenticated/onnx")({
   component: OnnxPage,
 });
 
