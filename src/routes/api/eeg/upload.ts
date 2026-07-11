@@ -5,28 +5,14 @@ import { embedSignal } from "@/lib/embeddings";
 import { decodeCognitiveState } from "@/lib/decoder";
 import { log, startTimer } from "@/lib/logging";
 import { authenticateRequest, AuthError } from "@/integrations/supabase/request-auth";
+import { checkRateLimit } from "@/integrations/supabase/rate-limit";
 import type { EEGSignal } from "@/lib/eeg/types";
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_TYPES = [".edf", ".bdf", ".csv", ".tsv", ".npy"];
 
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_MAX = 20;
-const RATE_LIMIT_WINDOW = 60_000;
-
-function checkRateLimit(userId: string): { allowed: boolean; retryAfterMs: number } {
-  const now = Date.now();
-  const entry = rateLimitMap.get(userId);
-  if (!entry || now >= entry.resetAt) {
-    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
-    return { allowed: true, retryAfterMs: 0 };
-  }
-  if (entry.count >= RATE_LIMIT_MAX) {
-    return { allowed: false, retryAfterMs: entry.resetAt - now };
-  }
-  entry.count += 1;
-  return { allowed: true, retryAfterMs: 0 };
-}
+const RATE_LIMIT_WINDOW_SECONDS = 60;
 
 export const Route = createFileRoute("/api/eeg/upload")({
   server: {
@@ -45,7 +31,19 @@ export const Route = createFileRoute("/api/eeg/upload")({
             return json({ error: (authErr as Error).message ?? "Unauthorized" }, status);
           }
 
-          const rl = checkRateLimit(userId);
+          let rl: { allowed: boolean; retryAfterMs: number };
+          try {
+            rl = await checkRateLimit(supabase, userId, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_SECONDS);
+          } catch (rlErr) {
+            // Fail open: an unavailable rate-limit check shouldn't take down
+            // the upload path, but it must be loud so a persistent outage is
+            // noticed rather than silently disabling rate limiting.
+            log("warn", "eeg.upload.rate_limit_check_failed", {
+              error: (rlErr as Error).message,
+              userId,
+            });
+            rl = { allowed: true, retryAfterMs: 0 };
+          }
           if (!rl.allowed) {
             return json(
               { error: "Rate limit exceeded. Try again shortly.", retry_after_ms: rl.retryAfterMs },
