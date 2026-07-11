@@ -32,6 +32,24 @@ function normalize(x: number[]): number[] {
   return x.map((v) => v / n);
 }
 
+/**
+ * Deterministic seeded PRNG (mulberry32). Power iteration's starting
+ * vector was previously drawn from Math.random(), making `fitPCA`
+ * non-deterministic run-to-run — component sign/order could flip for
+ * near-degenerate eigenvalues, and results weren't reproducible. This
+ * only needs to avoid landing exactly on a degenerate/symmetric vector,
+ * not to be cryptographically random.
+ */
+function seededRandom(seed: number): () => number {
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6d2b79f5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 /** Fit PCA with the top-k components using power iteration with deflation. */
 export function fitPCA(X: number[][], k: number, iters = 60): PCAModel {
   const n = X.length;
@@ -65,9 +83,10 @@ export function fitPCA(X: number[][], k: number, iters = 60): PCAModel {
   const components: number[][] = [];
   const eigs: number[] = [];
   const A = cov.map((row) => row.slice());
+  const rand = seededRandom(0x2026_0711);
 
   for (let comp = 0; comp < Math.min(k, d); comp++) {
-    let v = new Array<number>(d).fill(0).map(() => Math.random() - 0.5);
+    let v = new Array<number>(d).fill(0).map(() => rand() - 0.5);
     v = normalize(v);
     let lambda = 0;
     for (let it = 0; it < iters; it++) {
