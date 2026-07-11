@@ -37,7 +37,9 @@ function SignUp() {
 
   async function onGoogle() {
     setError(null);
-    const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/dashboard" });
+    const res = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin + "/dashboard",
+    });
     if (res.error) setError(res.error.message);
   }
 
@@ -98,11 +100,28 @@ function SignUp() {
         <GlassCard className="mt-8">
           {step === 1 && (
             <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">Choose the account type that best fits you.</p>
+              <p className="text-sm text-muted-foreground">
+                Choose the account type that best fits you.
+              </p>
               {[
-                { id: "individual", icon: User, title: "Individual", desc: "Personal access to the playground, embeddings, and reconstruction tools." },
-                { id: "researcher", icon: FlaskConical, title: "Researcher", desc: "Academic features, dataset linking, publication tracking, citations." },
-                { id: "enterprise", icon: Building2, title: "Enterprise", desc: "Team seats, API keys, governance, and SLA-backed inference." },
+                {
+                  id: "individual",
+                  icon: User,
+                  title: "Individual",
+                  desc: "Personal access to the playground, embeddings, and reconstruction tools.",
+                },
+                {
+                  id: "researcher",
+                  icon: FlaskConical,
+                  title: "Researcher",
+                  desc: "Academic features, dataset linking, publication tracking, citations.",
+                },
+                {
+                  id: "enterprise",
+                  icon: Building2,
+                  title: "Enterprise",
+                  desc: "Team seats, API keys, governance, and SLA-backed inference.",
+                },
               ].map((opt) => {
                 const Icon = opt.icon;
                 const active = role === opt.id;
@@ -123,35 +142,69 @@ function SignUp() {
                   </button>
                 );
               })}
-              <button onClick={() => setStep(2)} className="w-full rounded-md bg-neuro-gradient px-4 py-2.5 text-sm font-medium text-background glow">Continue</button>
+              <button
+                onClick={() => setStep(2)}
+                className="w-full rounded-md bg-neuro-gradient px-4 py-2.5 text-sm font-medium text-background glow"
+              >
+                Continue
+              </button>
             </div>
           )}
 
           {step === 2 && (
             <div className="space-y-3">
-              <button type="button" onClick={onGoogle} className="w-full rounded-md border border-border bg-card/40 px-4 py-2.5 text-sm font-medium hover:bg-card">
+              <button
+                type="button"
+                onClick={onGoogle}
+                className="w-full rounded-md border border-border bg-card/40 px-4 py-2.5 text-sm font-medium hover:bg-card"
+              >
                 Continue with Google
               </button>
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                <div className="h-px flex-1 bg-border" /> or <div className="h-px flex-1 bg-border" />
+                <div className="h-px flex-1 bg-border" /> or{" "}
+                <div className="h-px flex-1 bg-border" />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="fn">Full name</Label>
-                <Input id="fn" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                <Input
+                  id="fn"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="em">Email</Label>
-                <Input id="em" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                <Input
+                  id="em"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="pw">Password</Label>
-                <Input id="pw" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input
+                  id="pw"
+                  type="password"
+                  required
+                  minLength={8}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
               <div className="flex gap-2">
-                <button onClick={() => setStep(1)} className="rounded-md border border-border bg-card/40 px-4 py-2.5 text-sm hover:bg-card">Back</button>
+                <button
+                  onClick={() => setStep(1)}
+                  className="rounded-md border border-border bg-card/40 px-4 py-2.5 text-sm hover:bg-card"
+                >
+                  Back
+                </button>
                 <button
                   onClick={() => {
-                    if (!fullName || !email || password.length < 8) return setError("Fill all fields (password ≥ 8 chars)");
+                    if (!fullName || !email || password.length < 8)
+                      return setError("Fill all fields (password ≥ 8 chars)");
                     setError(null);
                     if (role === "individual") onFinish();
                     else setStep(3);
@@ -168,19 +221,41 @@ function SignUp() {
             <div className="space-y-3">
               <div className="space-y-1.5">
                 <Label>Institution name</Label>
-                <Input required value={institution} onChange={(e) => setInstitution(e.target.value)} />
+                <Input
+                  required
+                  value={institution}
+                  onChange={(e) => setInstitution(e.target.value)}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label>Publication URL</Label>
-                <Input type="url" placeholder="https://" value={publicationUrl} onChange={(e) => setPublicationUrl(e.target.value)} />
+                <Input
+                  type="url"
+                  placeholder="https://"
+                  value={publicationUrl}
+                  onChange={(e) => setPublicationUrl(e.target.value)}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label>Research field</Label>
-                <Input placeholder="e.g. computational neuroscience" value={researchField} onChange={(e) => setResearchField(e.target.value)} />
+                <Input
+                  placeholder="e.g. computational neuroscience"
+                  value={researchField}
+                  onChange={(e) => setResearchField(e.target.value)}
+                />
               </div>
               <div className="flex gap-2">
-                <button onClick={() => setStep(2)} className="rounded-md border border-border bg-card/40 px-4 py-2.5 text-sm hover:bg-card">Back</button>
-                <button onClick={onFinish} disabled={loading} className="flex-1 rounded-md bg-neuro-gradient px-4 py-2.5 text-sm font-medium text-background glow disabled:opacity-60">
+                <button
+                  onClick={() => setStep(2)}
+                  className="rounded-md border border-border bg-card/40 px-4 py-2.5 text-sm hover:bg-card"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={onFinish}
+                  disabled={loading}
+                  className="flex-1 rounded-md bg-neuro-gradient px-4 py-2.5 text-sm font-medium text-background glow disabled:opacity-60"
+                >
                   {loading ? "Creating…" : "Create account"}
                 </button>
               </div>
@@ -191,36 +266,69 @@ function SignUp() {
             <div className="space-y-3">
               <div className="space-y-1.5">
                 <Label>Company name</Label>
-                <Input required value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+                <Input
+                  required
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                />
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label>Company size</Label>
-                  <Input placeholder="e.g. 11–50" value={companySize} onChange={(e) => setCompanySize(e.target.value)} />
+                  <Input
+                    placeholder="e.g. 11–50"
+                    value={companySize}
+                    onChange={(e) => setCompanySize(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Industry</Label>
-                  <Input placeholder="e.g. healthtech" value={industry} onChange={(e) => setIndustry(e.target.value)} />
+                  <Input
+                    placeholder="e.g. healthtech"
+                    value={industry}
+                    onChange={(e) => setIndustry(e.target.value)}
+                  />
                 </div>
               </div>
               <div className="space-y-1.5">
                 <Label>Website</Label>
-                <Input type="url" placeholder="https://" value={website} onChange={(e) => setWebsite(e.target.value)} />
+                <Input
+                  type="url"
+                  placeholder="https://"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                />
               </div>
               <div className="flex gap-2">
-                <button onClick={() => setStep(2)} className="rounded-md border border-border bg-card/40 px-4 py-2.5 text-sm hover:bg-card">Back</button>
-                <button onClick={onFinish} disabled={loading} className="flex-1 rounded-md bg-neuro-gradient px-4 py-2.5 text-sm font-medium text-background glow disabled:opacity-60">
+                <button
+                  onClick={() => setStep(2)}
+                  className="rounded-md border border-border bg-card/40 px-4 py-2.5 text-sm hover:bg-card"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={onFinish}
+                  disabled={loading}
+                  className="flex-1 rounded-md bg-neuro-gradient px-4 py-2.5 text-sm font-medium text-background glow disabled:opacity-60"
+                >
                   {loading ? "Creating…" : "Create account"}
                 </button>
               </div>
             </div>
           )}
 
-          {error && <div className="mt-3 rounded border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</div>}
+          {error && (
+            <div className="mt-3 rounded border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+              {error}
+            </div>
+          )}
         </GlassCard>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          Already have an account? <Link to="/signin" className="text-foreground hover:underline">Sign in</Link>
+          Already have an account?{" "}
+          <Link to="/signin" className="text-foreground hover:underline">
+            Sign in
+          </Link>
         </p>
       </div>
     </SiteShell>

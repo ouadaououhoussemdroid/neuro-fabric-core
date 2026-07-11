@@ -5,12 +5,7 @@
  */
 import { createAdapter, getDescriptor } from "../models/registry";
 import type { EEGModelAdapter } from "../adapters/types";
-import type {
-  EmbeddingOutput,
-  ModelDescriptor,
-  ModelInput,
-  PredictionOutput,
-} from "../types";
+import type { EmbeddingOutput, ModelDescriptor, ModelInput, PredictionOutput } from "../types";
 
 export class InferenceEngine {
   private cache = new Map<string, EEGModelAdapter>();

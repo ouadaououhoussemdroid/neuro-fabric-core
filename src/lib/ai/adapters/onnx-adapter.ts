@@ -11,12 +11,7 @@
  * adapter, preserving backward compatibility.
  */
 import type { EEGModelAdapter } from "./types";
-import type {
-  EmbeddingOutput,
-  ModelDescriptor,
-  ModelInput,
-  PredictionOutput,
-} from "../types";
+import type { EmbeddingOutput, ModelDescriptor, ModelInput, PredictionOutput } from "../types";
 import { bandPowerFeatures } from "../../embeddings/features";
 import { segment } from "../../eeg/preprocessing/segment";
 
@@ -39,11 +34,7 @@ export interface OrtRuntime {
       options?: Record<string, unknown>,
     ): Promise<OrtSessionLike>;
   };
-  Tensor: new (
-    type: "float32",
-    data: Float32Array,
-    dims: readonly number[],
-  ) => OrtTensorLike;
+  Tensor: new (type: "float32", data: Float32Array, dims: readonly number[]) => OrtTensorLike;
   env?: { wasm?: { numThreads?: number; simd?: boolean } };
 }
 
@@ -103,8 +94,7 @@ async function defaultRuntime(): Promise<OrtRuntime> {
   if (mod?.env?.wasm && mod.env.wasm.wasmPaths == null) {
     const envOverride =
       typeof import.meta !== "undefined"
-        ? (import.meta as { env?: Record<string, string | undefined> }).env
-            ?.VITE_ORT_WASM_PATHS
+        ? (import.meta as { env?: Record<string, string | undefined> }).env?.VITE_ORT_WASM_PATHS
         : undefined;
     mod.env.wasm.wasmPaths =
       envOverride ?? "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/";

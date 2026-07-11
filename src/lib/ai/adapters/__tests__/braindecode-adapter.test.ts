@@ -9,7 +9,9 @@ import { embed } from "../../embeddings";
 import { registerModel, unregisterModel } from "../../models/registry";
 import type { ModelInput } from "../../types";
 
-function makeFakeBridge(opts: { available?: boolean; failForward?: boolean } = {}): BraindecodeBridge {
+function makeFakeBridge(
+  opts: { available?: boolean; failForward?: boolean } = {},
+): BraindecodeBridge {
   return {
     async isAvailable() {
       return opts.available ?? true;

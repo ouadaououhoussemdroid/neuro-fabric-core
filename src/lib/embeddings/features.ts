@@ -5,7 +5,11 @@ import type { EEGWindow } from "../eeg/types";
  *  Bands (Hz): δ 0.5–4, θ 4–8, α 8–13, β 13–30, γ 30–45.
  */
 const BANDS: Array<[number, number]> = [
-  [0.5, 4], [4, 8], [8, 13], [13, 30], [30, 45],
+  [0.5, 4],
+  [4, 8],
+  [8, 13],
+  [13, 30],
+  [30, 45],
 ];
 
 function dftPowerSpectrum(x: number[], fs: number): { freq: number; power: number }[] {
@@ -22,7 +26,8 @@ function dftPowerSpectrum(x: number[], fs: number): { freq: number; power: numbe
   const out: { freq: number; power: number }[] = [];
   const half = M / 2;
   for (let k = 1; k < half; k++) {
-    let re = 0, im = 0;
+    let re = 0,
+      im = 0;
     const c = (2 * Math.PI * k) / M;
     for (let n = 0; n < M; n++) {
       const a = c * n;

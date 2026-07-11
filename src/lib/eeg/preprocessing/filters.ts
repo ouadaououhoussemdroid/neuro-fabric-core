@@ -12,9 +12,9 @@ function lowpassCoeffs(fs: number, fc: number, q = Math.SQRT1_2): Biquad {
   const alpha = sinw / (2 * q);
   const a0 = 1 + alpha;
   return {
-    b0: ((1 - cosw) / 2) / a0,
+    b0: (1 - cosw) / 2 / a0,
     b1: (1 - cosw) / a0,
-    b2: ((1 - cosw) / 2) / a0,
+    b2: (1 - cosw) / 2 / a0,
     a1: (-2 * cosw) / a0,
     a2: (1 - alpha) / a0,
   };
@@ -27,9 +27,9 @@ function highpassCoeffs(fs: number, fc: number, q = Math.SQRT1_2): Biquad {
   const alpha = sinw / (2 * q);
   const a0 = 1 + alpha;
   return {
-    b0: ((1 + cosw) / 2) / a0,
-    b1: (-(1 + cosw)) / a0,
-    b2: ((1 + cosw) / 2) / a0,
+    b0: (1 + cosw) / 2 / a0,
+    b1: -(1 + cosw) / a0,
+    b2: (1 + cosw) / 2 / a0,
     a1: (-2 * cosw) / a0,
     a2: (1 - alpha) / a0,
   };
@@ -53,13 +53,18 @@ function notchCoeffs(fs: number, fc: number, q = 30): Biquad {
 function applyBiquad(x: number[], c: Biquad): number[] {
   const n = x.length;
   const y = new Array<number>(n);
-  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  let x1 = 0,
+    x2 = 0,
+    y1 = 0,
+    y2 = 0;
   for (let i = 0; i < n; i++) {
     const xi = x[i];
     const yi = c.b0 * xi + c.b1 * x1 + c.b2 * x2 - c.a1 * y1 - c.a2 * y2;
     y[i] = yi;
-    x2 = x1; x1 = xi;
-    y2 = y1; y1 = yi;
+    x2 = x1;
+    x1 = xi;
+    y2 = y1;
+    y1 = yi;
   }
   return y;
 }

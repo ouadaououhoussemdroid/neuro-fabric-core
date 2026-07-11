@@ -47,7 +47,9 @@ export function DashboardShell({
           <div className="ml-auto flex items-center gap-2">
             <div className="hidden items-center gap-2 rounded-md border border-border bg-card/40 px-2.5 py-1.5 text-xs sm:flex">
               <span className="font-medium">{fullName}</span>
-              <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider ${r.cls}`}>
+              <span
+                className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider ${r.cls}`}
+              >
                 {r.label}
               </span>
             </div>

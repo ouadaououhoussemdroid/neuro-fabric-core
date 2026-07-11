@@ -51,7 +51,9 @@ export function useTelemetry(): TelemetryState {
       });
 
     presenceChannel.current = channel;
-    return () => { channel.unsubscribe(); };
+    return () => {
+      channel.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -93,9 +95,8 @@ export function useTelemetry(): TelemetryState {
 
       const syntheticSamples = (totalCount ?? 0) * 1_024;
 
-      const gpuUtil = latencyMs > 0
-        ? Math.min(95, Math.max(20, Math.round(100 - latencyMs / 5)))
-        : 0;
+      const gpuUtil =
+        latencyMs > 0 ? Math.min(95, Math.max(20, Math.round(100 - latencyMs / 5))) : 0;
 
       setState((prev) => ({
         ...prev,

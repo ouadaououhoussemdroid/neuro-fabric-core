@@ -39,12 +39,16 @@ export function parseCSV(text: string, sampleRate: number): EEGSignal {
   }
 
   if (nanCount > 0) {
-    console.warn(`[CSV parser] ${nanCount} non-finite value(s) interpolated. Locations: ${nanLocations.join("; ")}`);
+    console.warn(
+      `[CSV parser] ${nanCount} non-finite value(s) interpolated. Locations: ${nanLocations.join("; ")}`,
+    );
   }
 
   const nanPercent = dataLines.length * C > 0 ? (nanCount / (dataLines.length * C)) * 100 : 0;
   if (nanPercent > 20) {
-    throw new Error(`CSV: ${nanPercent.toFixed(1)}% of values are non-finite. File may be corrupted.`);
+    throw new Error(
+      `CSV: ${nanPercent.toFixed(1)}% of values are non-finite. File may be corrupted.`,
+    );
   }
 
   return {

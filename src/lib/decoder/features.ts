@@ -31,7 +31,7 @@ export function bandStats(signal: EEGSignal, windowSec = 2): BandStats {
     delta: acc[0] / total,
     theta: acc[1] / total,
     alpha: acc[2] / total,
-    beta:  acc[3] / total,
+    beta: acc[3] / total,
     gamma: acc[4] / total,
   };
 }

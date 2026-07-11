@@ -3,7 +3,9 @@ export function cosine(a: number[], b: number[]): number {
   if (a.length !== b.length) {
     throw new Error(`cosine: dim mismatch ${a.length} vs ${b.length}`);
   }
-  let dot = 0, na = 0, nb = 0;
+  let dot = 0,
+    na = 0,
+    nb = 0;
   for (let i = 0; i < a.length; i++) {
     dot += a[i] * b[i];
     na += a[i] * a[i];

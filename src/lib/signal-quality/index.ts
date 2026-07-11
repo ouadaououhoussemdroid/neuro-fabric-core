@@ -34,7 +34,15 @@ export function checkSignalQuality(signal: EEGSignal): SignalQualityReport {
     const samples = signal.data[c];
     if (!samples || samples.length === 0) {
       errors.push(`Channel ${ch}: no data`);
-      channelReports.push({ channel: ch, level: "bad", issues: ["No data"], rms: 0, flatPercent: 100, clippedPercent: 0, nanPercent: 100 });
+      channelReports.push({
+        channel: ch,
+        level: "bad",
+        issues: ["No data"],
+        rms: 0,
+        flatPercent: 100,
+        clippedPercent: 0,
+        nanPercent: 100,
+      });
       continue;
     }
 
@@ -60,24 +68,37 @@ export function checkSignalQuality(signal: EEGSignal): SignalQualityReport {
     if (clippedPercent > 1) issues.push(`Clipping detected (${clippedPercent.toFixed(1)}%)`);
 
     if (rms > MAX_RMS_UV) issues.push(`High amplitude RMS=${rms.toFixed(1)} µV`);
-    if (rms < MIN_RMS_UV && flatPercent < 10) issues.push(`Very low amplitude RMS=${rms.toFixed(4)} µV`);
+    if (rms < MIN_RMS_UV && flatPercent < 10)
+      issues.push(`Very low amplitude RMS=${rms.toFixed(4)} µV`);
 
-    const level: QualityLevel = issues.length === 0 ? "good" : issues.length <= 1 ? "warning" : "bad";
-    channelReports.push({ channel: ch, level, issues, rms, flatPercent, clippedPercent, nanPercent });
+    const level: QualityLevel =
+      issues.length === 0 ? "good" : issues.length <= 1 ? "warning" : "bad";
+    channelReports.push({
+      channel: ch,
+      level,
+      issues,
+      rms,
+      flatPercent,
+      clippedPercent,
+      nanPercent,
+    });
   }
 
   const badCount = channelReports.filter((c) => c.level === "bad").length;
   const warnCount = channelReports.filter((c) => c.level === "warning").length;
   const total = channelReports.length || 1;
   const score = Math.max(0, Math.round(100 - (badCount / total) * 60 - (warnCount / total) * 20));
-  const overall: QualityLevel = badCount > total * 0.3 ? "bad" : badCount > 0 || warnCount > total * 0.3 ? "warning" : "good";
+  const overall: QualityLevel =
+    badCount > total * 0.3 ? "bad" : badCount > 0 || warnCount > total * 0.3 ? "warning" : "good";
 
   if (signal.sampleRate < 128) warnings.push(`Low sample rate (${signal.sampleRate} Hz)`);
   if (signal.channels.length < 2) warnings.push("Single-channel signal");
-  if ((signal.data[0]?.length ?? 0) / signal.sampleRate < 2) warnings.push("Recording too short (< 2s)");
+  if ((signal.data[0]?.length ?? 0) / signal.sampleRate < 2)
+    warnings.push("Recording too short (< 2s)");
 
   const nanMeta = signal.meta?.nan_percent as number | undefined;
-  if (nanMeta && nanMeta > 5) errors.push(`File contained ${nanMeta.toFixed(1)}% non-finite values`);
+  if (nanMeta && nanMeta > 5)
+    errors.push(`File contained ${nanMeta.toFixed(1)}% non-finite values`);
 
   return { overall, score, channels: channelReports, warnings, errors };
 }
@@ -88,4 +109,4 @@ export function qualityColor(level: QualityLevel): string {
 
 export function qualityLabel(level: QualityLevel): string {
   return level === "good" ? "Good" : level === "warning" ? "Warning" : "Poor";
-                                       }
+}

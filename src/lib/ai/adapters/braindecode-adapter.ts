@@ -19,12 +19,7 @@
  * instead of an opaque Python traceback.
  */
 import type { EEGModelAdapter } from "./types";
-import type {
-  EmbeddingOutput,
-  ModelDescriptor,
-  ModelInput,
-  PredictionOutput,
-} from "../types";
+import type { EmbeddingOutput, ModelDescriptor, ModelInput, PredictionOutput } from "../types";
 import { segment } from "../../eeg/preprocessing/segment";
 
 /**

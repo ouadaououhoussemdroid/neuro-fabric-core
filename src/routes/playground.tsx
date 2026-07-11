@@ -7,12 +7,17 @@ import { Line, LineChart, ResponsiveContainer, XAxis } from "recharts";
 import { Image as ImageIcon, Play, Upload } from "lucide-react";
 
 export const Route = createFileRoute("/playground")({
-  head: () => ({ meta: [
-    { title: "API Playground — NeuroWeave" },
-    { name: "description", content: "Run embeddings, reconstruction, and synthetic generation on sample EEG." },
-    { property: "og:title", content: "API Playground — NeuroWeave" },
-    { property: "og:description", content: "Interactive NeuroWeave API playground." },
-  ]}),
+  head: () => ({
+    meta: [
+      { title: "API Playground — NeuroWeave" },
+      {
+        name: "description",
+        content: "Run embeddings, reconstruction, and synthetic generation on sample EEG.",
+      },
+      { property: "og:title", content: "API Playground — NeuroWeave" },
+      { property: "og:description", content: "Interactive NeuroWeave API playground." },
+    ],
+  }),
   component: PlaygroundPage,
 });
 
@@ -88,29 +93,35 @@ function PlaygroundPage() {
                 {response?.signal
                   ? `${uploadedFile?.name ?? "signal"} · ${response.signal.channels.length}ch · ${response.signal.sampleRate} Hz`
                   : uploadedFile
-                  ? `${uploadedFile.name} · ready`
-                  : "no signal loaded"}
+                    ? `${uploadedFile.name} · ready`
+                    : "no signal loaded"}
               </div>
               <label className="inline-flex items-center gap-2 rounded-md border border-border bg-card/40 px-3 py-1.5 text-xs hover:bg-card cursor-pointer">
-  <Upload className="h-3.5 w-3.5" />
-  {uploadedFile ? uploadedFile.name : "Upload EEG"}
-  <input
-    type="file"
-    accept=".edf,.csv,.npy"
-    className="hidden"
-    onChange={(e) => {
-      setUploadedFile(e.target.files?.[0] ?? null);
-      setError(null);
-    }}
-  />
-</label>
-          
+                <Upload className="h-3.5 w-3.5" />
+                {uploadedFile ? uploadedFile.name : "Upload EEG"}
+                <input
+                  type="file"
+                  accept=".edf,.csv,.npy"
+                  className="hidden"
+                  onChange={(e) => {
+                    setUploadedFile(e.target.files?.[0] ?? null);
+                    setError(null);
+                  }}
+                />
+              </label>
             </div>
             <div className="mt-4 h-44">
               <ResponsiveContainer>
                 <LineChart data={SAMPLE_SIGNAL}>
                   <XAxis dataKey="t" hide />
-                  <Line type="monotone" dataKey="v" stroke="oklch(0.85 0.18 195)" strokeWidth={1} dot={false} isAnimationActive={false} />
+                  <Line
+                    type="monotone"
+                    dataKey="v"
+                    stroke="oklch(0.85 0.18 195)"
+                    strokeWidth={1}
+                    dot={false}
+                    isAnimationActive={false}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -121,7 +132,9 @@ function PlaygroundPage() {
                   key={e}
                   onClick={() => setEndpoint(e)}
                   className={`rounded-md border px-3 py-1.5 text-xs font-mono uppercase tracking-wider ${
-                    endpoint === e ? "border-neuro/60 bg-neuro/10 text-foreground" : "border-border text-muted-foreground hover:text-foreground"
+                    endpoint === e
+                      ? "border-neuro/60 bg-neuro/10 text-foreground"
+                      : "border-border text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   /v1/{e}
@@ -149,10 +162,13 @@ function PlaygroundPage() {
             <div className="mt-6">
               <div className="flex items-center justify-between">
                 <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Latent vector · {response ? `${response.dimensions}d · ${response.model}` : "awaiting inference"}
+                  Latent vector ·{" "}
+                  {response ? `${response.dimensions}d · ${response.model}` : "awaiting inference"}
                 </div>
                 {latencyMs != null && (
-                  <div className={`font-mono text-[10px] ${error ? "text-destructive" : "text-neuro"}`}>
+                  <div
+                    className={`font-mono text-[10px] ${error ? "text-destructive" : "text-neuro"}`}
+                  >
                     {latencyMs} ms · {error ? "error" : "200 OK"}
                   </div>
                 )}
@@ -164,12 +180,8 @@ function PlaygroundPage() {
                   <StreamingLatent cols={64} rows={4} speed={running ? 60 : 140} />
                 )}
               </div>
-              {response && (
-                <ResultsPanel data={response} />
-              )}
-              {endpoint === "reconstruct" && response && (
-                <ReconstructionPreview seed={runId} />
-              )}
+              {response && <ResultsPanel data={response} />}
+              {endpoint === "reconstruct" && response && <ReconstructionPreview seed={runId} />}
             </div>
           </GlassCard>
 
@@ -258,7 +270,10 @@ function LatentVector({ vector }: { vector: number[] }) {
   const max = Math.max(1e-9, ...slice.map((v) => Math.abs(v)));
   return (
     <div className="space-y-[2px]">
-      <div className="grid gap-[2px]" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))` }}>
+      <div
+        className="grid gap-[2px]"
+        style={{ gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))` }}
+      >
         {slice.map((v, i) => {
           const a = Math.abs(v) / max;
           return (
@@ -327,11 +342,17 @@ function ResultsPanel({ data }: { data: ApiResponse }) {
           <dt className="text-muted-foreground">model</dt>
           <dd className="text-right">{data.model}</dd>
           <dt className="text-muted-foreground">preprocess</dt>
-          <dd className="text-right tabular-nums text-neuro">{data.timings.preprocess_ms.toFixed(1)} ms</dd>
+          <dd className="text-right tabular-nums text-neuro">
+            {data.timings.preprocess_ms.toFixed(1)} ms
+          </dd>
           <dt className="text-muted-foreground">embed</dt>
-          <dd className="text-right tabular-nums text-neuro">{data.timings.embed_ms.toFixed(1)} ms</dd>
+          <dd className="text-right tabular-nums text-neuro">
+            {data.timings.embed_ms.toFixed(1)} ms
+          </dd>
           <dt className="text-muted-foreground">decode</dt>
-          <dd className="text-right tabular-nums text-neuro">{data.timings.decode_ms.toFixed(1)} ms</dd>
+          <dd className="text-right tabular-nums text-neuro">
+            {data.timings.decode_ms.toFixed(1)} ms
+          </dd>
           <dt className="text-muted-foreground">total</dt>
           <dd className="text-right tabular-nums">{data.timings.total_ms.toFixed(1)} ms</dd>
         </dl>
@@ -368,11 +389,14 @@ function ReconstructionPreview({ seed }: { seed: number }) {
         />
         <div className="absolute inset-0 grid-bg opacity-30" />
         <div className="absolute left-2 top-2 flex items-center gap-1.5 rounded border border-border bg-background/60 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
-          <ImageIcon className="h-3 w-3 text-neuro" /> reconstruction · diff step {Math.min(40, Math.round(progress * 0.4))}/40
+          <ImageIcon className="h-3 w-3 text-neuro" /> reconstruction · diff step{" "}
+          {Math.min(40, Math.round(progress * 0.4))}/40
         </div>
       </div>
       <div className="glass rounded-lg p-3">
-        <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Decode · vision.v1</div>
+        <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+          Decode · vision.v1
+        </div>
         <div className="mt-2 text-sm">"a golden retriever sitting on green grass"</div>
         <div className="mt-4 space-y-2">
           {[
@@ -388,7 +412,10 @@ function ReconstructionPreview({ seed }: { seed: number }) {
               <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted/40">
                 <div
                   className="h-full bg-neuro-gradient"
-                  style={{ width: `${(v as number) * 100 * (progress / 100)}%`, transition: "width 80ms linear" }}
+                  style={{
+                    width: `${(v as number) * 100 * (progress / 100)}%`,
+                    transition: "width 80ms linear",
+                  }}
                 />
               </div>
             </div>

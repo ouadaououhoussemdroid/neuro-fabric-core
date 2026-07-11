@@ -76,17 +76,37 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "NeuroWeave — Foundation Models for Brain Signals" },
-      { name: "description", content: "NeuroAI APIs for embeddings, cognitive decoding, synthetic neurodata, and EEG-to-image reconstruction." },
+      {
+        name: "description",
+        content:
+          "NeuroAI APIs for embeddings, cognitive decoding, synthetic neurodata, and EEG-to-image reconstruction.",
+      },
       { name: "author", content: "NeuroWeave Labs" },
       { property: "og:title", content: "NeuroWeave — Foundation Models for Brain Signals" },
-      { property: "og:description", content: "NeuroAI APIs for embeddings, cognitive decoding, synthetic neurodata, and EEG-to-image reconstruction." },
+      {
+        property: "og:description",
+        content:
+          "NeuroAI APIs for embeddings, cognitive decoding, synthetic neurodata, and EEG-to-image reconstruction.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@NeuroWeave" },
       { name: "twitter:title", content: "NeuroWeave — Foundation Models for Brain Signals" },
-      { name: "twitter:description", content: "NeuroAI APIs for embeddings, cognitive decoding, synthetic neurodata, and EEG-to-image reconstruction." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2189688e-a8a5-427e-a09a-3010697af7d0/id-preview-3f0a94f8--34104fa7-0de5-4fe0-9f54-5098f061599c.lovable.app-1780223608702.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2189688e-a8a5-427e-a09a-3010697af7d0/id-preview-3f0a94f8--34104fa7-0de5-4fe0-9f54-5098f061599c.lovable.app-1780223608702.png" },
+      {
+        name: "twitter:description",
+        content:
+          "NeuroAI APIs for embeddings, cognitive decoding, synthetic neurodata, and EEG-to-image reconstruction.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2189688e-a8a5-427e-a09a-3010697af7d0/id-preview-3f0a94f8--34104fa7-0de5-4fe0-9f54-5098f061599c.lovable.app-1780223608702.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2189688e-a8a5-427e-a09a-3010697af7d0/id-preview-3f0a94f8--34104fa7-0de5-4fe0-9f54-5098f061599c.lovable.app-1780223608702.png",
+      },
     ],
     links: [
       {
@@ -95,7 +115,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,

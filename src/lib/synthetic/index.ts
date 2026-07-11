@@ -20,7 +20,7 @@ export interface SyntheticOptions {
 function mulberry32(seed: number) {
   let s = seed >>> 0;
   return function () {
-    s = (s + 0x6D2B79F5) >>> 0;
+    s = (s + 0x6d2b79f5) >>> 0;
     let t = s;
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
@@ -44,7 +44,10 @@ function pinkNoise(n: number, rng: () => number): number[] {
     // Update the lowest set bit's row
     let k = 0;
     let mask = i ^ (i - 1);
-    while ((mask & 1) === 0 && k < octaves - 1) { mask >>>= 1; k++; }
+    while ((mask & 1) === 0 && k < octaves - 1) {
+      mask >>>= 1;
+      k++;
+    }
     rows[k] = gaussian(rng) * 0.5;
     let s = 0;
     for (let r = 0; r < octaves; r++) s += rows[r];
@@ -68,7 +71,7 @@ export function generateSyntheticEEG(opts: SyntheticOptions = {}): EEGSignal {
     gamma: 0.3,
     ...(opts.bandWeights ?? {}),
   };
-  const seedBase = opts.seed ?? 0xC0FFEE;
+  const seedBase = opts.seed ?? 0xc0ffee;
 
   const channels: string[] = [];
   const data: number[][] = [];
@@ -82,14 +85,14 @@ export function generateSyntheticEEG(opts: SyntheticOptions = {}): EEGSignal {
       delta: rng() * 2 * Math.PI,
       theta: rng() * 2 * Math.PI,
       alpha: rng() * 2 * Math.PI,
-      beta:  rng() * 2 * Math.PI,
+      beta: rng() * 2 * Math.PI,
       gamma: rng() * 2 * Math.PI,
     };
     const detune = {
       delta: BAND_CENTER.delta * (1 + (rng() - 0.5) * 0.1),
       theta: BAND_CENTER.theta * (1 + (rng() - 0.5) * 0.1),
       alpha: BAND_CENTER.alpha * (1 + (rng() - 0.5) * 0.05),
-      beta:  BAND_CENTER.beta  * (1 + (rng() - 0.5) * 0.1),
+      beta: BAND_CENTER.beta * (1 + (rng() - 0.5) * 0.1),
       gamma: BAND_CENTER.gamma * (1 + (rng() - 0.5) * 0.1),
     };
     for (let i = 0; i < N; i++) {
@@ -98,7 +101,7 @@ export function generateSyntheticEEG(opts: SyntheticOptions = {}): EEGSignal {
         w.delta * Math.sin(2 * Math.PI * detune.delta * t + phases.delta) +
         w.theta * Math.sin(2 * Math.PI * detune.theta * t + phases.theta) +
         w.alpha * Math.sin(2 * Math.PI * detune.alpha * t + phases.alpha) +
-        w.beta  * Math.sin(2 * Math.PI * detune.beta  * t + phases.beta) +
+        w.beta * Math.sin(2 * Math.PI * detune.beta * t + phases.beta) +
         w.gamma * Math.sin(2 * Math.PI * detune.gamma * t + phases.gamma);
       // Scale to ~microvolt range; pink dominates broadband noise floor
       out[i] = 10 * (0.6 * sig + 1.2 * pink[i]);

@@ -85,8 +85,7 @@ registerArtifact({
   runtime: "pyodide",
   name: "Braindecode • EEGNetv4 (default)",
   version: "0.1.0",
-  description:
-    "EEGNetv4 over a 22-channel 2 s @ 128 Hz window. Requires a Braindecode bridge.",
+  description: "EEGNetv4 over a 22-channel 2 s @ 128 Hz window. Requires a Braindecode bridge.",
   input: { kind: "raw", channels: 22, samples: 256, sampleRate: 128 },
   output: { embeddingDim: 16, normalized: false },
   source: { kind: "inline", description: "Pyodide+PyTorch bridge (deferred)" },
@@ -116,7 +115,10 @@ registerArtifact({
     "exported to ONNX and executed via onnxruntime-web. 32-D attention-pooled embedding.",
   input: { kind: "raw", channels: 22, samples: 1000, sampleRate: 250 },
   output: { embeddingDim: 32, normalized: false },
-  source: { kind: "inline", description: "operator-provided ONNX file via registerBraindecodeEEGConformer()" },
+  source: {
+    kind: "inline",
+    description: "operator-provided ONNX file via registerBraindecodeEEGConformer()",
+  },
   provenance: {
     paper: "Song et al. 2022 (EEG Conformer)",
     library: "braindecode>=0.8",

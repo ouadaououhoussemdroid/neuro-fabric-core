@@ -76,8 +76,7 @@ export async function benchmarkAdapter(
     embeddingDim: dim,
     fellBack,
     fallbackReason,
-    heapDeltaBytes:
-      heap0 != null && heap1 != null ? Math.max(0, heap1 - heap0) : undefined,
+    heapDeltaBytes: heap0 != null && heap1 != null ? Math.max(0, heap1 - heap0) : undefined,
   };
 }
 

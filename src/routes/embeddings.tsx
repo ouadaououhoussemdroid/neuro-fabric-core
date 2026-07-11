@@ -3,15 +3,31 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SiteShell } from "@/components/site-shell";
 import { GlassCard, PageHeader, Section, StatPill } from "@/components/ui-bits";
 import { Search, Sparkles, Layers, Activity, Zap, Brain, Orbit } from "lucide-react";
-import { Area, AreaChart, ResponsiveContainer, RadialBar, RadialBarChart, PolarAngleAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  ResponsiveContainer,
+  RadialBar,
+  RadialBarChart,
+  PolarAngleAxis,
+} from "recharts";
 
 export const Route = createFileRoute("/embeddings")({
-  head: () => ({ meta: [
-    { title: "Embeddings Explorer — NeuroWeave" },
-    { name: "description", content: "Interactive 3D latent space, brain-state clusters, semantic search, and real-time embedding generation." },
-    { property: "og:title", content: "Embeddings Explorer — NeuroWeave" },
-    { property: "og:description", content: "Zoomable 3D latent map, vector similarity metrics, and brain-state transitions." },
-  ]}),
+  head: () => ({
+    meta: [
+      { title: "Embeddings Explorer — NeuroWeave" },
+      {
+        name: "description",
+        content:
+          "Interactive 3D latent space, brain-state clusters, semantic search, and real-time embedding generation.",
+      },
+      { property: "og:title", content: "Embeddings Explorer — NeuroWeave" },
+      {
+        property: "og:description",
+        content: "Zoomable 3D latent map, vector similarity metrics, and brain-state transitions.",
+      },
+    ],
+  }),
   component: EmbeddingsPage,
 });
 
@@ -26,7 +42,16 @@ const CLUSTERS = [
   { id: "affect.stress", hue: 12, label: "Affect · Stress" },
 ];
 
-const SUBJECTS = ["subj_0421/run_03", "subj_0118/run_07", "subj_0712/run_01", "subj_0099/run_12", "subj_0322/run_02", "subj_0501/run_05", "subj_0884/run_09", "subj_0277/run_04"];
+const SUBJECTS = [
+  "subj_0421/run_03",
+  "subj_0118/run_07",
+  "subj_0712/run_01",
+  "subj_0099/run_12",
+  "subj_0322/run_02",
+  "subj_0501/run_05",
+  "subj_0884/run_09",
+  "subj_0277/run_04",
+];
 
 type Pt3 = { x: number; y: number; z: number; c: number; label: string; sim: number };
 
@@ -69,7 +94,13 @@ function LatentSpace3D({
   onHover: (i: number | null) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const dragRef = useRef<{ on: boolean; lx: number; ly: number; rx: number; ry: number }>({ on: false, lx: 0, ly: 0, rx: 0.5, ry: 0.6 });
+  const dragRef = useRef<{ on: boolean; lx: number; ly: number; rx: number; ry: number }>({
+    on: false,
+    lx: 0,
+    ly: 0,
+    rx: 0.5,
+    ry: 0.6,
+  });
   const autoRef = useRef(true);
   const stateRef = useRef({ rx: 0.5, ry: 0.6 });
   const hoverRef = useRef<number | null>(null);
@@ -104,8 +135,10 @@ function LatentSpace3D({
         stateRef.current.ry += (dragRef.current.ry - stateRef.current.ry) * 0.15;
       }
       const { rx, ry } = stateRef.current;
-      const cosX = Math.cos(rx), sinX = Math.sin(rx);
-      const cosY = Math.cos(ry), sinY = Math.sin(ry);
+      const cosX = Math.cos(rx),
+        sinX = Math.sin(rx);
+      const cosY = Math.cos(ry),
+        sinY = Math.sin(ry);
 
       const cx = W / 2;
       const cy = H / 2;
@@ -125,10 +158,18 @@ function LatentSpace3D({
           const persp = 1 / (1 + z2 * 0.6);
           return { px: cx + x1 * scale * persp, py: cy + y1 * scale * persp };
         };
-        const a = project(t, -1), b = project(t, 1);
-        const a2 = project(-1, t), b2 = project(1, t);
-        ctx.beginPath(); ctx.moveTo(a.px, a.py); ctx.lineTo(b.px, b.py); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(a2.px, a2.py); ctx.lineTo(b2.px, b2.py); ctx.stroke();
+        const a = project(t, -1),
+          b = project(t, 1);
+        const a2 = project(-1, t),
+          b2 = project(1, t);
+        ctx.beginPath();
+        ctx.moveTo(a.px, a.py);
+        ctx.lineTo(b.px, b.py);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(a2.px, a2.py);
+        ctx.lineTo(b2.px, b2.py);
+        ctx.stroke();
       }
 
       // project points
@@ -159,17 +200,21 @@ function LatentSpace3D({
         grd.addColorStop(0, `oklch(0.85 0.2 ${hue} / ${alpha * 0.5})`);
         grd.addColorStop(1, `oklch(0.85 0.2 ${hue} / 0)`);
         ctx.fillStyle = grd;
-        ctx.beginPath(); ctx.arc(p.px, p.py, p.size * 5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath();
+        ctx.arc(p.px, p.py, p.size * 5, 0, Math.PI * 2);
+        ctx.fill();
         // core
         ctx.fillStyle = `oklch(0.88 0.18 ${hue} / ${alpha})`;
-        ctx.beginPath(); ctx.arc(p.px, p.py, p.size, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath();
+        ctx.arc(p.px, p.py, p.size, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       // animated flow particles between two cluster centers
       const t = performance.now() / 1000;
       for (let k = 0; k < 18; k++) {
         const seed = k * 0.37;
-        const u = ((t * 0.25 + seed) % 1);
+        const u = (t * 0.25 + seed) % 1;
         const aIdx = k % CLUSTERS.length;
         const bIdx = (k + 3) % CLUSTERS.length;
         const a = points.find((p) => p.c === aIdx)!;
@@ -185,7 +230,9 @@ function LatentSpace3D({
         const px = cx + x1 * scale * persp;
         const py = cy + y1 * scale * persp;
         ctx.fillStyle = `oklch(0.95 0.16 200 / ${0.6 * (1 - Math.abs(u - 0.5) * 2)})`;
-        ctx.beginPath(); ctx.arc(px, py, 1.6 * dpr, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath();
+        ctx.arc(px, py, 1.6 * dpr, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       raf = requestAnimationFrame(draw);
@@ -208,9 +255,12 @@ function LatentSpace3D({
       let best = 18 * dpr;
       // we need projected positions; recompute lightweight
       const { rx, ry } = stateRef.current;
-      const cosX = Math.cos(rx), sinX = Math.sin(rx);
-      const cosY = Math.cos(ry), sinY = Math.sin(ry);
-      const cx = canvas.width / 2, cy = canvas.height / 2;
+      const cosX = Math.cos(rx),
+        sinX = Math.sin(rx);
+      const cosY = Math.cos(ry),
+        sinY = Math.sin(ry);
+      const cx = canvas.width / 2,
+        cy = canvas.height / 2;
       const scale = Math.min(canvas.width, canvas.height) * 0.42 * zoom;
       for (let i = 0; i < points.length; i++) {
         const p = points[i];
@@ -222,7 +272,10 @@ function LatentSpace3D({
         const px = cx + x1 * scale * persp;
         const py = cy + y1 * scale * persp;
         const d = Math.hypot(px - mx, py - my);
-        if (d < best) { best = d; nearest = i; }
+        if (d < best) {
+          best = d;
+          nearest = i;
+        }
       }
       if (nearest !== hoverRef.current) {
         hoverRef.current = nearest;
@@ -238,8 +291,15 @@ function LatentSpace3D({
         dragRef.current.ly = e.clientY;
       }
     };
-    const onUp = () => { dragRef.current.on = false; };
-    const onLeave = () => { if (hoverRef.current !== null) { hoverRef.current = null; onHover(null); } };
+    const onUp = () => {
+      dragRef.current.on = false;
+    };
+    const onLeave = () => {
+      if (hoverRef.current !== null) {
+        hoverRef.current = null;
+        onHover(null);
+      }
+    };
 
     canvas.addEventListener("pointerdown", onDown);
     window.addEventListener("pointermove", onMove);
@@ -256,7 +316,12 @@ function LatentSpace3D({
     };
   }, [points, activeCluster, zoom, onHover]);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full cursor-grab active:cursor-grabbing" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 h-full w-full cursor-grab active:cursor-grabbing"
+    />
+  );
 }
 
 function EmbeddingsPage() {
@@ -273,18 +338,23 @@ function EmbeddingsPage() {
   }, []);
 
   const ranked = useMemo(
-    () => [...points]
-      .map((p) => ({ ...p, sim: p.sim * (activeCluster === null || p.c === activeCluster ? 1 : 0.45) }))
-      .sort((a, b) => b.sim - a.sim)
-      .slice(0, 8),
+    () =>
+      [...points]
+        .map((p) => ({
+          ...p,
+          sim: p.sim * (activeCluster === null || p.c === activeCluster ? 1 : 0.45),
+        }))
+        .sort((a, b) => b.sim - a.sim)
+        .slice(0, 8),
     [points, activeCluster],
   );
 
   const dimSpectrum = useMemo(
-    () => Array.from({ length: 48 }, (_, i) => ({
-      d: i,
-      v: 0.3 + 0.7 * Math.abs(Math.sin(i * 0.4 + genTick * 0.3)) * (1 - i / 64),
-    })),
+    () =>
+      Array.from({ length: 48 }, (_, i) => ({
+        d: i,
+        v: 0.3 + 0.7 * Math.abs(Math.sin(i * 0.4 + genTick * 0.3)) * (1 - i / 64),
+      })),
     [genTick],
   );
 
@@ -296,10 +366,11 @@ function EmbeddingsPage() {
   ];
 
   const flowChart = useMemo(
-    () => Array.from({ length: 40 }, (_, i) => ({
-      t: i,
-      v: 0.5 + 0.4 * Math.sin(i * 0.4 + genTick * 0.6) + Math.random() * 0.08,
-    })),
+    () =>
+      Array.from({ length: 40 }, (_, i) => ({
+        t: i,
+        v: 0.5 + 0.4 * Math.sin(i * 0.4 + genTick * 0.6) + Math.random() * 0.08,
+      })),
     [genTick],
   );
 
@@ -334,32 +405,61 @@ function EmbeddingsPage() {
                 <span className="font-mono text-[10px] text-neuro">cosine</span>
               </div>
               <div className="flex items-center gap-1.5 rounded-md border border-border bg-background/40 px-2 py-1.5">
-                <button onClick={() => setZoom((z) => Math.max(0.6, z - 0.15))} className="px-1.5 font-mono text-xs text-muted-foreground hover:text-foreground">−</button>
-                <span className="font-mono text-[10px] text-muted-foreground">{zoom.toFixed(2)}×</span>
-                <button onClick={() => setZoom((z) => Math.min(2.4, z + 0.15))} className="px-1.5 font-mono text-xs text-muted-foreground hover:text-foreground">+</button>
+                <button
+                  onClick={() => setZoom((z) => Math.max(0.6, z - 0.15))}
+                  className="px-1.5 font-mono text-xs text-muted-foreground hover:text-foreground"
+                >
+                  −
+                </button>
+                <span className="font-mono text-[10px] text-muted-foreground">
+                  {zoom.toFixed(2)}×
+                </span>
+                <button
+                  onClick={() => setZoom((z) => Math.min(2.4, z + 0.15))}
+                  className="px-1.5 font-mono text-xs text-muted-foreground hover:text-foreground"
+                >
+                  +
+                </button>
               </div>
-              <span className="font-mono text-[10px] uppercase text-muted-foreground">umap · n=420 · 3D</span>
+              <span className="font-mono text-[10px] uppercase text-muted-foreground">
+                umap · n=420 · 3D
+              </span>
             </div>
 
             <div className="relative aspect-[16/11] grid-bg">
-              <LatentSpace3D points={points} activeCluster={activeCluster} zoom={zoom} onHover={setHover} />
+              <LatentSpace3D
+                points={points}
+                activeCluster={activeCluster}
+                zoom={zoom}
+                onHover={setHover}
+              />
 
               {/* HUD top-left */}
               <div className="pointer-events-none absolute left-4 top-4 space-y-1.5">
                 <div className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/60 px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
-                  <span className="h-1.5 w-1.5 rounded-full bg-neuro animate-pulse-glow" /> streaming embeddings · 412/s
+                  <span className="h-1.5 w-1.5 rounded-full bg-neuro animate-pulse-glow" />{" "}
+                  streaming embeddings · 412/s
                 </div>
-                <div className="font-mono text-[10px] text-muted-foreground">drag to rotate · scroll buttons to zoom</div>
+                <div className="font-mono text-[10px] text-muted-foreground">
+                  drag to rotate · scroll buttons to zoom
+                </div>
               </div>
 
               {/* HUD hover label */}
               {hover !== null && (
                 <div className="pointer-events-none absolute right-4 top-4 rounded-md border border-border bg-background/80 px-3 py-2 backdrop-blur">
-                  <div className="font-mono text-[10px] uppercase text-muted-foreground">vector</div>
+                  <div className="font-mono text-[10px] uppercase text-muted-foreground">
+                    vector
+                  </div>
                   <div className="font-mono text-xs">{points[hover].label}</div>
                   <div className="mt-1 flex items-center gap-1.5">
-                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: `oklch(0.85 0.2 ${CLUSTERS[points[hover].c].hue})` }} />
-                    <span className="font-mono text-[10px] text-muted-foreground">{CLUSTERS[points[hover].c].id}</span>
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ background: `oklch(0.85 0.2 ${CLUSTERS[points[hover].c].hue})` }}
+                    />
+                    <span className="font-mono text-[10px] text-muted-foreground">
+                      {CLUSTERS[points[hover].c].id}
+                    </span>
                   </div>
                 </div>
               )}
@@ -373,10 +473,15 @@ function EmbeddingsPage() {
                       key={c.id}
                       onClick={() => setActiveCluster(active ? null : i)}
                       className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-mono text-[10px] transition ${
-                        active ? "border-neuro/60 bg-neuro/10 text-foreground" : "border-border bg-background/60 text-muted-foreground hover:text-foreground"
+                        active
+                          ? "border-neuro/60 bg-neuro/10 text-foreground"
+                          : "border-border bg-background/60 text-muted-foreground hover:text-foreground"
                       }`}
                     >
-                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: `oklch(0.85 0.2 ${c.hue})` }} />
+                      <span
+                        className="h-1.5 w-1.5 rounded-full"
+                        style={{ background: `oklch(0.85 0.2 ${c.hue})` }}
+                      />
                       {c.id}
                     </button>
                   );
@@ -401,7 +506,14 @@ function EmbeddingsPage() {
                         <stop offset="100%" stopColor="oklch(0.78 0.16 200)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <Area type="monotone" dataKey="v" stroke="oklch(0.85 0.18 195)" strokeWidth={1.5} fill="url(#flowGrad)" isAnimationActive={false} />
+                    <Area
+                      type="monotone"
+                      dataKey="v"
+                      stroke="oklch(0.85 0.18 195)"
+                      strokeWidth={1.5}
+                      fill="url(#flowGrad)"
+                      isAnimationActive={false}
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -421,14 +533,24 @@ function EmbeddingsPage() {
                 {ranked.map((r, i) => (
                   <li key={i} className="flex items-center justify-between gap-3 py-2 text-sm">
                     <span className="flex items-center gap-2 min-w-0">
-                      <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: `oklch(0.85 0.2 ${CLUSTERS[r.c].hue})` }} />
-                      <span className="font-mono text-xs text-muted-foreground truncate">{r.label}</span>
+                      <span
+                        className="h-1.5 w-1.5 shrink-0 rounded-full"
+                        style={{ background: `oklch(0.85 0.2 ${CLUSTERS[r.c].hue})` }}
+                      />
+                      <span className="font-mono text-xs text-muted-foreground truncate">
+                        {r.label}
+                      </span>
                     </span>
                     <span className="flex items-center gap-2">
                       <div className="h-1 w-16 overflow-hidden rounded-full bg-muted">
-                        <div className="h-full bg-neuro-gradient" style={{ width: `${r.sim * 100}%` }} />
+                        <div
+                          className="h-full bg-neuro-gradient"
+                          style={{ width: `${r.sim * 100}%` }}
+                        />
                       </div>
-                      <span className="w-10 text-right font-mono text-xs text-neuro">{r.sim.toFixed(3)}</span>
+                      <span className="w-10 text-right font-mono text-xs text-neuro">
+                        {r.sim.toFixed(3)}
+                      </span>
                     </span>
                   </li>
                 ))}
@@ -455,7 +577,9 @@ function EmbeddingsPage() {
                 ))}
               </div>
               <div className="mt-2 flex justify-between font-mono text-[10px] text-muted-foreground">
-                <span>d₀</span><span>d₂₄</span><span>d₄₇</span>
+                <span>d₀</span>
+                <span>d₂₄</span>
+                <span>d₄₇</span>
               </div>
             </GlassCard>
 
@@ -475,14 +599,23 @@ function EmbeddingsPage() {
                         <span className="font-mono text-muted-foreground">{c.value}%</span>
                       </div>
                       <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted">
-                        <div className="h-full rounded-full" style={{ width: `${c.value}%`, background: c.fill }} />
+                        <div
+                          className="h-full rounded-full"
+                          style={{ width: `${c.value}%`, background: c.fill }}
+                        />
                       </div>
                     </div>
                   ))}
                 </div>
                 <div className="h-24 w-24">
                   <ResponsiveContainer width="100%" height="100%">
-                    <RadialBarChart innerRadius="55%" outerRadius="100%" data={cogState} startAngle={90} endAngle={-270}>
+                    <RadialBarChart
+                      innerRadius="55%"
+                      outerRadius="100%"
+                      data={cogState}
+                      startAngle={90}
+                      endAngle={-270}
+                    >
                       <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
                       <RadialBar background dataKey="value" cornerRadius={4} />
                     </RadialBarChart>
@@ -500,7 +633,9 @@ function EmbeddingsPage() {
               <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 <Orbit className="h-3 w-3 text-neuro" /> Brain-state transition graph · last 5 min
               </div>
-              <span className="font-mono text-[10px] text-muted-foreground">markov · stationary</span>
+              <span className="font-mono text-[10px] text-muted-foreground">
+                markov · stationary
+              </span>
             </div>
             <div className="relative h-56">
               <svg viewBox="0 0 600 220" className="absolute inset-0 h-full w-full">
@@ -516,18 +651,23 @@ function EmbeddingsPage() {
                   return { c, i, cx, cy };
                 }).map((n, _, all) => (
                   <g key={n.i}>
-                    {all.filter((m) => m.i !== n.i && (n.i + m.i) % 3 === 0).map((m) => {
-                      const w = 0.15 + ((n.i * 7 + m.i * 3) % 7) / 20;
-                      return (
-                        <line
-                          key={`${n.i}-${m.i}`}
-                          x1={n.cx} y1={n.cy} x2={m.cx} y2={m.cy}
-                          stroke={`oklch(0.78 0.16 200 / ${w})`}
-                          strokeWidth={w * 4}
-                          markerEnd="url(#arr)"
-                        />
-                      );
-                    })}
+                    {all
+                      .filter((m) => m.i !== n.i && (n.i + m.i) % 3 === 0)
+                      .map((m) => {
+                        const w = 0.15 + ((n.i * 7 + m.i * 3) % 7) / 20;
+                        return (
+                          <line
+                            key={`${n.i}-${m.i}`}
+                            x1={n.cx}
+                            y1={n.cy}
+                            x2={m.cx}
+                            y2={m.cy}
+                            stroke={`oklch(0.78 0.16 200 / ${w})`}
+                            strokeWidth={w * 4}
+                            markerEnd="url(#arr)"
+                          />
+                        );
+                      })}
                   </g>
                 ))}
                 {CLUSTERS.map((c, i) => {
@@ -536,8 +676,23 @@ function EmbeddingsPage() {
                   const cy = 110 + Math.sin(angle) * 80;
                   return (
                     <g key={c.id}>
-                      <circle cx={cx} cy={cy} r={22} fill={`oklch(0.85 0.2 ${c.hue} / 0.18)`} stroke={`oklch(0.85 0.2 ${c.hue} / 0.7)`} />
-                      <text x={cx} y={cy + 36} textAnchor="middle" fontSize="9" fontFamily="JetBrains Mono" fill="oklch(0.78 0.018 250)">{c.id}</text>
+                      <circle
+                        cx={cx}
+                        cy={cy}
+                        r={22}
+                        fill={`oklch(0.85 0.2 ${c.hue} / 0.18)`}
+                        stroke={`oklch(0.85 0.2 ${c.hue} / 0.7)`}
+                      />
+                      <text
+                        x={cx}
+                        y={cy + 36}
+                        textAnchor="middle"
+                        fontSize="9"
+                        fontFamily="JetBrains Mono"
+                        fill="oklch(0.78 0.018 250)"
+                      >
+                        {c.id}
+                      </text>
                     </g>
                   );
                 })}
@@ -550,16 +705,35 @@ function EmbeddingsPage() {
               <Zap className="h-3 w-3 text-neuro" /> Foundation model · neuroweave-1024
             </div>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Backbone</span><span className="font-mono text-xs">NeuroFormer-L</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Parameters</span><span className="font-mono text-xs">1.4 B</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Pretrain hours</span><span className="font-mono text-xs">84,200 h EEG</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Latent dim</span><span className="font-mono text-xs">1,024</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Probe accuracy</span><span className="font-mono text-xs text-neuro">94.2%</span></div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Backbone</span>
+                <span className="font-mono text-xs">NeuroFormer-L</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Parameters</span>
+                <span className="font-mono text-xs">1.4 B</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Pretrain hours</span>
+                <span className="font-mono text-xs">84,200 h EEG</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Latent dim</span>
+                <span className="font-mono text-xs">1,024</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Probe accuracy</span>
+                <span className="font-mono text-xs text-neuro">94.2%</span>
+              </div>
             </div>
             <div className="mt-4 rounded-md border border-border bg-background/40 p-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
-              <span className="text-neuro">{"→"}</span> embed(signal) <span className="text-muted-foreground/60">// returns 1024-d</span><br />
-              <span className="text-neuro">{"→"}</span> ann.search(v, k=8)<br />
-              <span className="text-neuro">{"→"}</span> decode_state(v) <span className="text-muted-foreground/60">// → cognitive</span>
+              <span className="text-neuro">{"→"}</span> embed(signal){" "}
+              <span className="text-muted-foreground/60">// returns 1024-d</span>
+              <br />
+              <span className="text-neuro">{"→"}</span> ann.search(v, k=8)
+              <br />
+              <span className="text-neuro">{"→"}</span> decode_state(v){" "}
+              <span className="text-muted-foreground/60">// → cognitive</span>
             </div>
           </GlassCard>
         </div>

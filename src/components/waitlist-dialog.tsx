@@ -1,6 +1,13 @@
 import { useState, ReactNode } from "react";
 import { z } from "zod";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
@@ -67,7 +74,8 @@ export function WaitlistDialog({ children }: { children: ReactNode }) {
             </div>
             <DialogTitle className="text-xl">You're on the list</DialogTitle>
             <DialogDescription className="max-w-sm">
-              Thanks for requesting access to NeuroWeave. We'll reach out at <span className="font-mono text-foreground">{email}</span> as cohorts open up.
+              Thanks for requesting access to NeuroWeave. We'll reach out at{" "}
+              <span className="font-mono text-foreground">{email}</span> as cohorts open up.
             </DialogDescription>
           </div>
         ) : (
@@ -93,7 +101,9 @@ export function WaitlistDialog({ children }: { children: ReactNode }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="wl-name">Name <span className="text-muted-foreground">(optional)</span></Label>
+                <Label htmlFor="wl-name">
+                  Name <span className="text-muted-foreground">(optional)</span>
+                </Label>
                 <Input
                   id="wl-name"
                   type="text"
@@ -105,7 +115,9 @@ export function WaitlistDialog({ children }: { children: ReactNode }) {
                 />
               </div>
               {error && (
-                <p className="text-sm text-destructive" role="alert">{error}</p>
+                <p className="text-sm text-destructive" role="alert">
+                  {error}
+                </p>
               )}
               <button
                 type="submit"
@@ -113,7 +125,9 @@ export function WaitlistDialog({ children }: { children: ReactNode }) {
                 className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-neuro-gradient px-4 py-2.5 text-sm font-medium text-background glow transition-transform hover:scale-[1.01] disabled:opacity-60"
               >
                 {status === "loading" ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" /> Submitting…</>
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Submitting…
+                  </>
                 ) : (
                   "Request access"
                 )}

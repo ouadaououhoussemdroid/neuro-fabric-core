@@ -4,12 +4,17 @@ import { GlassCard, PageHeader, Section, StatPill } from "@/components/ui-bits";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export const Route = createFileRoute("/research")({
-  head: () => ({ meta: [
-    { title: "Research Dashboard — NeuroWeave" },
-    { name: "description", content: "Experiment tracking, datasets, training metrics, and benchmarks." },
-    { property: "og:title", content: "Research Dashboard — NeuroWeave" },
-    { property: "og:description", content: "Track experiments and benchmarks." },
-  ]}),
+  head: () => ({
+    meta: [
+      { title: "Research Dashboard — NeuroWeave" },
+      {
+        name: "description",
+        content: "Experiment tracking, datasets, training metrics, and benchmarks.",
+      },
+      { property: "og:title", content: "Research Dashboard — NeuroWeave" },
+      { property: "og:description", content: "Track experiments and benchmarks." },
+    ],
+  }),
   component: ResearchPage,
 });
 
@@ -48,16 +53,50 @@ function ResearchPage() {
           <GlassCard>
             <div className="flex items-center justify-between">
               <div className="text-sm font-semibold">nwf-7b · exp_2014 · training</div>
-              <span className="font-mono text-[10px] text-muted-foreground">step 10,000 / 50,000</span>
+              <span className="font-mono text-[10px] text-muted-foreground">
+                step 10,000 / 50,000
+              </span>
             </div>
             <div className="mt-4 h-64">
               <ResponsiveContainer>
                 <LineChart data={TRAIN}>
-                  <XAxis dataKey="step" stroke="oklch(0.6 0.02 260)" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <YAxis stroke="oklch(0.6 0.02 260)" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: "oklch(0.18 0.014 260)", border: "1px solid oklch(1 0 0 / 0.1)", borderRadius: 8, fontSize: 12 }} />
-                  <Line type="monotone" dataKey="loss" stroke="oklch(0.85 0.18 195)" strokeWidth={1.5} dot={false} name="train loss" />
-                  <Line type="monotone" dataKey="val" stroke="oklch(0.7 0.22 295)" strokeWidth={1.5} dot={false} name="val loss" />
+                  <XAxis
+                    dataKey="step"
+                    stroke="oklch(0.6 0.02 260)"
+                    tick={{ fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    stroke="oklch(0.6 0.02 260)"
+                    tick={{ fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: "oklch(0.18 0.014 260)",
+                      border: "1px solid oklch(1 0 0 / 0.1)",
+                      borderRadius: 8,
+                      fontSize: 12,
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="loss"
+                    stroke="oklch(0.85 0.18 195)"
+                    strokeWidth={1.5}
+                    dot={false}
+                    name="train loss"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="val"
+                    stroke="oklch(0.7 0.22 295)"
+                    strokeWidth={1.5}
+                    dot={false}
+                    name="val loss"
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -73,8 +112,16 @@ function ResearchPage() {
                 ["BCI-IV 2a · kappa", 0.69],
               ].map(([n, v]) => (
                 <li key={n as string}>
-                  <div className="flex justify-between text-xs"><span>{n}</span><span className="font-mono text-neuro">{(v as number).toFixed(3)}</span></div>
-                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full bg-neuro-gradient" style={{ width: `${(v as number) * 100}%` }} /></div>
+                  <div className="flex justify-between text-xs">
+                    <span>{n}</span>
+                    <span className="font-mono text-neuro">{(v as number).toFixed(3)}</span>
+                  </div>
+                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full bg-neuro-gradient"
+                      style={{ width: `${(v as number) * 100}%` }}
+                    />
+                  </div>
                 </li>
               ))}
             </ul>
@@ -82,7 +129,9 @@ function ResearchPage() {
         </div>
 
         <GlassCard className="mt-6 p-0">
-          <div className="border-b border-border/60 px-5 py-3 text-sm font-semibold">Experiments</div>
+          <div className="border-b border-border/60 px-5 py-3 text-sm font-semibold">
+            Experiments
+          </div>
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -101,8 +150,12 @@ function ResearchPage() {
                   <td className="px-5 py-3 font-mono text-neuro">{e.acc.toFixed(3)}</td>
                   <td className="px-5 py-3 font-mono text-muted-foreground">{e.loss.toFixed(2)}</td>
                   <td className="px-5 py-3">
-                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] ${e.status === "running" ? "bg-neuro/10 text-neuro" : "bg-muted text-muted-foreground"}`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${e.status === "running" ? "bg-neuro animate-pulse-glow" : "bg-muted-foreground"}`} />
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] ${e.status === "running" ? "bg-neuro/10 text-neuro" : "bg-muted text-muted-foreground"}`}
+                    >
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${e.status === "running" ? "bg-neuro animate-pulse-glow" : "bg-muted-foreground"}`}
+                      />
                       {e.status}
                     </span>
                   </td>

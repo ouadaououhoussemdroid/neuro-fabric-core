@@ -20,7 +20,9 @@ function makeInput(C: number, T: number, sr: number): ModelInput {
 
 describe("EEGConformer production registration", () => {
   const id = "braindecode-eegconformer-prod";
-  afterEach(() => { unregisterModel(id); });
+  afterEach(() => {
+    unregisterModel(id);
+  });
 
   it("registers with the documented defaults (22ch, 4 s @ 250 Hz, 32-D)", () => {
     registerBraindecodeEEGConformer({ artifact: new Uint8Array([0]) });
@@ -35,7 +37,9 @@ describe("EEGConformer production registration", () => {
     registerBraindecodeEEGConformer({
       artifact: new Uint8Array([0]),
       // Force unavailable runtime to exercise the production fallback chain.
-      runtime: async () => { throw new Error("no runtime in test env"); },
+      runtime: async () => {
+        throw new Error("no runtime in test env");
+      },
     });
     const res = await embedEEG(makeInput(22, 1000, 250), { preferredModelId: id });
     expect(res.fellBack).toBe(true);

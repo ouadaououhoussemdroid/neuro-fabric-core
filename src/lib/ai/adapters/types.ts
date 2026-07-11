@@ -1,9 +1,4 @@
-import type {
-  EmbeddingOutput,
-  ModelDescriptor,
-  ModelInput,
-  PredictionOutput,
-} from "../types";
+import type { EmbeddingOutput, ModelDescriptor, ModelInput, PredictionOutput } from "../types";
 
 /**
  * Runtime contract every model adapter implements. Adapters wrap a concrete

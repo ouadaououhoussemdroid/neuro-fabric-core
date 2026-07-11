@@ -28,7 +28,7 @@ type Analysis = {
 async function loadAnalyses() {
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user!;
-  
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("full_name, role")
@@ -98,7 +98,13 @@ function AnalysesPage() {
   );
 }
 
-function AnalysisCard({ analysis: a, onDelete }: { analysis: Analysis; onDelete: (id: string) => void }) {
+function AnalysisCard({
+  analysis: a,
+  onDelete,
+}: {
+  analysis: Analysis;
+  onDelete: (id: string) => void;
+}) {
   const date = new Date(a.created_at).toLocaleString();
   const sizeMB = (a.file_size_bytes / (1024 * 1024)).toFixed(2);
   const durationSec = (a.num_samples / a.sample_rate).toFixed(1);
@@ -149,7 +155,9 @@ function MetricBar({ label, value, color }: { label: string; value: number; colo
     <div>
       <div className="mb-1 flex items-center justify-between text-[11px]">
         <span className="text-muted-foreground">{label}</span>
-        <span className="font-mono font-semibold" style={{ color }}>{pct}%</span>
+        <span className="font-mono font-semibold" style={{ color }}>
+          {pct}%
+        </span>
       </div>
       <div className="h-1.5 rounded-full bg-muted/60">
         <div

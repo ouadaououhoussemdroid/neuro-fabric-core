@@ -36,7 +36,7 @@ export function parseEDF(buffer: ArrayBuffer): EEGSignal {
   for (let i = 0; i < ns; i++) labels.push(ascii(off + i * 16, 16));
   off += 16 * ns;
   off += 80 * ns; // transducer
-  off += 8 * ns;  // physical dimension
+  off += 8 * ns; // physical dimension
   for (let i = 0; i < ns; i++) physMin.push(parseFloat(ascii(off + i * 8, 8)));
   off += 8 * ns;
   for (let i = 0; i < ns; i++) physMax.push(parseFloat(ascii(off + i * 8, 8)));

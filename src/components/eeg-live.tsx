@@ -22,15 +22,18 @@ export function EEGLive({ height = 260 }: { height?: number }) {
     if (!ctx) return;
 
     let raf = 0;
-    let w = 0, h = 0;
+    let w = 0,
+      h = 0;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const buffers: number[][] = BANDS.map(() => []);
     const COLS = 600;
 
     const resize = () => {
       const r = canvas.getBoundingClientRect();
-      w = r.width; h = r.height;
-      canvas.width = w * dpr; canvas.height = h * dpr;
+      w = r.width;
+      h = r.height;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
@@ -47,7 +50,10 @@ export function EEGLive({ height = 260 }: { height?: number }) {
       ctx.lineWidth = 1;
       for (let i = 0; i < 5; i++) {
         const y = (h / 4) * i;
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
       }
 
       const rowH = h / BANDS.length;
@@ -80,16 +86,25 @@ export function EEGLive({ height = 260 }: { height?: number }) {
       raf = requestAnimationFrame(draw);
     };
     draw();
-    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
   }, []);
 
   return (
-    <div className="relative w-full overflow-hidden rounded-lg border border-border/60 bg-background/40" style={{ height }}>
+    <div
+      className="relative w-full overflow-hidden rounded-lg border border-border/60 bg-background/40"
+      style={{ height }}
+    >
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />
       <div className="pointer-events-none absolute inset-y-0 left-0 flex flex-col justify-between p-3">
         {BANDS.map((b) => (
           <div key={b.name} className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ background: b.color, boxShadow: `0 0 8px ${b.color}` }} />
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ background: b.color, boxShadow: `0 0 8px ${b.color}` }}
+            />
             <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
               {b.name} <span className="text-foreground/70">· {b.hz}</span>
             </span>

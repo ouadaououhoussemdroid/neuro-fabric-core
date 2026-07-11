@@ -5,7 +5,7 @@ import { useTelemetry } from "@/hooks/use-telemetry";
 
 function useHistory(value: number, len = 28) {
   const [data, setData] = useState<{ x: number; v: number }[]>(() =>
-    Array.from({ length: len }, (_, i) => ({ x: i, v: 0 }))
+    Array.from({ length: len }, (_, i) => ({ x: i, v: 0 })),
   );
   useEffect(() => {
     if (value === 0) return;
@@ -55,12 +55,8 @@ function Widget({
       </div>
       <div className="mt-3 flex items-end justify-between gap-2">
         <div>
-          <div className="font-mono text-xl font-semibold tabular-nums tracking-tight">
-            {value}
-          </div>
-          {sub && (
-            <div className="mt-0.5 font-mono text-[10px] text-muted-foreground">{sub}</div>
-          )}
+          <div className="font-mono text-xl font-semibold tabular-nums tracking-tight">{value}</div>
+          {sub && <div className="mt-0.5 font-mono text-[10px] text-muted-foreground">{sub}</div>}
         </div>
         {children && <div className="h-10 w-24">{children}</div>}
       </div>
@@ -88,7 +84,6 @@ export function LiveOpsBand() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-
         <Widget
           icon={Activity}
           label="p50 latency"
@@ -103,7 +98,14 @@ export function LiveOpsBand() {
                   <stop offset="100%" stopColor="oklch(0.85 0.18 195)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <Area type="monotone" dataKey="v" stroke="oklch(0.85 0.18 195)" strokeWidth={1} fill="url(#lat)" isAnimationActive={false} />
+              <Area
+                type="monotone"
+                dataKey="v"
+                stroke="oklch(0.85 0.18 195)"
+                strokeWidth={1}
+                fill="url(#lat)"
+                isAnimationActive={false}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </Widget>
@@ -116,7 +118,12 @@ export function LiveOpsBand() {
         >
           <ResponsiveContainer>
             <BarChart data={gpuSeries}>
-              <Bar dataKey="v" fill="oklch(0.7 0.22 295)" isAnimationActive={false} radius={[1, 1, 0, 0]} />
+              <Bar
+                dataKey="v"
+                fill="oklch(0.7 0.22 295)"
+                isAnimationActive={false}
+                radius={[1, 1, 0, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         </Widget>
@@ -135,7 +142,14 @@ export function LiveOpsBand() {
                   <stop offset="100%" stopColor="oklch(0.82 0.18 170)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <Area type="monotone" dataKey="v" stroke="oklch(0.82 0.18 170)" strokeWidth={1} fill="url(#tps)" isAnimationActive={false} />
+              <Area
+                type="monotone"
+                dataKey="v"
+                stroke="oklch(0.82 0.18 170)"
+                strokeWidth={1}
+                fill="url(#tps)"
+                isAnimationActive={false}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </Widget>
@@ -160,15 +174,22 @@ export function LiveOpsBand() {
           value={t.apiRequests > 0 ? t.apiRequests.toLocaleString() : "—"}
           sub="total · today"
         />
-
       </div>
     </div>
   );
 }
 
-export function StreamingLatent({ cols = 64, rows = 4, speed = 110 }: { cols?: number; rows?: number; speed?: number }) {
+export function StreamingLatent({
+  cols = 64,
+  rows = 4,
+  speed = 110,
+}: {
+  cols?: number;
+  rows?: number;
+  speed?: number;
+}) {
   const [grid, setGrid] = useState<number[][]>(() =>
-    Array.from({ length: rows }, () => Array.from({ length: cols }, () => Math.random() * 2 - 1))
+    Array.from({ length: rows }, () => Array.from({ length: cols }, () => Math.random() * 2 - 1)),
   );
   useEffect(() => {
     const id = setInterval(() => {
@@ -177,7 +198,7 @@ export function StreamingLatent({ cols = 64, rows = 4, speed = 110 }: { cols?: n
           const shifted = row.slice(1);
           shifted.push(Math.random() * 2 - 1);
           return shifted;
-        })
+        }),
       );
     }, speed);
     return () => clearInterval(id);
@@ -185,7 +206,11 @@ export function StreamingLatent({ cols = 64, rows = 4, speed = 110 }: { cols?: n
   return (
     <div className="space-y-[2px]">
       {grid.map((row, r) => (
-        <div key={r} className="grid gap-[2px]" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))` }}>
+        <div
+          key={r}
+          className="grid gap-[2px]"
+          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))` }}
+        >
           {row.map((v, i) => (
             <div
               key={i}
@@ -244,7 +269,7 @@ export function InferenceStages({ active }: { active: boolean }) {
     <div className="flex flex-wrap items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider">
       {stages.map((s, i) => {
         const done = active && i < cur;
-        const now  = active && i === cur;
+        const now = active && i === cur;
         return (
           <span
             key={s}
@@ -252,8 +277,8 @@ export function InferenceStages({ active }: { active: boolean }) {
               now
                 ? "border-neuro/60 bg-neuro/15 text-foreground"
                 : done
-                ? "border-border bg-muted/30 text-muted-foreground"
-                : "border-border/60 text-muted-foreground/60"
+                  ? "border-border bg-muted/30 text-muted-foreground"
+                  : "border-border/60 text-muted-foreground/60"
             }`}
           >
             {s}
