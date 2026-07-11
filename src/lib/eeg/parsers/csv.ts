@@ -21,6 +21,7 @@ export function parseCSV(text: string, sampleRate: number): EEGSignal {
 
   let nanCount = 0;
   const nanLocations: string[] = [];
+  const nanCountPerChannel = new Array<number>(C).fill(0);
 
   for (let r = 0; r < dataLines.length; r++) {
     const cells = split(dataLines[r]);
@@ -28,6 +29,7 @@ export function parseCSV(text: string, sampleRate: number): EEGSignal {
       const v = Number(cells[c]);
       if (!Number.isFinite(v)) {
         nanCount++;
+        nanCountPerChannel[c]++;
         if (nanLocations.length < 10) {
           nanLocations.push(`row ${r + 1}, ch ${channels[c]}`);
         }
@@ -38,9 +40,12 @@ export function parseCSV(text: string, sampleRate: number): EEGSignal {
     }
   }
 
+  const warnings: string[] = [];
   if (nanCount > 0) {
-    console.warn(
-      `[CSV parser] ${nanCount} non-finite value(s) interpolated. Locations: ${nanLocations.join("; ")}`,
+    warnings.push(
+      `${nanCount} non-finite value(s) forward-filled. Locations: ${nanLocations.join("; ")}${
+        nanCount > nanLocations.length ? "; …" : ""
+      }`,
     );
   }
 
@@ -51,10 +56,29 @@ export function parseCSV(text: string, sampleRate: number): EEGSignal {
     );
   }
 
+  // A whole-file threshold can hide one fully-dead channel in a
+  // multi-channel file (e.g. 1 of 8 channels 100% non-finite is only
+  // 12.5% file-wide, well under the 20% cutoff above, and would
+  // otherwise be silently forward-filled into a flat channel). Reject
+  // any single channel that's mostly garbage on its own terms too.
+  const CHANNEL_NAN_THRESHOLD = 50;
+  const badChannels: string[] = [];
+  for (let c = 0; c < C; c++) {
+    const chPercent = dataLines.length > 0 ? (nanCountPerChannel[c] / dataLines.length) * 100 : 0;
+    if (chPercent > CHANNEL_NAN_THRESHOLD) {
+      badChannels.push(`${channels[c]} (${chPercent.toFixed(1)}%)`);
+    }
+  }
+  if (badChannels.length > 0) {
+    throw new Error(
+      `CSV: channel(s) exceed ${CHANNEL_NAN_THRESHOLD}% non-finite values: ${badChannels.join(", ")}. Likely a disconnected/dead channel.`,
+    );
+  }
+
   return {
     channels,
     data,
     sampleRate,
-    meta: { format: "csv", nan_count: nanCount, nan_percent: nanPercent },
+    meta: { format: "csv", nan_count: nanCount, nan_percent: nanPercent, warnings },
   };
 }
