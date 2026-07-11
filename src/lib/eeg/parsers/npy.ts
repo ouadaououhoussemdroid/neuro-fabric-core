@@ -17,11 +17,12 @@ export function parseNPY(buffer: ArrayBuffer, sampleRate: number): EEGSignal {
     if (bytes[i] !== magic[i]) throw new Error("NPY: bad magic");
   }
   const major = bytes[6];
-  const headerLen = major >= 2
-    ? new DataView(buffer).getUint32(8, true)
-    : new DataView(buffer).getUint16(8, true);
+  const headerLen =
+    major >= 2 ? new DataView(buffer).getUint32(8, true) : new DataView(buffer).getUint16(8, true);
   const headerStart = major >= 2 ? 12 : 10;
-  const header = new TextDecoder("ascii").decode(bytes.subarray(headerStart, headerStart + headerLen));
+  const header = new TextDecoder("ascii").decode(
+    bytes.subarray(headerStart, headerStart + headerLen),
+  );
 
   // Header looks like: {'descr': '<f4', 'fortran_order': False, 'shape': (64, 2560), }
   const descrMatch = header.match(/'descr':\s*'([^']+)'/);
@@ -43,11 +44,20 @@ export function parseNPY(buffer: ArrayBuffer, sampleRate: number): EEGSignal {
 
   const read = (i: number): number => {
     switch (descr) {
-      case "<f4": case "|f4": return view.getFloat32(i * 4, true);
-      case "<f8": case "|f8": return view.getFloat64(i * 8, true);
-      case "<i2": case "|i2": return view.getInt16(i * 2, true);
-      case "<i4": case "|i4": return view.getInt32(i * 4, true);
-      default: throw new Error(`NPY: unsupported dtype ${descr}`);
+      case "<f4":
+      case "|f4":
+        return view.getFloat32(i * 4, true);
+      case "<f8":
+      case "|f8":
+        return view.getFloat64(i * 8, true);
+      case "<i2":
+      case "|i2":
+        return view.getInt16(i * 2, true);
+      case "<i4":
+      case "|i4":
+        return view.getInt32(i * 4, true);
+      default:
+        throw new Error(`NPY: unsupported dtype ${descr}`);
     }
   };
 

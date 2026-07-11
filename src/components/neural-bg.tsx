@@ -4,7 +4,13 @@ import { useEffect, useRef } from "react";
  * Lightweight animated neural network background.
  * Nodes drift slowly; lines connect nearby nodes; opacity pulses.
  */
-export function NeuralBackground({ density = 60, className = "" }: { density?: number; className?: string }) {
+export function NeuralBackground({
+  density = 60,
+  className = "",
+}: {
+  density?: number;
+  className?: string;
+}) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -14,14 +20,18 @@ export function NeuralBackground({ density = 60, className = "" }: { density?: n
     if (!ctx) return;
 
     let raf = 0;
-    let w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let w = 0,
+      h = 0;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     type Node = { x: number; y: number; vx: number; vy: number; r: number };
     let nodes: Node[] = [];
 
     const init = () => {
       const rect = canvas.getBoundingClientRect();
-      w = rect.width; h = rect.height;
-      canvas.width = w * dpr; canvas.height = h * dpr;
+      w = rect.width;
+      h = rect.height;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
       ctx.scale(dpr, dpr);
       nodes = Array.from({ length: density }, () => ({
         x: Math.random() * w,
@@ -35,22 +45,27 @@ export function NeuralBackground({ density = 60, className = "" }: { density?: n
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
       for (const n of nodes) {
-        n.x += n.vx; n.y += n.vy;
+        n.x += n.vx;
+        n.y += n.vy;
         if (n.x < 0 || n.x > w) n.vx *= -1;
         if (n.y < 0 || n.y > h) n.vy *= -1;
       }
       // edges
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
-          const a = nodes[i], b = nodes[j];
-          const dx = a.x - b.x, dy = a.y - b.y;
+          const a = nodes[i],
+            b = nodes[j];
+          const dx = a.x - b.x,
+            dy = a.y - b.y;
           const d = Math.hypot(dx, dy);
           if (d < 130) {
             const o = (1 - d / 130) * 0.35;
             ctx.strokeStyle = `rgba(196, 120, 80, ${o})`;
             ctx.lineWidth = 0.6;
             ctx.beginPath();
-            ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
           }
         }
       }
@@ -66,16 +81,18 @@ export function NeuralBackground({ density = 60, className = "" }: { density?: n
 
     init();
     draw();
-    const onResize = () => { ctx.setTransform(1, 0, 0, 1, 0, 0); init(); };
+    const onResize = () => {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      init();
+    };
     window.addEventListener("resize", onResize);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", onResize); };
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+    };
   }, [density]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className={`absolute inset-0 h-full w-full ${className}`}
-      aria-hidden
-    />
+    <canvas ref={canvasRef} className={`absolute inset-0 h-full w-full ${className}`} aria-hidden />
   );
 }

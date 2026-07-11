@@ -16,10 +16,7 @@ function makeFakeRuntime(opts: { outputDim?: number; failLoad?: boolean } = {}) 
     async run(feeds) {
       calls.runs++;
       const t = feeds["input"];
-      const sum = Array.from(t.data as ArrayLike<number>).reduce(
-        (a, b) => a + Number(b),
-        0,
-      );
+      const sum = Array.from(t.data as ArrayLike<number>).reduce((a, b) => a + Number(b), 0);
       const dim = opts.outputDim ?? 4;
       const data = new Float32Array(dim).map((_, i) => sum + i);
       return { embedding: { data, dims: [1, dim] } satisfies OrtTensorLike };
@@ -88,9 +85,9 @@ describe("ONNXAdapter", () => {
       runtime: async () => runtime,
     });
     await adapter.load();
-    await expect(
-      adapter.embed({ kind: "features", features: [[1, 2, 3]] }),
-    ).rejects.toThrow(/expected 5 features/);
+    await expect(adapter.embed({ kind: "features", features: [[1, 2, 3]] })).rejects.toThrow(
+      /expected 5 features/,
+    );
   });
 
   it("builds [1,C,T] tensor for raw windows", async () => {
@@ -126,9 +123,7 @@ describe("ONNXAdapter", () => {
 
   it("isONNXRuntimeAvailable returns true for a working runtime", async () => {
     const { runtime } = makeFakeRuntime();
-    await expect(isONNXRuntimeAvailable(async () => runtime)).resolves.toBe(
-      true,
-    );
+    await expect(isONNXRuntimeAvailable(async () => runtime)).resolves.toBe(true);
   });
 
   it("isONNXRuntimeAvailable returns false when import fails", async () => {

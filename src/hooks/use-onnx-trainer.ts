@@ -1,14 +1,29 @@
 import { useState, useCallback, useRef } from "react";
 
-export type TrainerPhase = "idle"|"installing"|"extracting"|"training"|"exporting"|"loading"|"ready"|"inferring"|"error";
+export type TrainerPhase =
+  | "idle"
+  | "installing"
+  | "extracting"
+  | "training"
+  | "exporting"
+  | "loading"
+  | "ready"
+  | "inferring"
+  | "error";
 
 export interface TrainerState {
-  phase: TrainerPhase; message: string; progress: number;
-  error?: string; accuracy?: number; modelSizeKB?: number;
+  phase: TrainerPhase;
+  message: string;
+  progress: number;
+  error?: string;
+  accuracy?: number;
+  modelSizeKB?: number;
 }
 
 export interface InferenceResult {
-  label: string; probabilities: Record<string, number>; latencyMs: number;
+  label: string;
+  probabilities: Record<string, number>;
+  latencyMs: number;
 }
 
 const ORT_CDN = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.js";
@@ -25,30 +40,35 @@ async function loadOrtScript(): Promise<void> {
 }
 
 export function useOnnxTrainer() {
-  const [state, setState] = useState<TrainerState>({ phase: "idle", message: "Not started", progress: 0 });
-  const sessionRef = useRef<any>(null);
+  const [state, setState] = useState<TrainerState>({
+    phase: "idle",
+    message: "Not started",
+    progress: 0,
+  });
+  const sessionRef = useRef<OrtInferenceSession | null>(null);
   const labelsRef = useRef<string[]>([]);
   const onnxBytesRef = useRef<Uint8Array | null>(null);
-  const set = (s: Partial<TrainerState>) => setState(prev => ({ ...prev, ...s }));
+  const set = (s: Partial<TrainerState>) => setState((prev) => ({ ...prev, ...s }));
 
-  const trainAndExport = useCallback(async (
-    datasetId = "BNCI2014_001",
-    subjects = [1],
-    classifier: "svm"|"lda"|"rf" = "lda",
-  ) => {
-    const py = window.pyodideInstance;
-    if (!py) throw new Error("Pyodide not loaded — open /mne first");
-    set({ phase: "installing", message: "Installing skl2onnx…", progress: 5 });
-    try {
-      await py.runPythonAsync(`
+  const trainAndExport = useCallback(
+    async (
+      datasetId = "BNCI2014_001",
+      subjects = [1],
+      classifier: "svm" | "lda" | "rf" = "lda",
+    ) => {
+      const py = window.pyodideInstance;
+      if (!py) throw new Error("Pyodide not loaded — open /mne first");
+      set({ phase: "installing", message: "Installing skl2onnx…", progress: 5 });
+      try {
+        await py.runPythonAsync(`
 import micropip
 await micropip.install(["scikit-learn","skl2onnx","onnxconverter-common","moabb","pooch"])
       `);
-      set({ phase: "extracting", message: `Loading ${datasetId}…`, progress: 20 });
-      py.globals.set("_dataset_id", datasetId);
-      py.globals.set("_subjects", py.toPy(subjects));
-      py.globals.set("_classifier", classifier);
-      const result = await py.runPythonAsync(`
+        set({ phase: "extracting", message: `Loading ${datasetId}…`, progress: 20 });
+        py.globals.set("_dataset_id", datasetId);
+        py.globals.set("_subjects", py.toPy(subjects));
+        py.globals.set("_classifier", classifier);
+        const result = (await py.runPythonAsync(`
 import json, numpy as np, importlib
 from scipy import signal as sp_signal
 from sklearn.preprocessing import StandardScaler, LabelEncoder
@@ -99,49 +119,80 @@ pipe.fit(features,y)
 onnx_model=convert_sklearn(pipe,initial_types=[("float_input",FloatTensorType([None,features.shape[1]]))],target_opset=12)
 onnx_bytes=onnx_model.SerializeToString()
 json.dumps({"accuracy":round(float(np.mean(cv)),4),"cv_scores":[round(float(s),4) for s in cv],"n_epochs":int(X.shape[0]),"n_features":int(features.shape[1]),"n_classes":len(label_names),"label_names":label_names,"onnx_bytes":list(onnx_bytes),"onnx_size_kb":round(len(onnx_bytes)/1024,1),"classifier":_classifier})
-      `) as string;
-      const parsed = JSON.parse(result);
-      labelsRef.current = parsed.label_names;
-      set({ phase: "loading", message: `Loading ONNX (${parsed.onnx_size_kb} KB)…`, progress: 75, accuracy: parsed.accuracy, modelSizeKB: parsed.onnx_size_kb });
-      await loadOrtScript();
-      const onnxBytes = new Uint8Array(parsed.onnx_bytes);
-      onnxBytesRef.current = onnxBytes;
-      const session = await window.ort!.InferenceSession.create(onnxBytes.buffer, { executionProviders: ["wasm"] });
-      sessionRef.current = session;
-      set({ phase: "ready", message: `Ready — ${parsed.classifier.toUpperCase()} · ${(parsed.accuracy*100).toFixed(1)}% CV · ${parsed.onnx_size_kb} KB`, progress: 100, accuracy: parsed.accuracy, modelSizeKB: parsed.onnx_size_kb });
-      return parsed;
-    } catch (err) {
-      set({ phase: "error", message: "Failed", error: (err as Error).message, progress: 0 });
-      throw err;
-    }
-  }, []);
+      `)) as string;
+        const parsed = JSON.parse(result);
+        labelsRef.current = parsed.label_names;
+        set({
+          phase: "loading",
+          message: `Loading ONNX (${parsed.onnx_size_kb} KB)…`,
+          progress: 75,
+          accuracy: parsed.accuracy,
+          modelSizeKB: parsed.onnx_size_kb,
+        });
+        await loadOrtScript();
+        const onnxBytes = new Uint8Array(parsed.onnx_bytes);
+        onnxBytesRef.current = onnxBytes;
+        const session = await window.ort!.InferenceSession.create(onnxBytes.buffer, {
+          executionProviders: ["wasm"],
+        });
+        sessionRef.current = session;
+        set({
+          phase: "ready",
+          message: `Ready — ${parsed.classifier.toUpperCase()} · ${(parsed.accuracy * 100).toFixed(1)}% CV · ${parsed.onnx_size_kb} KB`,
+          progress: 100,
+          accuracy: parsed.accuracy,
+          modelSizeKB: parsed.onnx_size_kb,
+        });
+        return parsed;
+      } catch (err) {
+        set({ phase: "error", message: "Failed", error: (err as Error).message, progress: 0 });
+        throw err;
+      }
+    },
+    [],
+  );
 
   const infer = useCallback(async (features: number[]): Promise<InferenceResult> => {
     const session = sessionRef.current;
     if (!session || !window.ort) throw new Error("Model not loaded");
     set({ phase: "inferring" });
     const t0 = performance.now();
-    const tensor = new window.ort.Tensor("float32", new Float32Array(features), [1, features.length]);
+    const tensor = new window.ort.Tensor("float32", new Float32Array(features), [
+      1,
+      features.length,
+    ]);
     const output = await session.run({ [session.inputNames[0]]: tensor });
-    const latencyMs = +(performance.now()-t0).toFixed(2);
+    const latencyMs = +(performance.now() - t0).toFixed(2);
     const labels = labelsRef.current;
-    const probKey = session.outputNames.find((n: string) => n.includes("prob")) ?? session.outputNames[1] ?? session.outputNames[0];
-    const probData = output[probKey]?.data as Float32Array ?? new Float32Array(labels.length).fill(1/labels.length);
-    const labelData = output[session.outputNames[0]]?.data;
-    const predictedIdx = labelData ? Number(labelData[0]) : Array.from(probData).indexOf(Math.max(...Array.from(probData)));
-    const probabilities: Record<string,number> = {};
-    labels.forEach((l,i) => { probabilities[l] = +(probData[i]??0).toFixed(4); });
+    const probKey =
+      session.outputNames.find((n: string) => n.includes("prob")) ??
+      session.outputNames[1] ??
+      session.outputNames[0];
+    const probData =
+      (output[probKey]?.data as Float32Array) ??
+      new Float32Array(labels.length).fill(1 / labels.length);
+    const labelData = output[session.outputNames[0]]?.data as Float32Array | Int32Array | undefined;
+    const predictedIdx = labelData
+      ? Number(labelData[0])
+      : Array.from(probData).indexOf(Math.max(...Array.from(probData)));
+    const probabilities: Record<string, number> = {};
+    labels.forEach((l, i) => {
+      probabilities[l] = +(probData[i] ?? 0).toFixed(4);
+    });
     set({ phase: "ready" });
-    return { label: labels[predictedIdx]??"unknown", probabilities, latencyMs };
+    return { label: labels[predictedIdx] ?? "unknown", probabilities, latencyMs };
   }, []);
 
   const downloadOnnx = useCallback((filename = "eeg-classifier.onnx") => {
     if (!onnxBytesRef.current) return;
     const blob = new Blob([onnxBytesRef.current as BlobPart], { type: "application/octet-stream" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href=url; a.download=filename; a.click();
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
     URL.revokeObjectURL(url);
   }, []);
 
   return { state, trainAndExport, infer, downloadOnnx, labels: labelsRef.current };
-                                             }
+}

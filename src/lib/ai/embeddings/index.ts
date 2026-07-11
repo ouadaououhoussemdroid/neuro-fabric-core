@@ -6,11 +6,7 @@
 import { createAdapter, DEFAULT_EMBEDDER_ID, hasModel } from "../models/registry";
 import type { EmbeddingOutput, ModelInput } from "../types";
 import { log } from "../../logging";
-import {
-  l2Normalize,
-  validateEmbedding,
-  EmbeddingValidationError,
-} from "../validation";
+import { l2Normalize, validateEmbedding, EmbeddingValidationError } from "../validation";
 
 /**
  * Loud, observable signal that the embedding pipeline degraded to the PCA
@@ -26,7 +22,7 @@ function announceFallback(detail: {
   reason: string;
 }) {
   // Loud console signal — visible in production browser devtools and server logs.
-  // eslint-disable-next-line no-console
+
   console.error(
     `[neurofabric] EEG embedding fell back to PCA baseline (${detail.resolvedModelId}). ` +
       `Requested "${detail.requestedModelId}". Reason: ${detail.reason}`,
@@ -64,10 +60,7 @@ export interface EmbedResult extends EmbeddingOutput {
   normalized: boolean;
 }
 
-export async function embed(
-  input: ModelInput,
-  opts: EmbedOptions = {},
-): Promise<EmbedResult> {
+export async function embed(input: ModelInput, opts: EmbedOptions = {}): Promise<EmbedResult> {
   const id = opts.modelId ?? DEFAULT_EMBEDDER_ID;
   const fallback = opts.fallbackToPCA !== false;
   const normalize = opts.normalize !== false;
@@ -80,7 +73,13 @@ export async function embed(
   const adapter = createAdapter(id);
   if (!adapter.embed) {
     if (!fallback) throw new Error(`Adapter "${id}" does not support embeddings`);
-    return runFallbackChain(input, `adapter "${id}" has no embed()`, normalize, opts.expectedDim, chain);
+    return runFallbackChain(
+      input,
+      `adapter "${id}" has no embed()`,
+      normalize,
+      opts.expectedDim,
+      chain,
+    );
   }
   try {
     log("info", "ai.embed.load", { modelId: id });
@@ -93,7 +92,11 @@ export async function embed(
     if (!fallback) throw err;
     return runFallbackChain(input, reason, normalize, opts.expectedDim, chain, id);
   } finally {
-    try { await adapter.unload(); } catch { /* noop */ }
+    try {
+      await adapter.unload();
+    } catch {
+      /* noop */
+    }
   }
 }
 
@@ -135,7 +138,11 @@ async function runFallbackChain(
     } catch (err) {
       reasons.push(`${id}: ${(err as Error).message}`);
     } finally {
-      try { await adapter.unload(); } catch { /* noop */ }
+      try {
+        await adapter.unload();
+      } catch {
+        /* noop */
+      }
     }
   }
   throw new Error(`embed: all adapters failed (${reasons.join(" → ")})`);

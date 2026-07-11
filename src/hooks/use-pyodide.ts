@@ -30,10 +30,13 @@ async function loadPyodideScript(): Promise<void> {
 
 export function usePyodide() {
   const [state, setState] = useState<PyodideState>({
-    status: "idle", message: "Not started", progress: 0, error: null,
+    status: "idle",
+    message: "Not started",
+    progress: 0,
+    error: null,
   });
   const pyRef = useRef<PyodideInstance | null>(null);
-  const set = (s: Partial<PyodideState>) => setState(prev => ({ ...prev, ...s }));
+  const set = (s: Partial<PyodideState>) => setState((prev) => ({ ...prev, ...s }));
 
   const initialize = useCallback(async () => {
     if (pyRef.current) return;
@@ -46,7 +49,8 @@ export function usePyodide() {
       set({ status: "loading-pyodide", message: "Loading Pyodide runtime…", progress: 5 });
       await loadPyodideScript();
       set({ message: "Initializing Python…", progress: 15 });
-      if (!window.loadPyodide) throw new Error("Pyodide script did not register window.loadPyodide");
+      if (!window.loadPyodide)
+        throw new Error("Pyodide script did not register window.loadPyodide");
       const py = await window.loadPyodide({ indexURL: PYODIDE_CDN });
       window.pyodideInstance = py;
       pyRef.current = py;
@@ -65,7 +69,12 @@ print(f"MNE {mne.__version__} loaded")
       `);
       set({ status: "ready", message: "MNE-Python ready ✓", progress: 100, error: null });
     } catch (err) {
-      set({ status: "error", message: "Failed to load", error: (err as Error).message, progress: 0 });
+      set({
+        status: "error",
+        message: "Failed to load",
+        error: (err as Error).message,
+        progress: 0,
+      });
     }
   }, []);
 

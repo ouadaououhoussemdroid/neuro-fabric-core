@@ -1,7 +1,19 @@
 import { ReactNode } from "react";
 
-export function Section({ children, className = "", id }: { children: ReactNode; className?: string; id?: string }) {
-  return <section id={id} className={`mx-auto max-w-7xl px-4 py-20 ${className}`}>{children}</section>;
+export function Section({
+  children,
+  className = "",
+  id,
+}: {
+  children: ReactNode;
+  className?: string;
+  id?: string;
+}) {
+  return (
+    <section id={id} className={`mx-auto max-w-7xl px-4 py-20 ${className}`}>
+      {children}
+    </section>
+  );
 }
 
 export function Eyebrow({ children }: { children: ReactNode }) {
@@ -13,20 +25,42 @@ export function Eyebrow({ children }: { children: ReactNode }) {
   );
 }
 
-export function GlassCard({ children, className = "", onClick }: { children: ReactNode; className?: string; onClick?: () => void }) {
-  return <div className={`glass rounded-xl p-6 ${className}`} onClick={onClick}>{children}</div>;
+export function GlassCard({
+  children,
+  className = "",
+  onClick,
+}: {
+  children: ReactNode;
+  className?: string;
+  onClick?: () => void;
+}) {
+  return (
+    <div className={`glass rounded-xl p-6 ${className}`} onClick={onClick}>
+      {children}
+    </div>
+  );
 }
 
 export function StatPill({ label, value }: { label: string; value: string }) {
   return (
     <div className="glass rounded-lg px-4 py-3">
-      <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
       <div className="mt-1 text-xl font-semibold tracking-tight">{value}</div>
     </div>
   );
 }
 
-export function PageHeader({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: string }) {
+export function PageHeader({
+  eyebrow,
+  title,
+  sub,
+}: {
+  eyebrow: string;
+  title: string;
+  sub?: string;
+}) {
   return (
     <div className="mb-10">
       <Eyebrow>{eyebrow}</Eyebrow>

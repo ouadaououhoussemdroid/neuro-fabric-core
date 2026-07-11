@@ -6,12 +6,14 @@ import { Area, AreaChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis } fro
 import { Download } from "lucide-react";
 
 export const Route = createFileRoute("/synthetic")({
-  head: () => ({ meta: [
-    { title: "Synthetic Neurodata Lab — NeuroWeave" },
-    { name: "description", content: "Generate condition-controlled synthetic EEG datasets." },
-    { property: "og:title", content: "Synthetic Neurodata Lab — NeuroWeave" },
-    { property: "og:description", content: "Generate consented, label-rich synthetic EEG." },
-  ]}),
+  head: () => ({
+    meta: [
+      { title: "Synthetic Neurodata Lab — NeuroWeave" },
+      { name: "description", content: "Generate condition-controlled synthetic EEG datasets." },
+      { property: "og:title", content: "Synthetic Neurodata Lab — NeuroWeave" },
+      { property: "og:description", content: "Generate consented, label-rich synthetic EEG." },
+    ],
+  }),
   component: SyntheticPage,
 });
 
@@ -31,13 +33,16 @@ function SyntheticPage() {
     }));
   }, [attention, stress, workload]);
 
-  const bands = useMemo(() => [
-    { band: "δ", power: 0.2 + Math.random() * 0.1 },
-    { band: "θ", power: 0.3 + stress * 0.3 },
-    { band: "α", power: 0.4 + attention * 0.4 },
-    { band: "β", power: 0.3 + workload * 0.4 },
-    { band: "γ", power: 0.15 + workload * 0.2 },
-  ], [attention, stress, workload]);
+  const bands = useMemo(
+    () => [
+      { band: "δ", power: 0.2 + Math.random() * 0.1 },
+      { band: "θ", power: 0.3 + stress * 0.3 },
+      { band: "α", power: 0.4 + attention * 0.4 },
+      { band: "β", power: 0.3 + workload * 0.4 },
+      { band: "γ", power: 0.15 + workload * 0.2 },
+    ],
+    [attention, stress, workload],
+  );
 
   return (
     <SiteShell>
@@ -50,7 +55,9 @@ function SyntheticPage() {
 
         <div className="grid gap-4 lg:grid-cols-[1fr_2fr]">
           <GlassCard>
-            <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Conditions</div>
+            <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              Conditions
+            </div>
             <div className="mt-4 space-y-5">
               <Slider label="attention" value={attention} onChange={setAttention} />
               <Slider label="stress" value={stress} onChange={setStress} />
@@ -63,7 +70,9 @@ function SyntheticPage() {
                       key={c}
                       onClick={() => setCategory(c)}
                       className={`rounded-md border px-2.5 py-1 text-[11px] ${
-                        category === c ? "border-neuro/60 bg-neuro/10" : "border-border text-muted-foreground hover:text-foreground"
+                        category === c
+                          ? "border-neuro/60 bg-neuro/10"
+                          : "border-border text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {c}
@@ -83,8 +92,12 @@ function SyntheticPage() {
           <div className="space-y-4">
             <GlassCard>
               <div className="flex items-center justify-between">
-                <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Synthesized signal · Cz</div>
-                <div className="font-mono text-[10px] text-muted-foreground">cat={category} · n=1024</div>
+                <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Synthesized signal · Cz
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground">
+                  cat={category} · n=1024
+                </div>
               </div>
               <div className="mt-3 h-44">
                 <ResponsiveContainer>
@@ -95,18 +108,32 @@ function SyntheticPage() {
                         <stop offset="100%" stopColor="oklch(0.78 0.16 200)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <Area type="monotone" dataKey="v" stroke="oklch(0.85 0.18 195)" strokeWidth={1.2} fill="url(#syn)" />
+                    <Area
+                      type="monotone"
+                      dataKey="v"
+                      stroke="oklch(0.85 0.18 195)"
+                      strokeWidth={1.2}
+                      fill="url(#syn)"
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
             </GlassCard>
 
             <GlassCard>
-              <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Band power</div>
+              <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Band power
+              </div>
               <div className="mt-3 h-40">
                 <ResponsiveContainer>
                   <BarChart data={bands}>
-                    <XAxis dataKey="band" stroke="oklch(0.6 0.02 260)" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <XAxis
+                      dataKey="band"
+                      stroke="oklch(0.6 0.02 260)"
+                      tick={{ fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
                     <YAxis hide />
                     <Bar dataKey="power" fill="oklch(0.78 0.16 200)" radius={[4, 4, 0, 0]} />
                   </BarChart>
@@ -120,10 +147,21 @@ function SyntheticPage() {
   );
 }
 
-function Slider({ label, value, onChange }: { label: string; value: number; onChange: (n: number) => void }) {
+function Slider({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  onChange: (n: number) => void;
+}) {
   return (
     <div>
-      <div className="flex items-center justify-between text-xs"><span className="text-muted-foreground">{label}</span><span className="font-mono text-neuro">{value.toFixed(2)}</span></div>
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">{label}</span>
+        <span className="font-mono text-neuro">{value.toFixed(2)}</span>
+      </div>
       <input
         type="range"
         min={0}

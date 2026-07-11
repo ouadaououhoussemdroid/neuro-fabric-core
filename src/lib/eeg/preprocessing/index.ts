@@ -13,7 +13,13 @@ export interface PreprocessOptions {
   notch?: { fc: 50 | 60; q?: number } | false;
   normalize?: boolean;
   segment?: { windowSec: number; overlap: number } | false;
-  artifactRejection?: { enabled?: boolean; thresholds?: Partial<ArtifactThresholds>; maxContaminationPercent?: number } | false;
+  artifactRejection?:
+    | {
+        enabled?: boolean;
+        thresholds?: Partial<ArtifactThresholds>;
+        maxContaminationPercent?: number;
+      }
+    | false;
 }
 
 export interface PreprocessResult {
@@ -62,12 +68,16 @@ export function preprocess(input: EEGSignal, opts: PreprocessOptions = {}): Prep
   if (seg) {
     const s = performance.now();
     windows = segment(data, fs, seg.windowSec, seg.overlap);
-    steps.push({ name: "segment", params: { ...seg, count: windows.length }, durationMs: +(performance.now() - s).toFixed(2) });
+    steps.push({
+      name: "segment",
+      params: { ...seg, count: windows.length },
+      durationMs: +(performance.now() - s).toFixed(2),
+    });
   }
 
   let artifactReport: ArtifactReport | undefined;
   const arOpts = opts.artifactRejection;
-  const arEnabled = arOpts !== false && (arOpts?.enabled !== false);
+  const arEnabled = arOpts !== false && arOpts?.enabled !== false;
 
   if (arEnabled && windows.length > 0) {
     const s = performance.now();
@@ -75,13 +85,19 @@ export function preprocess(input: EEGSignal, opts: PreprocessOptions = {}): Prep
       arOpts && typeof arOpts === "object" ? arOpts : {};
     const { windows: cleanWindows, report: arReport } = rejectArtifacts(windows, {
       thresholds: arConfig?.thresholds,
-      maxContaminationPercent: arConfig?.maxContaminationPercent ?? DEFAULTS.artifactRejection.maxContaminationPercent,
+      maxContaminationPercent:
+        arConfig?.maxContaminationPercent ?? DEFAULTS.artifactRejection.maxContaminationPercent,
     });
     artifactReport = arReport;
     windows = cleanWindows;
     steps.push({
       name: "artifact-rejection",
-      params: { totalWindows: arReport.totalWindows, rejectedWindows: arReport.rejectedWindows, rejectedPercent: +arReport.rejectedPercent.toFixed(1), keptWindows: arReport.keptWindows },
+      params: {
+        totalWindows: arReport.totalWindows,
+        rejectedWindows: arReport.rejectedWindows,
+        rejectedPercent: +arReport.rejectedPercent.toFixed(1),
+        keptWindows: arReport.keptWindows,
+      },
       durationMs: +(performance.now() - s).toFixed(2),
     });
   }

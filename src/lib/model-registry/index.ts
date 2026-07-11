@@ -18,7 +18,8 @@ export const MODEL_REGISTRY: Record<string, ModelVersion> = {
   "baseline-spectral-v1": {
     id: "baseline-spectral-v1",
     type: "decoder",
-    description: "Spectral ratio heuristics: beta/(alpha+theta) for attention, theta/alpha for workload, beta+gamma for arousal. Mathematically grounded but unvalidated against ground truth.",
+    description:
+      "Spectral ratio heuristics: beta/(alpha+theta) for attention, theta/alpha for workload, beta+gamma for arousal. Mathematically grounded but unvalidated against ground truth.",
     version: "1.0.0",
     isExperimental: false,
     inputShape: "EEGSignal",
@@ -30,7 +31,8 @@ export const MODEL_REGISTRY: Record<string, ModelVersion> = {
   "tfjs-eeg-v1": {
     id: "tfjs-eeg-v1",
     type: "decoder",
-    description: "3-layer MLP (5→32→16→3) with SYNTHETIC weights — not trained on real data. Blended 70/30 with spectral baseline. Weights are hand-coded placeholders pending real training.",
+    description:
+      "3-layer MLP (5→32→16→3) with SYNTHETIC weights — not trained on real data. Blended 70/30 with spectral baseline. Weights are hand-coded placeholders pending real training.",
     version: "0.1.0-synthetic",
     isExperimental: true,
     inputShape: "float[5] band-power features",
@@ -53,7 +55,8 @@ export const MODEL_REGISTRY: Record<string, ModelVersion> = {
   "linear-ae": {
     id: "linear-ae",
     type: "embedder",
-    description: "Linear autoencoder — mathematically equivalent to PCA. Closed-form solution, no training required.",
+    description:
+      "Linear autoencoder — mathematically equivalent to PCA. Closed-form solution, no training required.",
     version: "1.0.0",
     isExperimental: false,
     inputShape: "EEGWindow[]",

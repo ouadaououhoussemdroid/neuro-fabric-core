@@ -16,9 +16,7 @@ function fakeRuntime(embeddingDim: number): () => Promise<OrtRuntime> {
           async run() {
             return {
               embedding: {
-                data: Float32Array.from(
-                  Array.from({ length: embeddingDim }, (_, i) => i + 1),
-                ),
+                data: Float32Array.from(Array.from({ length: embeddingDim }, (_, i) => i + 1)),
                 dims: [1, embeddingDim],
               },
             };
@@ -80,9 +78,13 @@ describe("ONNX-backed Braindecode bridge", () => {
           sampleRate: 128,
           windowSamples: 256,
           bridge: () => ({
-            async isAvailable() { return true; },
+            async isAvailable() {
+              return true;
+            },
             async load() {},
-            async forward() { throw new Error("simulated ONNX failure"); },
+            async forward() {
+              throw new Error("simulated ONNX failure");
+            },
             async unload() {},
           }),
         }),

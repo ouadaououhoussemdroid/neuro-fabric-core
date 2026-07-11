@@ -7,13 +7,7 @@
  */
 import type { EEGSignal, EEGWindow } from "../eeg/types";
 
-export type ModelKind =
-  | "pca"
-  | "linear-ae"
-  | "onnx"
-  | "pytorch-export"
-  | "braindecode"
-  | "eegpt";
+export type ModelKind = "pca" | "linear-ae" | "onnx" | "pytorch-export" | "braindecode" | "eegpt";
 
 export type ModelTask =
   | "embedding"
@@ -23,11 +17,11 @@ export type ModelTask =
   | "foundation";
 
 export type ModelRuntime =
-  | "js"        // pure JS / WebAssembly-free
-  | "wasm"      // WebAssembly (ONNX Runtime Web, tract, ggml, ...)
-  | "webgpu"    // WebGPU accelerated
-  | "pyodide"   // Python in browser (Braindecode, MNE)
-  | "server";   // server-side inference
+  | "js" // pure JS / WebAssembly-free
+  | "wasm" // WebAssembly (ONNX Runtime Web, tract, ggml, ...)
+  | "webgpu" // WebGPU accelerated
+  | "pyodide" // Python in browser (Braindecode, MNE)
+  | "server"; // server-side inference
 
 export interface ModelCapabilities {
   task: ModelTask;

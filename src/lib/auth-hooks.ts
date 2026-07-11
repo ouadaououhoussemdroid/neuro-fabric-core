@@ -22,5 +22,5 @@ export function useSession() {
     };
   }, []);
 
-  return { session, user: session?.user ?? null as User | null, loading };
+  return { session, user: session?.user ?? (null as User | null), loading };
 }

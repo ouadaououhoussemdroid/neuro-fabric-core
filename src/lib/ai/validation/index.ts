@@ -12,16 +12,16 @@ export interface ValidationOptions {
 }
 
 export class EmbeddingValidationError extends Error {
-  constructor(public readonly code: string, msg: string) {
+  constructor(
+    public readonly code: string,
+    msg: string,
+  ) {
     super(msg);
     this.name = "EmbeddingValidationError";
   }
 }
 
-export function validateEmbedding(
-  vec: readonly number[],
-  opts: ValidationOptions = {},
-): void {
+export function validateEmbedding(vec: readonly number[], opts: ValidationOptions = {}): void {
   if (!Array.isArray(vec) && !ArrayBuffer.isView(vec as never)) {
     throw new EmbeddingValidationError("not_array", "embedding is not an array");
   }

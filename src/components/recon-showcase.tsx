@@ -1,5 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { Brain, ChevronRight, Cpu, Eye, Image as ImageIcon, Layers, Sparkles, Waves } from "lucide-react";
+import {
+  Brain,
+  ChevronRight,
+  Cpu,
+  Eye,
+  Image as ImageIcon,
+  Layers,
+  Sparkles,
+  Waves,
+} from "lucide-react";
 import { GlassCard, Eyebrow } from "@/components/ui-bits";
 import { LiveDot } from "@/components/live-ops";
 
@@ -22,7 +31,9 @@ function ReconTile({
   scanlines?: boolean;
 }) {
   return (
-    <div className={`relative overflow-hidden rounded-lg border border-border bg-card/40 ${className}`}>
+    <div
+      className={`relative overflow-hidden rounded-lg border border-border bg-card/40 ${className}`}
+    >
       <div
         className="absolute inset-0 transition-[filter,opacity] duration-500"
         style={{
@@ -61,7 +72,13 @@ function ReconTile({
 }
 
 /** EEG-style mini trace SVG, deterministic via seed. */
-function MiniTrace({ seed = 0, color = "oklch(0.85 0.18 195)" }: { seed?: number; color?: string }) {
+function MiniTrace({
+  seed = 0,
+  color = "oklch(0.85 0.18 195)",
+}: {
+  seed?: number;
+  color?: string;
+}) {
   const pts = useMemo(() => {
     const n = 96;
     const rng = (i: number) => {
@@ -70,13 +87,13 @@ function MiniTrace({ seed = 0, color = "oklch(0.85 0.18 195)" }: { seed?: number
     };
     return Array.from({ length: n }, (_, i) => {
       const v =
-        Math.sin((i + seed) / 5) * 0.6 +
-        Math.sin((i + seed) / 2.3) * 0.3 +
-        (rng(i) - 0.5) * 0.25;
+        Math.sin((i + seed) / 5) * 0.6 + Math.sin((i + seed) / 2.3) * 0.3 + (rng(i) - 0.5) * 0.25;
       return { x: (i / (n - 1)) * 100, y: 50 - v * 22 };
     });
   }, [seed]);
-  const d = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" ");
+  const d = pts
+    .map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(2)} ${p.y.toFixed(2)}`)
+    .join(" ");
   return (
     <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-full w-full">
       <path d={d} fill="none" stroke={color} strokeWidth={0.6} strokeLinecap="round" />
@@ -85,12 +102,48 @@ function MiniTrace({ seed = 0, color = "oklch(0.85 0.18 195)" }: { seed?: number
 }
 
 const GALLERY = [
-  { label: "visual.faces", caption: "young woman with red hair, frontal portrait", hue: 12, conf: 0.82, state: "attention.high" },
-  { label: "visual.scenes", caption: "snow-covered mountain range at dusk", hue: 220, conf: 0.74, state: "affect.calm" },
-  { label: "visual.animals", caption: "golden retriever on green grass", hue: 90, conf: 0.79, state: "affect.positive" },
-  { label: "visual.objects", caption: "ceramic teacup on wooden table", hue: 35, conf: 0.68, state: "attention.focused" },
-  { label: "visual.text", caption: "neon sign reading 'open'", hue: 320, conf: 0.71, state: "arousal.med" },
-  { label: "visual.abstract", caption: "swirling blue and violet light", hue: 270, conf: 0.66, state: "imagery.dream" },
+  {
+    label: "visual.faces",
+    caption: "young woman with red hair, frontal portrait",
+    hue: 12,
+    conf: 0.82,
+    state: "attention.high",
+  },
+  {
+    label: "visual.scenes",
+    caption: "snow-covered mountain range at dusk",
+    hue: 220,
+    conf: 0.74,
+    state: "affect.calm",
+  },
+  {
+    label: "visual.animals",
+    caption: "golden retriever on green grass",
+    hue: 90,
+    conf: 0.79,
+    state: "affect.positive",
+  },
+  {
+    label: "visual.objects",
+    caption: "ceramic teacup on wooden table",
+    hue: 35,
+    conf: 0.68,
+    state: "attention.focused",
+  },
+  {
+    label: "visual.text",
+    caption: "neon sign reading 'open'",
+    hue: 320,
+    conf: 0.71,
+    state: "arousal.med",
+  },
+  {
+    label: "visual.abstract",
+    caption: "swirling blue and violet light",
+    hue: 270,
+    conf: 0.66,
+    state: "imagery.dream",
+  },
 ] as const;
 
 const PIPELINE = [
@@ -142,8 +195,8 @@ export function ReconstructionShowcase() {
           From visual cortex to pixels in five stages.
         </h3>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          A multimodal decoder aligns EEG embeddings with a CLIP-conditioned diffusion prior. Each stage
-          is observable, versioned, and replayable for clinical-grade reproducibility.
+          A multimodal decoder aligns EEG embeddings with a CLIP-conditioned diffusion prior. Each
+          stage is observable, versioned, and replayable for clinical-grade reproducibility.
         </p>
 
         <div className="mt-6 grid items-stretch gap-3 md:grid-cols-[repeat(5,1fr)_auto] md:grid-cols-9">
@@ -279,8 +332,8 @@ export function ReconstructionShowcase() {
               Multimodal decoder ·{" "}
             </span>
             EEG embeddings are projected into a shared CLIP-aligned latent, then denoised by a
-            cross-attention diffusion prior conditioned on decoded cognitive state. Output is sampled
-            with classifier-free guidance (cfg=4.5) over 40 DDIM steps.
+            cross-attention diffusion prior conditioned on decoded cognitive state. Output is
+            sampled with classifier-free guidance (cfg=4.5) over 40 DDIM steps.
           </div>
         </GlassCard>
       </div>
@@ -375,17 +428,16 @@ function RadialScore({ value }: { value: number }) {
       </svg>
       <div className="text-center">
         <div className="font-mono text-xl font-semibold tabular-nums">{(v * 100).toFixed(0)}</div>
-        <div className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">score</div>
+        <div className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
+          score
+        </div>
       </div>
     </div>
   );
 }
 
 function DotGrid({ n = 48, hue = 200 }: { n?: number; hue?: number }) {
-  const cells = useMemo(
-    () => Array.from({ length: n }, () => Math.random()),
-    [n]
-  );
+  const cells = useMemo(() => Array.from({ length: n }, () => Math.random()), [n]);
   return (
     <div
       className="grid h-full gap-[2px]"

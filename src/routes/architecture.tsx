@@ -4,12 +4,17 @@ import { GlassCard, PageHeader, Section } from "@/components/ui-bits";
 import { ArrowRight, Cpu, Database, Eye, Layers, Shield, Waves } from "lucide-react";
 
 export const Route = createFileRoute("/architecture")({
-  head: () => ({ meta: [
-    { title: "Architecture — NeuroWeave" },
-    { name: "description", content: "From EEG ingestion to embeddings, latent space, and reconstruction APIs." },
-    { property: "og:title", content: "Architecture — NeuroWeave" },
-    { property: "og:description", content: "NeuroWeave platform architecture." },
-  ]}),
+  head: () => ({
+    meta: [
+      { title: "Architecture — NeuroWeave" },
+      {
+        name: "description",
+        content: "From EEG ingestion to embeddings, latent space, and reconstruction APIs.",
+      },
+      { property: "og:title", content: "Architecture — NeuroWeave" },
+      { property: "og:description", content: "NeuroWeave platform architecture." },
+    ],
+  }),
   component: ArchitecturePage,
 });
 
@@ -36,7 +41,9 @@ function ArchitecturePage() {
           <div className="grid gap-3 md:grid-cols-6">
             {STAGES.map((s, i) => (
               <GlassCard key={s.name} className="relative">
-                <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Stage {i + 1}</div>
+                <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Stage {i + 1}
+                </div>
                 <s.icon className="mt-3 h-5 w-5 text-neuro" />
                 <div className="mt-3 text-sm font-semibold">{s.name}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{s.desc}</div>
@@ -50,9 +57,18 @@ function ArchitecturePage() {
 
         <div className="mt-16 grid gap-4 lg:grid-cols-3">
           {[
-            { title: "Runtime", body: "Multi-region inference fleet on bare-metal GPUs with token-bucket fairness, custom CUDA kernels for 1D temporal convolutions, and streaming-first model serving." },
-            { title: "Storage", body: "Append-only neurodata lakehouse with Iceberg tables. Embeddings live in a sharded pgvector cluster with copy-on-write isolation per workspace." },
-            { title: "Governance", body: "Per-subject consent ledger, region-pinned encryption, audit-logged inference, and a deterministic replay engine to reproduce any past output." },
+            {
+              title: "Runtime",
+              body: "Multi-region inference fleet on bare-metal GPUs with token-bucket fairness, custom CUDA kernels for 1D temporal convolutions, and streaming-first model serving.",
+            },
+            {
+              title: "Storage",
+              body: "Append-only neurodata lakehouse with Iceberg tables. Embeddings live in a sharded pgvector cluster with copy-on-write isolation per workspace.",
+            },
+            {
+              title: "Governance",
+              body: "Per-subject consent ledger, region-pinned encryption, audit-logged inference, and a deterministic replay engine to reproduce any past output.",
+            },
           ].map((c) => (
             <GlassCard key={c.title}>
               <div className="text-sm font-semibold">{c.title}</div>

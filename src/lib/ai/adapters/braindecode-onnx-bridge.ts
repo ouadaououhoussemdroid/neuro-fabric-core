@@ -17,11 +17,7 @@
  * `BraindecodeBridge` contract by delegating to an internal `ONNXAdapter`.
  * The Braindecode adapter then validates window shape and forwards through it.
  */
-import {
-  ONNXAdapter,
-  isONNXRuntimeAvailable,
-  type ONNXAdapterOptions,
-} from "./onnx-adapter";
+import { ONNXAdapter, isONNXRuntimeAvailable, type ONNXAdapterOptions } from "./onnx-adapter";
 import type {
   BraindecodeBridge,
   BraindecodeForwardResult,
@@ -45,9 +41,7 @@ export interface ONNXBraindecodeBridgeOptions {
   runtime?: ONNXAdapterOptions["runtime"];
 }
 
-export function createONNXBraindecodeBridge(
-  opts: ONNXBraindecodeBridgeOptions,
-): BraindecodeBridge {
+export function createONNXBraindecodeBridge(opts: ONNXBraindecodeBridgeOptions): BraindecodeBridge {
   let embeddingAdapter: ONNXAdapter | null = null;
   let logitsAdapter: ONNXAdapter | null = null;
 

@@ -26,8 +26,7 @@ export function EmbedFallbackBadge() {
       setDismissed(false);
     }
     window.addEventListener(EMBED_FALLBACK_EVENT, onFallback as EventListener);
-    return () =>
-      window.removeEventListener(EMBED_FALLBACK_EVENT, onFallback as EventListener);
+    return () => window.removeEventListener(EMBED_FALLBACK_EVENT, onFallback as EventListener);
   }, []);
 
   if (!info || dismissed) return null;
@@ -43,15 +42,11 @@ export function EmbedFallbackBadge() {
         <div className="flex-1 text-xs">
           <p className="font-semibold">Degraded mode: PCA baseline</p>
           <p className="mt-1 text-amber-200/80">
-            The neural model{" "}
-            <span className="font-mono">{info.requestedModelId}</span> was
-            unavailable. Results came from{" "}
-            <span className="font-mono">{info.resolvedModelId}</span>.
+            The neural model <span className="font-mono">{info.requestedModelId}</span> was
+            unavailable. Results came from <span className="font-mono">{info.resolvedModelId}</span>
+            .
           </p>
-          <p
-            className="mt-1 truncate font-mono text-[10px] text-amber-200/60"
-            title={info.reason}
-          >
+          <p className="mt-1 truncate font-mono text-[10px] text-amber-200/60" title={info.reason}>
             {info.reason}
           </p>
         </div>

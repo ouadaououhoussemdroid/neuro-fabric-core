@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  validateEmbedding,
-  l2Normalize,
-  isUnitNorm,
-  EmbeddingValidationError,
-} from "../index";
+import { validateEmbedding, l2Normalize, isUnitNorm, EmbeddingValidationError } from "../index";
 
 describe("validateEmbedding", () => {
   it("accepts a well-formed vector", () => {
@@ -15,9 +10,7 @@ describe("validateEmbedding", () => {
     expect(() => validateEmbedding([0.1, Infinity, 0.3])).toThrow(/non-finite/);
   });
   it("rejects dim mismatch", () => {
-    expect(() => validateEmbedding([1, 2, 3], { expectedDim: 4 })).toThrow(
-      /expected dim 4/,
-    );
+    expect(() => validateEmbedding([1, 2, 3], { expectedDim: 4 })).toThrow(/expected dim 4/);
   });
   it("rejects all-zero by default", () => {
     expect(() => validateEmbedding([0, 0, 0])).toThrow(/zero/);
