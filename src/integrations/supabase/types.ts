@@ -1,425 +1,417 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
-  }
+    PostgrestVersion: "14.5";
+  };
   public: {
     Tables: {
       eeg_analyses: {
         Row: {
-          arousal: number
-          attention: number
-          bandpass_high: number | null
-          bandpass_low: number | null
-          created_at: string
-          embedding: Json
-          embedding_dimensions: number
-          embedding_model: string
-          file_name: string
-          file_size_bytes: number
-          id: string
-          notch_frequency: number | null
-          num_channels: number
-          num_samples: number
-          processing_time_ms: number
-          sample_rate: number
-          user_id: string
-          workload: number
-        }
+          arousal: number;
+          attention: number;
+          bandpass_high: number | null;
+          bandpass_low: number | null;
+          created_at: string;
+          embedding: number[];
+          embedding_dimensions: number;
+          embedding_model: string;
+          file_name: string;
+          file_size_bytes: number;
+          id: string;
+          notch_frequency: number | null;
+          num_channels: number;
+          num_samples: number;
+          processing_time_ms: number;
+          sample_rate: number;
+          user_id: string;
+          workload: number;
+        };
         Insert: {
-          arousal?: number
-          attention?: number
-          bandpass_high?: number | null
-          bandpass_low?: number | null
-          created_at?: string
-          embedding?: Json
-          embedding_dimensions: number
-          embedding_model: string
-          file_name: string
-          file_size_bytes?: number
-          id?: string
-          notch_frequency?: number | null
-          num_channels: number
-          num_samples: number
-          processing_time_ms?: number
-          sample_rate: number
-          user_id: string
-          workload?: number
-        }
+          arousal?: number;
+          attention?: number;
+          bandpass_high?: number | null;
+          bandpass_low?: number | null;
+          created_at?: string;
+          embedding?: number[];
+          embedding_dimensions: number;
+          embedding_model: string;
+          file_name: string;
+          file_size_bytes?: number;
+          id?: string;
+          notch_frequency?: number | null;
+          num_channels: number;
+          num_samples: number;
+          processing_time_ms?: number;
+          sample_rate: number;
+          user_id: string;
+          workload?: number;
+        };
         Update: {
-          arousal?: number
-          attention?: number
-          bandpass_high?: number | null
-          bandpass_low?: number | null
-          created_at?: string
-          embedding?: Json
-          embedding_dimensions?: number
-          embedding_model?: string
-          file_name?: string
-          file_size_bytes?: number
-          id?: string
-          notch_frequency?: number | null
-          num_channels?: number
-          num_samples?: number
-          processing_time_ms?: number
-          sample_rate?: number
-          user_id?: string
-          workload?: number
-        }
-        Relationships: []
-      }
+          arousal?: number;
+          attention?: number;
+          bandpass_high?: number | null;
+          bandpass_low?: number | null;
+          created_at?: string;
+          embedding?: number[];
+          embedding_dimensions?: number;
+          embedding_model?: string;
+          file_name?: string;
+          file_size_bytes?: number;
+          id?: string;
+          notch_frequency?: number | null;
+          num_channels?: number;
+          num_samples?: number;
+          processing_time_ms?: number;
+          sample_rate?: number;
+          user_id?: string;
+          workload?: number;
+        };
+        Relationships: [];
+      };
       enterprise_profiles: {
         Row: {
-          company_name: string
-          company_size: string | null
-          created_at: string
-          id: string
-          industry: string | null
-          user_id: string
-          website: string | null
-        }
+          company_name: string;
+          company_size: string | null;
+          created_at: string;
+          id: string;
+          industry: string | null;
+          user_id: string;
+          website: string | null;
+        };
         Insert: {
-          company_name: string
-          company_size?: string | null
-          created_at?: string
-          id?: string
-          industry?: string | null
-          user_id: string
-          website?: string | null
-        }
+          company_name: string;
+          company_size?: string | null;
+          created_at?: string;
+          id?: string;
+          industry?: string | null;
+          user_id: string;
+          website?: string | null;
+        };
         Update: {
-          company_name?: string
-          company_size?: string | null
-          created_at?: string
-          id?: string
-          industry?: string | null
-          user_id?: string
-          website?: string | null
-        }
+          company_name?: string;
+          company_size?: string | null;
+          created_at?: string;
+          id?: string;
+          industry?: string | null;
+          user_id?: string;
+          website?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "enterprise_profiles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "enterprise_profiles_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       experiment_runs: {
         Row: {
-          analysis_id: string | null
-          completed_at: string | null
-          created_at: string
-          duration_ms: number | null
-          experiment_id: string
-          id: string
-          metrics: Json
-          name: string | null
-          notes: string | null
-          params: Json
-          status: string
-          user_id: string | null
-        }
+          analysis_id: string | null;
+          completed_at: string | null;
+          created_at: string;
+          duration_ms: number | null;
+          experiment_id: string;
+          id: string;
+          metrics: Json;
+          name: string | null;
+          notes: string | null;
+          params: Json;
+          status: string;
+          user_id: string | null;
+        };
         Insert: {
-          analysis_id?: string | null
-          completed_at?: string | null
-          created_at?: string
-          duration_ms?: number | null
-          experiment_id: string
-          id?: string
-          metrics?: Json
-          name?: string | null
-          notes?: string | null
-          params?: Json
-          status?: string
-          user_id?: string | null
-        }
+          analysis_id?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          duration_ms?: number | null;
+          experiment_id: string;
+          id?: string;
+          metrics?: Json;
+          name?: string | null;
+          notes?: string | null;
+          params?: Json;
+          status?: string;
+          user_id?: string | null;
+        };
         Update: {
-          analysis_id?: string | null
-          completed_at?: string | null
-          created_at?: string
-          duration_ms?: number | null
-          experiment_id?: string
-          id?: string
-          metrics?: Json
-          name?: string | null
-          notes?: string | null
-          params?: Json
-          status?: string
-          user_id?: string | null
-        }
+          analysis_id?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          duration_ms?: number | null;
+          experiment_id?: string;
+          id?: string;
+          metrics?: Json;
+          name?: string | null;
+          notes?: string | null;
+          params?: Json;
+          status?: string;
+          user_id?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "experiment_runs_analysis_id_fkey"
-            columns: ["analysis_id"]
-            isOneToOne: false
-            referencedRelation: "eeg_analyses"
-            referencedColumns: ["id"]
+            foreignKeyName: "experiment_runs_analysis_id_fkey";
+            columns: ["analysis_id"];
+            isOneToOne: false;
+            referencedRelation: "eeg_analyses";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "experiment_runs_experiment_id_fkey"
-            columns: ["experiment_id"]
-            isOneToOne: false
-            referencedRelation: "experiments"
-            referencedColumns: ["id"]
+            foreignKeyName: "experiment_runs_experiment_id_fkey";
+            columns: ["experiment_id"];
+            isOneToOne: false;
+            referencedRelation: "experiments";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       experiments: {
         Row: {
-          created_at: string
-          description: string | null
-          id: string
-          name: string
-          status: string
-          tags: string[]
-          updated_at: string
-          user_id: string
-        }
+          created_at: string;
+          description: string | null;
+          id: string;
+          name: string;
+          status: string;
+          tags: string[];
+          updated_at: string;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          name: string
-          status?: string
-          tags?: string[]
-          updated_at?: string
-          user_id: string
-        }
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          name: string;
+          status?: string;
+          tags?: string[];
+          updated_at?: string;
+          user_id: string;
+        };
         Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          name?: string
-          status?: string
-          tags?: string[]
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          name?: string;
+          status?: string;
+          tags?: string[];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
-          avatar_url: string | null
-          created_at: string
-          full_name: string | null
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-        }
+          avatar_url: string | null;
+          created_at: string;
+          full_name: string | null;
+          id: string;
+          role: Database["public"]["Enums"]["app_role"];
+        };
         Insert: {
-          avatar_url?: string | null
-          created_at?: string
-          full_name?: string | null
-          id: string
-          role?: Database["public"]["Enums"]["app_role"]
-        }
+          avatar_url?: string | null;
+          created_at?: string;
+          full_name?: string | null;
+          id: string;
+          role?: Database["public"]["Enums"]["app_role"];
+        };
         Update: {
-          avatar_url?: string | null
-          created_at?: string
-          full_name?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-        }
-        Relationships: []
-      }
+          avatar_url?: string | null;
+          created_at?: string;
+          full_name?: string | null;
+          id?: string;
+          role?: Database["public"]["Enums"]["app_role"];
+        };
+        Relationships: [];
+      };
       researcher_profiles: {
         Row: {
-          created_at: string
-          id: string
-          institution_name: string
-          publication_url: string | null
-          research_field: string | null
-          user_id: string
-        }
+          created_at: string;
+          id: string;
+          institution_name: string;
+          publication_url: string | null;
+          research_field: string | null;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          institution_name: string
-          publication_url?: string | null
-          research_field?: string | null
-          user_id: string
-        }
+          created_at?: string;
+          id?: string;
+          institution_name: string;
+          publication_url?: string | null;
+          research_field?: string | null;
+          user_id: string;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          institution_name?: string
-          publication_url?: string | null
-          research_field?: string | null
-          user_id?: string
-        }
+          created_at?: string;
+          id?: string;
+          institution_name?: string;
+          publication_url?: string | null;
+          research_field?: string | null;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "researcher_profiles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "researcher_profiles_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       waitlist: {
         Row: {
-          created_at: string
-          email: string
-          id: string
-          name: string | null
-        }
+          created_at: string;
+          email: string;
+          id: string;
+          name: string | null;
+        };
         Insert: {
-          created_at?: string
-          email: string
-          id?: string
-          name?: string | null
-        }
+          created_at?: string;
+          email: string;
+          id?: string;
+          name?: string | null;
+        };
         Update: {
-          created_at?: string
-          email?: string
-          id?: string
-          name?: string | null
-        }
-        Relationships: []
-      }
-    }
+          created_at?: string;
+          email?: string;
+          id?: string;
+          name?: string | null;
+        };
+        Relationships: [];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Enums: {
-      app_role: "individual" | "researcher" | "enterprise"
-    }
+      app_role: "individual" | "researcher" | "enterprise";
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+    : never;
 
 export const Constants = {
   public: {
@@ -427,4 +419,4 @@ export const Constants = {
       app_role: ["individual", "researcher", "enterprise"],
     },
   },
-} as const
+} as const;
