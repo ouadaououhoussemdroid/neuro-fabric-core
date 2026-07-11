@@ -261,6 +261,24 @@ export type Database = {
           },
         ];
       };
+      rate_limits: {
+        Row: {
+          user_id: string;
+          window_start: string;
+          request_count: number;
+        };
+        Insert: {
+          user_id: string;
+          window_start?: string;
+          request_count?: number;
+        };
+        Update: {
+          user_id?: string;
+          window_start?: string;
+          request_count?: number;
+        };
+        Relationships: [];
+      };
       waitlist: {
         Row: {
           created_at: string;
@@ -287,7 +305,17 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      check_rate_limit: {
+        Args: {
+          p_user_id: string;
+          p_max_requests: number;
+          p_window_seconds: number;
+        };
+        Returns: {
+          allowed: boolean;
+          retry_after_ms: number;
+        }[];
+      };
     };
     Enums: {
       app_role: "individual" | "researcher" | "enterprise";
