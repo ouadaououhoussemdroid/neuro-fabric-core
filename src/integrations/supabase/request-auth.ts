@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { requireServerEnv } from "@/lib/env.server";
 import type { Database } from "./types";
 
 /**
@@ -20,10 +21,14 @@ export class AuthError extends Error {
 export async function authenticateRequest(
   request: Request,
 ): Promise<{ userId: string; supabase: SupabaseClient<Database> }> {
-  const SUPABASE_URL = process.env.SUPABASE_URL;
-  const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-    throw new AuthError("Server misconfigured: Supabase env vars missing", 500);
+  let SUPABASE_URL: string, SUPABASE_PUBLISHABLE_KEY: string;
+  try {
+    ({ SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } = requireServerEnv([
+      "SUPABASE_URL",
+      "SUPABASE_PUBLISHABLE_KEY",
+    ]));
+  } catch (e) {
+    throw new AuthError((e as Error).message, 500);
   }
 
   const authHeader = request.headers.get("authorization") ?? "";
