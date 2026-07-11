@@ -90,7 +90,9 @@ describe("ONNX-backed Braindecode bridge", () => {
         }),
     );
     try {
-      const res = await embedEEG(makeInput(4, 256, 128));
+      const res = await embedEEG(makeInput(4, 256, 128), {
+        preferredModelId: "braindecode-eegnetv4-onnx",
+      });
       expect(res.fellBack).toBe(true);
       expect(res.modelId).toBe("pca-legacy-v1");
       expect(res.fallbackReason).toMatch(/simulated ONNX failure/);
