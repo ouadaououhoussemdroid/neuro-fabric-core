@@ -16,7 +16,7 @@ import {
   Users,
 } from "lucide-react";
 
-export const Route = createFileRoute("/datasets")({
+export const Route = createFileRoute("/_authenticated/datasets")({
   component: DatasetsPage,
 });
 

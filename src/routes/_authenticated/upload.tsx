@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, CheckCircle, Upload, XCircle } from "lucide-react";
 
-export const Route = createFileRoute("/upload")({
+export const Route = createFileRoute("/_authenticated/upload")({
   component: UploadPage,
 });
 

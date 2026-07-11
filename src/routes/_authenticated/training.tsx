@@ -8,7 +8,7 @@ import { runTrainingPipeline } from "@/lib/training/pipeline";
 import type { TrainingProgress, TrainedWeights } from "@/lib/training/pipeline";
 import { Activity, AlertTriangle, CheckCircle, Download, Play, Square } from "lucide-react";
 
-export const Route = createFileRoute("/training")({
+export const Route = createFileRoute("/_authenticated/training")({
   component: TrainingPage,
 });
 
