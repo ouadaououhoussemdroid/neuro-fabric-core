@@ -25,6 +25,12 @@ dist-ssr
 .env.*
 !.env.example
 
+# bun is the authoritative package manager (see bunfig.toml); don't
+# let a stray `npm install` reintroduce a second, drifting lockfile
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
