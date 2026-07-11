@@ -10,9 +10,15 @@ export const Route = createFileRoute("/eeg2image")({
   head: () => ({
     meta: [
       { title: "EEG2Image — NeuroWeave" },
-      { name: "description", content: "Reconstruct images from visual-cortex EEG signals." },
+      {
+        name: "description",
+        content: "A concept demo of visual-cortex EEG-to-image reconstruction.",
+      },
       { property: "og:title", content: "EEG2Image — NeuroWeave" },
-      { property: "og:description", content: "NeuroWeave EEG-to-image reconstruction demo." },
+      {
+        property: "og:description",
+        content: "NeuroWeave EEG-to-image reconstruction concept demo.",
+      },
     ],
   }),
   component: EEG2ImagePage,
@@ -65,9 +71,9 @@ function EEG2ImagePage() {
     <SiteShell>
       <Section>
         <PageHeader
-          eyebrow="EEG2Image Reconstruction"
+          eyebrow="EEG2Image Reconstruction · concept demo"
           title="Decode what the visual cortex sees."
-          sub="Our latent-aligned diffusion model maps EEG embeddings to images with calibrated confidence and alignment scores."
+          sub="A concept preview of visual-cortex EEG-to-image reconstruction. This page cycles through fixed sample outputs to illustrate the intended UX — it is not connected to a live image-generation model."
         />
 
         <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">

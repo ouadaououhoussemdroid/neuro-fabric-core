@@ -190,13 +190,13 @@ export function ReconstructionShowcase() {
     <div className="space-y-12">
       {/* Pipeline diagram */}
       <div>
-        <Eyebrow>Latent-to-Image Pipeline</Eyebrow>
+        <Eyebrow>Latent-to-Image Pipeline · concept</Eyebrow>
         <h3 className="mt-3 text-2xl font-semibold tracking-tight md:text-3xl">
           From visual cortex to pixels in five stages.
         </h3>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          A multimodal decoder aligns EEG embeddings with a CLIP-conditioned diffusion prior. Each
-          stage is observable, versioned, and replayable for clinical-grade reproducibility.
+          A concept illustration of a proposed five-stage pipeline. No such decoder is built or
+          deployed today — the animation below is a fixed, illustrative sequence, not a live run.
         </p>
 
         <div className="mt-6 grid items-stretch gap-3 md:grid-cols-[repeat(5,1fr)_auto] md:grid-cols-9">
@@ -329,11 +329,12 @@ export function ReconstructionShowcase() {
 
           <div className="mt-6 rounded-lg border border-border/60 bg-muted/20 p-3 text-xs text-muted-foreground">
             <span className="font-mono text-[10px] uppercase tracking-wider text-foreground">
-              Multimodal decoder ·{" "}
+              Multimodal decoder · concept design{" "}
             </span>
-            EEG embeddings are projected into a shared CLIP-aligned latent, then denoised by a
-            cross-attention diffusion prior conditioned on decoded cognitive state. Output is
-            sampled with classifier-free guidance (cfg=4.5) over 40 DDIM steps.
+            Proposed design: EEG embeddings projected into a shared CLIP-aligned latent, then
+            denoised by a cross-attention diffusion prior conditioned on decoded cognitive state. No
+            such model has been built or trained — this describes a target architecture, not a
+            deployed one.
           </div>
         </GlassCard>
       </div>
@@ -348,7 +349,7 @@ export function ReconstructionShowcase() {
             </h3>
           </div>
           <span className="hidden font-mono text-[10px] uppercase tracking-wider text-muted-foreground md:inline">
-            held-out subjects · n=6
+            fixed samples · illustrative
           </span>
         </div>
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

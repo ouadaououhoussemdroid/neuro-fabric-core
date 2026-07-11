@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site-shell";
 import { GlassCard, PageHeader, Section, StatPill } from "@/components/ui-bits";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -6,13 +6,16 @@ import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "rec
 export const Route = createFileRoute("/research")({
   head: () => ({
     meta: [
-      { title: "Research Dashboard — NeuroWeave" },
+      { title: "Research Dashboard (concept) — NeuroWeave" },
       {
         name: "description",
-        content: "Experiment tracking, datasets, training metrics, and benchmarks.",
+        content: "Concept UI for experiment tracking, datasets, training metrics, and benchmarks.",
       },
-      { property: "og:title", content: "Research Dashboard — NeuroWeave" },
-      { property: "og:description", content: "Track experiments and benchmarks." },
+      { property: "og:title", content: "Research Dashboard (concept) — NeuroWeave" },
+      {
+        property: "og:description",
+        content: "Concept UI for tracking experiments and benchmarks.",
+      },
     ],
   }),
   component: ResearchPage,
@@ -37,22 +40,33 @@ function ResearchPage() {
     <SiteShell>
       <Section>
         <PageHeader
-          eyebrow="Research Dashboard"
+          eyebrow="Research Dashboard · concept UI"
           title="Experiments, metrics, and benchmarks."
-          sub="Track every training run, dataset version, and benchmark — designed for neuroscience teams that ship."
+          sub="A concept UI for the experiment-tracking workflow we intend to support — the runs, GPU hours, datasets, and benchmark scores below are illustrative sample data, not a real training program."
         />
 
+        <div className="mb-6 rounded-lg border border-neuro/30 bg-neuro/5 px-4 py-3 text-sm text-muted-foreground">
+          This dashboard is a concept UI. The real, working experiment tracking backing it is the{" "}
+          <code className="rounded bg-muted px-1 py-0.5 text-xs">experiments</code> /{" "}
+          <code className="rounded bg-muted px-1 py-0.5 text-xs">experiment_runs</code> tables,
+          usable today at{" "}
+          <Link to="/experiments" className="text-neuro hover:underline">
+            /experiments
+          </Link>
+          .
+        </div>
+
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <StatPill label="Active runs" value="12" />
-          <StatPill label="GPU hours · 7d" value="8,412" />
-          <StatPill label="Datasets" value="73" />
-          <StatPill label="Best benchmark" value="84.2% acc" />
+          <StatPill label="Active runs (demo)" value="12" />
+          <StatPill label="GPU hours · 7d (demo)" value="8,412" />
+          <StatPill label="Datasets (demo)" value="73" />
+          <StatPill label="Best benchmark (demo)" value="84.2% acc" />
         </div>
 
         <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
           <GlassCard>
             <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">nwf-7b · exp_2014 · training</div>
+              <div className="text-sm font-semibold">nwf-7b · exp_2014 · training (demo)</div>
               <span className="font-mono text-[10px] text-muted-foreground">
                 step 10,000 / 50,000
               </span>
