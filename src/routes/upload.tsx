@@ -76,7 +76,14 @@ function UploadPage() {
     form.append("file", file);
     if (sampleRate) form.append("sampleRate", sampleRate);
     try {
-      const res = await fetch("/api/eeg/upload", { method: "POST", body: form });
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) throw new Error("Sign in to upload and analyze a file.");
+      const res = await fetch("/api/eeg/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: form,
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setResult(data);

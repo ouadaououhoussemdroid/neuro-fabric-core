@@ -4,6 +4,7 @@ import { preprocess } from "@/lib/eeg/preprocessing";
 import { embedSignal } from "@/lib/embeddings";
 import { decodeCognitiveState } from "@/lib/decoder";
 import { log, startTimer } from "@/lib/logging";
+import { authenticateRequest, AuthError } from "@/integrations/supabase/request-auth";
 import type { EEGSignal } from "@/lib/eeg/types";
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -34,38 +35,22 @@ export const Route = createFileRoute("/api/eeg/upload")({
         const overall = startTimer("eeg.upload.total");
         try {
           let userId: string;
-          let supabase: any;
+          let supabase: Awaited<ReturnType<typeof authenticateRequest>>["supabase"];
           try {
-            const authHeader = request.headers.get("authorization") ?? "";
-            if (!authHeader.startsWith("Bearer ")) {
-              return json({ error: "Unauthorized: missing Bearer token" }, 401);
-            }
-            const token = authHeader.slice("Bearer ".length).trim();
-            if (!token) return json({ error: "Unauthorized: empty token" }, 401);
-
-            const { createClient } = await import("@supabase/supabase-js");
-            const SUPABASE_URL = process.env.SUPABASE_URL!;
-            const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY!;
-            if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-              return json({ error: "Server misconfigured: Supabase env vars missing" }, 500);
-            }
-            const client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-              global: { headers: { Authorization: `Bearer ${token}` } },
-              auth: { persistSession: false, autoRefreshToken: false },
-            });
-            const { data: userData, error: userErr } = await client.auth.getUser(token);
-            if (userErr || !userData?.user) {
-              return json({ error: "Unauthorized: invalid token" }, 401);
-            }
-            userId = userData.user.id;
-            supabase = client;
+            const auth = await authenticateRequest(request);
+            userId = auth.userId;
+            supabase = auth.supabase;
           } catch (authErr) {
-            return json({ error: (authErr as Error).message ?? "Unauthorized" }, 401);
+            const status = authErr instanceof AuthError ? authErr.status : 401;
+            return json({ error: (authErr as Error).message ?? "Unauthorized" }, status);
           }
 
           const rl = checkRateLimit(userId);
           if (!rl.allowed) {
-            return json({ error: "Rate limit exceeded. Try again shortly.", retry_after_ms: rl.retryAfterMs }, 429);
+            return json(
+              { error: "Rate limit exceeded. Try again shortly.", retry_after_ms: rl.retryAfterMs },
+              429,
+            );
           }
 
           const ct = request.headers.get("content-type") ?? "";
@@ -80,7 +65,13 @@ export const Route = createFileRoute("/api/eeg/upload")({
           }
 
           if (file.size > MAX_FILE_BYTES) {
-            return json({ error: `File too large. Maximum is ${MAX_FILE_BYTES / 1024 / 1024} MB.`, file_size_bytes: file.size }, 413);
+            return json(
+              {
+                error: `File too large. Maximum is ${MAX_FILE_BYTES / 1024 / 1024} MB.`,
+                file_size_bytes: file.size,
+              },
+              413,
+            );
           }
 
           if (file.size === 0) {
@@ -91,7 +82,10 @@ export const Route = createFileRoute("/api/eeg/upload")({
           const lower = filename.toLowerCase();
           const isAllowed = ALLOWED_TYPES.some((ext) => lower.endsWith(ext));
           if (!isAllowed) {
-            return json({ error: `Unsupported file type: ${filename}. Allowed: ${ALLOWED_TYPES.join(", ")}` }, 415);
+            return json(
+              { error: `Unsupported file type: ${filename}. Allowed: ${ALLOWED_TYPES.join(", ")}` },
+              415,
+            );
           }
 
           const sampleRateRaw = form.get("sampleRate");
@@ -105,11 +99,13 @@ export const Route = createFileRoute("/api/eeg/upload")({
               signal = parseEDF(await file.arrayBuffer());
             } else if (lower.endsWith(".csv") || lower.endsWith(".tsv")) {
               const fs = Number(sampleRateRaw);
-              if (!Number.isFinite(fs) || fs <= 0) return json({ error: "sampleRate required for CSV" }, 400);
+              if (!Number.isFinite(fs) || fs <= 0)
+                return json({ error: "sampleRate required for CSV" }, 400);
               signal = parseCSV(await file.text(), fs);
             } else if (lower.endsWith(".npy")) {
               const fs = Number(sampleRateRaw);
-              if (!Number.isFinite(fs) || fs <= 0) return json({ error: "sampleRate required for NPY" }, 400);
+              if (!Number.isFinite(fs) || fs <= 0)
+                return json({ error: "sampleRate required for NPY" }, 400);
               signal = parseNPY(await file.arrayBuffer(), fs);
             } else {
               return json({ error: `Unsupported file type: ${filename}` }, 415);
@@ -118,7 +114,10 @@ export const Route = createFileRoute("/api/eeg/upload")({
             return json({ error: `Failed to parse file: ${(parseErr as Error).message}` }, 422);
           }
 
-          const uploadMs = tUpload.end({ channels: signal.channels.length, samples: signal.data[0]?.length ?? 0 });
+          const uploadMs = tUpload.end({
+            channels: signal.channels.length,
+            samples: signal.data[0]?.length ?? 0,
+          });
 
           if (signal.channels.length === 0 || !signal.data[0] || signal.data[0].length === 0) {
             return json({ error: "Parsed signal has no data." }, 422);
@@ -132,7 +131,10 @@ export const Route = createFileRoute("/api/eeg/upload")({
             bandpass: bp ? { low: Number(bp.low), high: Number(bp.high) } : undefined,
             notch: nt ? { fc: (Number(nt.fc) === 50 ? 50 : 60) as 50 | 60 } : undefined,
           });
-          const preprocessMs = tPre.end({ steps: pre.report.steps.length, windows: pre.windows.length });
+          const preprocessMs = tPre.end({
+            steps: pre.report.steps.length,
+            windows: pre.windows.length,
+          });
 
           if (pre.windows.length === 0) {
             return json({ error: "Signal too short for window segmentation." }, 422);
@@ -148,6 +150,7 @@ export const Route = createFileRoute("/api/eeg/upload")({
           const totalMs = overall.end({ filename });
 
           let analysisId: string | null = null;
+          let persisted = false;
           try {
             const { data: insertData, error: dbErr } = await supabase
               .from("eeg_analyses")
@@ -171,18 +174,40 @@ export const Route = createFileRoute("/api/eeg/upload")({
               })
               .select("id")
               .single();
-            if (!dbErr) analysisId = insertData?.id ?? null;
-          } catch (_) {}
+            if (dbErr) {
+              log("error", "eeg.upload.persist_failed", { error: dbErr.message, userId, filename });
+            } else {
+              analysisId = insertData?.id ?? null;
+              persisted = analysisId !== null;
+            }
+          } catch (e) {
+            log("error", "eeg.upload.persist_exception", {
+              error: (e as Error).message,
+              userId,
+              filename,
+            });
+          }
 
           return json({
             analysis_id: analysisId,
+            persisted,
             embedding: emb.vector,
             dimensions: emb.dimensions,
             model: emb.model,
             preprocessing_report: pre.report,
             decoder,
-            timings: { upload_ms: uploadMs, preprocess_ms: preprocessMs, embed_ms: embedMs, decode_ms: decodeMs, total_ms: totalMs },
-            signal: { channels: signal.channels, sampleRate: signal.sampleRate, samples: signal.data[0]?.length ?? 0 },
+            timings: {
+              upload_ms: uploadMs,
+              preprocess_ms: preprocessMs,
+              embed_ms: embedMs,
+              decode_ms: decodeMs,
+              total_ms: totalMs,
+            },
+            signal: {
+              channels: signal.channels,
+              sampleRate: signal.sampleRate,
+              samples: signal.data[0]?.length ?? 0,
+            },
           });
         } catch (err) {
           log("error", "eeg.upload.failed", { error: (err as Error).message });
@@ -194,10 +219,17 @@ export const Route = createFileRoute("/api/eeg/upload")({
 });
 
 function json(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
 }
 
 function parseJsonField(v: FormDataEntryValue | null): Record<string, unknown> | null {
   if (typeof v !== "string" || v.length === 0) return null;
-  try { return JSON.parse(v) as Record<string, unknown>; } catch { return null; }
+  try {
+    return JSON.parse(v) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
 }
