@@ -1,5 +1,7 @@
 # NeuroSync: Code-Level Audit Report
 
+> **⚠️ Historical document — superseded.** Retained as a baseline for traceability. The current project state is documented in `docs/audits/2026-06-19_project_state_audit.md`, and the active task catalogue is `docs/roadmaps/2026-06-19_open_source_execution_blueprint.md`.
+
 **Audit Date:** 2026-06-06  
 **Repository:** ouadaououhoussemdroid/neuro-fabric-core  
 **Commit:** 2ee39e44d02bd27036734bcf1fadba659083c5e4  
@@ -34,14 +36,14 @@
 
 ### Current Maturity Scores
 
-| Dimension | Score | Status |
-|-----------|-------|--------|
-| **Frontend Engineering** | 8/10 | Production-ready UI/UX patterns |
-| **EEG Signal Processing** | 7/10 | Genuine algorithms, no production hardening |
-| **Machine Learning** | 0/10 | Zero ML infrastructure |
-| **Scientific Infrastructure** | 1/10 | Only heuristics; no validation |
-| **Data Infrastructure** | 1/10 | No persistent storage |
-| **DevOps/Deployment** | 2/10 | Vite template; no CI/CD |
+| Dimension                     | Score | Status                                      |
+| ----------------------------- | ----- | ------------------------------------------- |
+| **Frontend Engineering**      | 8/10  | Production-ready UI/UX patterns             |
+| **EEG Signal Processing**     | 7/10  | Genuine algorithms, no production hardening |
+| **Machine Learning**          | 0/10  | Zero ML infrastructure                      |
+| **Scientific Infrastructure** | 1/10  | Only heuristics; no validation              |
+| **Data Infrastructure**       | 1/10  | No persistent storage                       |
+| **DevOps/Deployment**         | 2/10  | Vite template; no CI/CD                     |
 
 ---
 
@@ -52,6 +54,7 @@
 **File:** `src/lib/eeg/parsers/edf.ts`
 
 **Evidence:**
+
 - Lines 10-107: Complete EDF v1.0 parser with proper header extraction
 - Lines 55: Correct sample rate calculation: `fs0 = samplesPerRecord[0] / recordDuration`
 - Lines 74-76: Proper digital-to-physical scaling using standard formula
@@ -62,6 +65,7 @@
 **File:** `src/lib/eeg/parsers/csv.ts`
 
 **Evidence:**
+
 - Lines 17-19: Flexible header detection (checks if first row is numeric)
 - Lines 22-29: Correct channel/sample matrix construction
 
@@ -72,6 +76,7 @@
 **File:** `src/lib/eeg/parsers/npy.ts`
 
 **Evidence:**
+
 - Lines 44-52: Multiple dtype support (f4, f8, i2, i4)
 - Lines 60-68: Handles both C and Fortran ordering
 
@@ -82,6 +87,7 @@
 **File:** `src/lib/eeg/preprocessing/filters.ts`
 
 **Evidence:**
+
 - Lines 8-21: Correct Butterworth IIR coefficient calculation
 - Lines 68-74: Zero-phase forward-backward filtering (filtfilt)
 - Lines 81-89: Proper cascade of highpass then lowpass
@@ -91,6 +97,7 @@
 **File:** `src/lib/eeg/preprocessing/filters.ts`
 
 **Evidence:**
+
 - Lines 38-51: Narrow-band notch filter (Q=30 default)
 - Lines 92-98: Applied per-channel with zero-phase
 
@@ -99,6 +106,7 @@
 **File:** `src/lib/eeg/preprocessing/segment.ts`
 
 **Evidence:**
+
 - Lines 18-19: Correct window size calculation
 - Lines 22-26: Proper overlap handling
 
@@ -107,6 +115,7 @@
 **File:** `src/lib/eeg/preprocessing/normalize.ts`
 
 **Evidence:**
+
 - Lines 2-18: Per-channel standardization with safe zero-guard
 
 ### 1.8 Feature Extraction: REAL ✅ (Confidence: 98%)
@@ -114,6 +123,7 @@
 **File:** `src/lib/embeddings/features.ts`
 
 **Evidence:**
+
 - Lines 11-35: Naive DFT with Hann windowing
 - Lines 7-9: Five standard EEG bands defined
 - Lines 37-47: Correct per-band power aggregation
@@ -129,6 +139,7 @@
 **File:** `src/lib/embeddings/pca.ts`
 
 **Evidence:**
+
 - Lines 36-90: Complete power iteration algorithm
 - Lines 41-43: Correct mean centering
 - Lines 49-63: Correct covariance matrix computation (symmetric)
@@ -141,6 +152,7 @@
 **File:** `src/lib/embeddings/autoencoder.ts`
 
 **Evidence:**
+
 ```typescript
 // Lines 1-9: EXPLICIT ADMISSION
 /**
@@ -150,7 +162,7 @@
 
 // Lines 20-27: IMPLEMENTATION
 export function fitAutoencoder(X: number[][], latentDim: number): AutoencoderModel {
-  const pca: PCAModel = fitPCA(X, latentDim);  // JUST CALLS PCA
+  const pca: PCAModel = fitPCA(X, latentDim); // JUST CALLS PCA
   const encoder = pca.components;
   // ... transposes encoder ...
   return { kind: "linear-ae", latentDim, encoder, decoder, mean: pca.mean };
@@ -164,6 +176,7 @@ export function fitAutoencoder(X: number[][], latentDim: number): AutoencoderMod
 **File:** `src/lib/embeddings/index.ts`
 
 **Evidence:**
+
 - Lines 18-20: Feature extraction via DFT
 - Lines 36-39: Mean-pooling across windows
 - Lines 41-49: Smart fallback to raw features if n < k
@@ -178,6 +191,7 @@ export function fitAutoencoder(X: number[][], latentDim: number): AutoencoderMod
 **File:** `src/lib/decoder/index.ts`
 
 **Evidence:**
+
 ```typescript
 // Lines 7-15: EXPLICIT HEURISTIC ADMISSION
 /**
@@ -223,11 +237,13 @@ function squash(x: number): number {
 ### Evidence of Absence
 
 **package.json inspection:**
+
 - No TensorFlow, no PyTorch, no JAX
 - No ML.js, no ONNX, no TensorFlow.js
 - Zero neural network libraries
 
 **Code inspection:**
+
 - Zero `import tensorflow` or `import torch`
 - Zero neural network definitions
 - Zero training loops
@@ -246,6 +262,7 @@ function squash(x: number): number {
 **File:** `src/lib/eeg/loaders/physionet.ts`
 
 **Evidence:**
+
 - Lines 14-30: Correctly lists 109 subjects × 14 runs = 1,526 records
 - Lines 32-36: Fetches from official PhysioNet HTTPS
 
@@ -256,6 +273,7 @@ function squash(x: number): number {
 **File:** `src/lib/eeg/loaders/tuh.ts`
 
 **Evidence:**
+
 ```typescript
 // Lines 5-9: EXPLICIT ADMISSION
 /**
@@ -293,6 +311,7 @@ if (!base || index.length === 0) return [];
 **File:** `src/routes/api/eeg/upload.ts`
 
 **Pipeline (Lines 28-127):**
+
 1. Multipart form parsing
 2. File type detection (EDF/CSV/NPY)
 3. Signal parsing
@@ -302,6 +321,7 @@ if (!base || index.length === 0) return [];
 7. JSON response with timings
 
 **Security Issues:**
+
 - ⚠️ No file size limit
 - ⚠️ No rate limiting
 - ⚠️ No explicit authentication check
@@ -311,15 +331,15 @@ if (!base || index.length === 0) return [];
 
 ## SECTION 7: SCIENTIFIC READINESS SCORES
 
-| Dimension | Score | Justification |
-|-----------|-------|---------------|
-| **EEG Preprocessing** | 6/10 | Correct filters; no artifact rejection, no ICA |
-| **Feature Extraction** | 5/10 | Standard bands; naive DFT (no FFT), single-window (high variance) |
-| **Embeddings** | 3/10 | PCA is sound; no learned representation, no validation |
-| **Cognitive Decoding** | 2/10 | Heuristic ratios; unvalidated, no ground truth |
-| **Dataset Infrastructure** | 4/10 | PhysioNet works; TUH/BCI need mirrors; Sleep-EDF/CHB-MIT missing |
-| **Training Infrastructure** | 0/10 | Zero training pipeline |
-| **Foundation Model Readiness** | 0/10 | No neural networks whatsoever |
+| Dimension                      | Score | Justification                                                     |
+| ------------------------------ | ----- | ----------------------------------------------------------------- |
+| **EEG Preprocessing**          | 6/10  | Correct filters; no artifact rejection, no ICA                    |
+| **Feature Extraction**         | 5/10  | Standard bands; naive DFT (no FFT), single-window (high variance) |
+| **Embeddings**                 | 3/10  | PCA is sound; no learned representation, no validation            |
+| **Cognitive Decoding**         | 2/10  | Heuristic ratios; unvalidated, no ground truth                    |
+| **Dataset Infrastructure**     | 4/10  | PhysioNet works; TUH/BCI need mirrors; Sleep-EDF/CHB-MIT missing  |
+| **Training Infrastructure**    | 0/10  | Zero training pipeline                                            |
+| **Foundation Model Readiness** | 0/10  | No neural networks whatsoever                                     |
 
 **Overall Scientific Maturity: 2/10**
 
@@ -369,6 +389,7 @@ All EEG processing genuinely implemented with mathematically correct algorithms.
 ### 4. PRODUCTION READINESS: 15%
 
 Reasons it's not production-ready:
+
 - ❌ No data persistence (results computed but not stored)
 - ❌ No authentication (Supabase import but not integrated)
 - ❌ No rate limiting (DoS vector)
@@ -383,15 +404,16 @@ Reasons it's not production-ready:
 **NOT:** AI platform, ML system, or neurotechnology product
 
 **For:**
+
 - ✅ Research prototype of spectral analysis
 - ✅ Educational tool for EEG processing
 - ✅ Proof-of-concept for cognitive heuristics
 
 **Not For:**
+
 - ❌ Production clinical use
 - ❌ AI/ML deployment
 - ❌ Peer-reviewed research (unvalidated metrics)
 - ❌ Commercial neurotechnology product
 
 ---
-

@@ -6,20 +6,20 @@
 
 ## 1. Readiness Matrix
 
-| Stage | File(s) | Status | Notes |
-|---|---|---|---|
-| Contract | `configs/eegconformer-bciiv2a.yaml` | Ready | 22ch · 250Hz · 1000 samples · 32-d · opset 17 — matches `registerBraindecodeEEGConformer`. |
-| Dataset acquisition | `scripts/acquire_dataset.py` | Ready | MOABB `BNCI2014_001`; idempotent; honours `MNE_DATA`/`MOABB_DATA`. |
-| Preprocessing | `scripts/preprocess.py` | Ready | MOABB `MotorImagery` paradigm (4–38 Hz, 0–4 s, resample 250 Hz), per-trial z-score, cross-subject split, T-axis pad/crop. |
-| Training | `scripts/train.py` | Ready | AdamW + cosine, AMP, early stopping, best-val checkpoint, `train_history.json`. |
-| Validation | `scripts/validate.py` | Ready | Cross-subject hold-out (subject 9). Writes `validation_report.json`. |
-| Evaluation | `scripts/evaluate.py` | Ready | Mirrors browser benchmark (cosine recall@k, embedding norm/variance). |
-| Checkpoint export | produced by `train.py` | Ready | `eegconformer.pt` is best-val `state_dict`. |
-| ONNX export | `scripts/export_onnx.py` + repo `scripts/export_braindecode_eegconformer.py` | Ready | opset 17, named outputs `embedding`+`logits`, `onnx.checker`, >=0.999 PT-ORT cosine gate. |
-| Packaging | `scripts/package.py` | Ready | sha256, `manifest.json`, embeds train/validation/evaluation reports, copies `MODEL_CARD.md`. |
-| Orchestration | `scripts/run_all.sh` | Ready | Sequential pipeline. |
-| Colab notebook | `notebooks/EEGConformer_BCIIV2a.ipynb` | Ready with caveats | 12 cells: clone -> install -> GPU check -> cat config -> acquire -> preprocess -> train -> validate -> evaluate -> export -> package -> zip & download. Caveats below. |
-| Operator docs | `docs/TRAINING_GUIDE.md`, `docs/MODEL_CARD.md`, `README.md` | Ready | Acceptance thresholds documented (`holdout_acc >= 0.55`, `recall@10 >= 0.55`). |
+| Stage               | File(s)                                                                      | Status             | Notes                                                                                                                                                                  |
+| ------------------- | ---------------------------------------------------------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Contract            | `configs/eegconformer-bciiv2a.yaml`                                          | Ready              | 22ch · 250Hz · 1000 samples · 32-d · opset 17 — matches `registerBraindecodeEEGConformer`.                                                                             |
+| Dataset acquisition | `scripts/acquire_dataset.py`                                                 | Ready              | MOABB `BNCI2014_001`; idempotent; honours `MNE_DATA`/`MOABB_DATA`.                                                                                                     |
+| Preprocessing       | `scripts/preprocess.py`                                                      | Ready              | MOABB `MotorImagery` paradigm (4–38 Hz, 0–4 s, resample 250 Hz), per-trial z-score, cross-subject split, T-axis pad/crop.                                              |
+| Training            | `scripts/train.py`                                                           | Ready              | AdamW + cosine, AMP, early stopping, best-val checkpoint, `train_history.json`.                                                                                        |
+| Validation          | `scripts/validate.py`                                                        | Ready              | Cross-subject hold-out (subject 9). Writes `validation_report.json`.                                                                                                   |
+| Evaluation          | `scripts/evaluate.py`                                                        | Ready              | Mirrors browser benchmark (cosine recall@k, embedding norm/variance).                                                                                                  |
+| Checkpoint export   | produced by `train.py`                                                       | Ready              | `eegconformer.pt` is best-val `state_dict`.                                                                                                                            |
+| ONNX export         | `scripts/export_onnx.py` + repo `scripts/export_braindecode_eegconformer.py` | Ready              | opset 17, named outputs `embedding`+`logits`, `onnx.checker`, >=0.999 PT-ORT cosine gate.                                                                              |
+| Packaging           | `scripts/package.py`                                                         | Ready              | sha256, `manifest.json`, embeds train/validation/evaluation reports, copies `MODEL_CARD.md`.                                                                           |
+| Orchestration       | `scripts/run_all.sh`                                                         | Ready              | Sequential pipeline.                                                                                                                                                   |
+| Colab notebook      | `notebooks/EEGConformer_BCIIV2a.ipynb`                                       | Ready with caveats | 12 cells: clone -> install -> GPU check -> cat config -> acquire -> preprocess -> train -> validate -> evaluate -> export -> package -> zip & download. Caveats below. |
+| Operator docs       | `docs/TRAINING_GUIDE.md`, `docs/MODEL_CARD.md`, `README.md`                  | Ready              | Acceptance thresholds documented (`holdout_acc >= 0.55`, `recall@10 >= 0.55`).                                                                                         |
 
 **Pipeline completeness vs the stated goal (`eegconformer.pt -> eegconformer.onnx`):** No missing stage. Every required artefact (`eegconformer.pt`, `eegconformer.onnx`, `manifest.json`, `MODEL_CARD.md`, `train_history.json`, `validation_report.json`, `evaluation_report.json`) is produced by the documented pipeline.
 

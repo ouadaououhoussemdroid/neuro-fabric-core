@@ -68,6 +68,42 @@ registerModel(
 
 // Production EEGConformer — ONNX artefact served from /models/
 registerBraindecodeEEGConformer({ artifact: "/models/eegconformer.onnx" });
+
+// T-015 — Braindecode model zoo: register EEGNetv4, ShallowFBCSPNet, Deep4Net
+// alongside EEGConformer for comparative ablations. Each uses the same
+// BraindecodeAdapter scaffolding; ONNX artefacts are exported via the
+// extended export script (scripts/export_braindecode_eegconformer.py
+// now accepts --architecture).
+registerModel(
+  () =>
+    new BraindecodeAdapter({
+      id: "braindecode-eegnetv4-default",
+      architecture: "EEGNetv4",
+      channels: 22,
+      sampleRate: 128,
+      windowSamples: 256,
+    }),
+);
+registerModel(
+  () =>
+    new BraindecodeAdapter({
+      id: "braindecode-shallowfbcspnet-default",
+      architecture: "ShallowFBCSPNet",
+      channels: 22,
+      sampleRate: 250,
+      windowSamples: 1125,
+    }),
+);
+registerModel(
+  () =>
+    new BraindecodeAdapter({
+      id: "braindecode-deep4net-default",
+      architecture: "Deep4Net",
+      channels: 22,
+      sampleRate: 250,
+      windowSamples: 1125,
+    }),
+);
 /** Default embedder used when callers do not pin a model id. */
 export const DEFAULT_EMBEDDER_ID = "pca-legacy-v1";
 

@@ -1,4 +1,3 @@
-
 # Authentication System with Role-Based Dashboards
 
 ## 1. Database (Supabase migration)

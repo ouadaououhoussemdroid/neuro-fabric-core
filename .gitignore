@@ -31,6 +31,9 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
+# Supabase CLI cache (environment-specific, never commit)
+supabase/.temp/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -41,3 +44,23 @@ pnpm-lock.yaml
 *.njsproj
 *.sln
 *.sw?
+coverage/
+.claude/
+.zcode/
+# Test coverage
+coverage/
+
+# Local AI tools
+.claude/
+.zcode/
+
+# Environment
+.env
+.env.local
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Training outputs
+training/artefacts/

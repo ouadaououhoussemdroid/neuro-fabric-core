@@ -84,11 +84,7 @@ await embedEEG(input, {
 ```ts
 import { benchmarkAll } from "@/lib/ai/benchmark";
 
-await benchmarkAll(
-  ["pca-legacy-v1", "braindecode-eegconformer-prod"],
-  input,
-  20,
-);
+await benchmarkAll(["pca-legacy-v1", "braindecode-eegconformer-prod"], input, 20);
 ```
 
 Numbers and methodology: `docs/audits/2026-06-17_braindecode-benchmark.md`.

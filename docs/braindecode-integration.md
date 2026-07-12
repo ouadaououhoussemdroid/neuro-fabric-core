@@ -1,5 +1,7 @@
 # Braindecode Integration Report — Phase 4
 
+> **⚠️ Historical document — superseded.** Retained as a baseline for traceability. The current project state is documented in `docs/audits/2026-06-19_project_state_audit.md`, and the active task catalogue is `docs/roadmaps/2026-06-19_open_source_execution_blueprint.md`.
+
 _Date: 2026-06-17_
 
 ## What Braindecode is
@@ -8,12 +10,12 @@ _Date: 2026-06-17_
 architectures, maintained by the Berlin/Freiburg BCI groups. Reference
 models we expose through the adapter:
 
-| Architecture | Paper | Default sr / window | Embedding dim |
-| --- | --- | --- | --- |
-| ShallowFBCSPNet | Schirrmeister 2017 | 250 Hz / 4.5 s | 40 |
-| Deep4Net | Schirrmeister 2017 | 250 Hz / 4.5 s | 200 |
-| EEGNetv4 | Lawhern 2018 | 128 Hz / 2 s | 16 |
-| EEGConformer | Song 2022 | 250 Hz / 4 s | 32 |
+| Architecture    | Paper              | Default sr / window | Embedding dim |
+| --------------- | ------------------ | ------------------- | ------------- |
+| ShallowFBCSPNet | Schirrmeister 2017 | 250 Hz / 4.5 s      | 40            |
+| Deep4Net        | Schirrmeister 2017 | 250 Hz / 4.5 s      | 200           |
+| EEGNetv4        | Lawhern 2018       | 128 Hz / 2 s        | 16            |
+| EEGConformer    | Song 2022          | 250 Hz / 4 s        | 32            |
 
 All four are PyTorch `nn.Module` classes; none have a pure-JS port. The
 only browser-side path is **Pyodide + a PyTorch-on-Pyodide wheel**;
@@ -38,12 +40,12 @@ embed(input, { modelId: "braindecode-...", fallbackChain: [...] })
 
 ## What ships in Phase 4
 
-| File | Purpose |
-| --- | --- |
-| `src/lib/ai/adapters/braindecode-adapter.ts` | Real adapter + bridge contract + model catalog. |
-| `src/lib/ai/models/registry.ts` | Registers `braindecode-eegnetv4-default`. |
-| `src/lib/ai/artifacts/index.ts` | Artifact metadata + provenance for the default model. |
-| `src/lib/ai/embeddings/index.ts` | New `fallbackChain` option; PCA always tail. |
+| File                                                        | Purpose                                                     |
+| ----------------------------------------------------------- | ----------------------------------------------------------- |
+| `src/lib/ai/adapters/braindecode-adapter.ts`                | Real adapter + bridge contract + model catalog.             |
+| `src/lib/ai/models/registry.ts`                             | Registers `braindecode-eegnetv4-default`.                   |
+| `src/lib/ai/artifacts/index.ts`                             | Artifact metadata + provenance for the default model.       |
+| `src/lib/ai/embeddings/index.ts`                            | New `fallbackChain` option; PCA always tail.                |
 | `src/lib/ai/adapters/__tests__/braindecode-adapter.test.ts` | 5 tests (shape validation, bridge missing, cascade to PCA). |
 
 ## Bridge contract
@@ -70,16 +72,16 @@ to ONNX → PCA. No call site needs to know.
 
 ## Compatibility with the existing EEG pipeline
 
-| Pipeline stage | Compatible? | Notes |
-| --- | --- | --- |
-| EDF/CSV/NPY parsers | Yes | Adapter accepts the existing `EEGWindow[]` shape. |
-| Filters (bandpass, notch) | Yes | Run before windowing as usual. |
-| Artifact rejection | Yes | Removes bad windows pre-forward. |
-| Re-referencing | Yes | Apply CAR before forward; not yet implemented for ICA. |
-| Segmentation | Yes | `segment()` falls back automatically when input is a raw signal. |
-| Normalisation | Recommended | Per-channel z-score per window before forward. |
-| `embedSignal` / PCA | Untouched | Adapter is additive; PCA still default. |
-| `vector-search` | Yes | Outputs L2-normalised through the embed facade. |
+| Pipeline stage            | Compatible? | Notes                                                            |
+| ------------------------- | ----------- | ---------------------------------------------------------------- |
+| EDF/CSV/NPY parsers       | Yes         | Adapter accepts the existing `EEGWindow[]` shape.                |
+| Filters (bandpass, notch) | Yes         | Run before windowing as usual.                                   |
+| Artifact rejection        | Yes         | Removes bad windows pre-forward.                                 |
+| Re-referencing            | Yes         | Apply CAR before forward; not yet implemented for ICA.           |
+| Segmentation              | Yes         | `segment()` falls back automatically when input is a raw signal. |
+| Normalisation             | Recommended | Per-channel z-score per window before forward.                   |
+| `embedSignal` / PCA       | Untouched   | Adapter is additive; PCA still default.                          |
+| `vector-search`           | Yes         | Outputs L2-normalised through the embed facade.                  |
 
 **Hard constraints checked at runtime**: channels = artifact.input.channels,
 samples = artifact.input.samples. Mismatches throw a typed error
@@ -99,12 +101,12 @@ sine input, iterations = 5, in the test runtime. Replace the Braindecode
 row with the live measurement once a real bridge is loaded; the structure
 is what matters here.
 
-| Backend | Runtime | Latency p50 | Latency p95 | Embed dim | Notes |
-| --- | --- | --- | --- | --- | --- |
-| PCA (legacy) | JS | ~2 ms | ~3 ms | 10–64 | Always available, default fallback. |
-| ONNX (feature-input) | WASM | ~5–15 ms | ~25 ms | model-defined | Phase 2; falls back to PCA. |
-| ONNX (raw [1,C,T]) | WASM | ~20–60 ms | ~100 ms | model-defined | Slightly slower; same fallback. |
-| Braindecode (Pyodide) | Pyodide+torch | 200–800 ms* | 1–2 s* | 16–200 | First call dominated by load(); cached after. |
+| Backend               | Runtime       | Latency p50  | Latency p95 | Embed dim     | Notes                                         |
+| --------------------- | ------------- | ------------ | ----------- | ------------- | --------------------------------------------- |
+| PCA (legacy)          | JS            | ~2 ms        | ~3 ms       | 10–64         | Always available, default fallback.           |
+| ONNX (feature-input)  | WASM          | ~5–15 ms     | ~25 ms      | model-defined | Phase 2; falls back to PCA.                   |
+| ONNX (raw [1,C,T])    | WASM          | ~20–60 ms    | ~100 ms     | model-defined | Slightly slower; same fallback.               |
+| Braindecode (Pyodide) | Pyodide+torch | 200–800 ms\* | 1–2 s\*     | 16–200        | First call dominated by load(); cached after. |
 
 \* Pyodide+torch numbers are upper bounds from published benchmarks;
 actual values depend on the wheel and the model. The adapter caches the
@@ -112,15 +114,15 @@ session via the `InferenceEngine` LRU, so subsequent calls amortise.
 
 ## Migration safety
 
-| Concern | Status |
-| --- | --- |
-| PCA path | Unchanged. Still default + tail fallback. |
-| ONNX path | Unchanged. Same capability probe + fallback. |
-| EEG preprocessing | Unchanged. Adapter consumes its existing outputs. |
-| Vector search | Unchanged. `NeuralVectorIndex` handles new embeddings. |
-| Public exports | Additive only. No renames, no removals. |
-| Tests | 23 / 23 passing (was 18). |
-| Database / migrations | None. |
+| Concern               | Status                                                 |
+| --------------------- | ------------------------------------------------------ |
+| PCA path              | Unchanged. Still default + tail fallback.              |
+| ONNX path             | Unchanged. Same capability probe + fallback.           |
+| EEG preprocessing     | Unchanged. Adapter consumes its existing outputs.      |
+| Vector search         | Unchanged. `NeuralVectorIndex` handles new embeddings. |
+| Public exports        | Additive only. No renames, no removals.                |
+| Tests                 | 23 / 23 passing (was 18).                              |
+| Database / migrations | None.                                                  |
 
 ## Out of scope (next phases)
 

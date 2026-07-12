@@ -8,13 +8,13 @@ had pinned in v1 does not exist on PyPI.
 
 ## 1. What v1 got wrong
 
-| Pin (v1)            | Reality on PyPI                                                  |
-|---------------------|------------------------------------------------------------------|
-| `braindecode==1.1.1`| Not published. Available 1.x: 1.0.0, **1.1.0**, 1.2.0, …, 1.5.2. |
-| `moabb==1.1.1`      | Not published. 1.x line jumps 0.4.6 → **1.4.0** → 1.4.2/1.4.3/1.5.|
-| `mne==1.7.1`        | Incompatible — braindecode 1.1.0 requires `mne>=1.10`.           |
-| `numpy==1.26.4`     | Incompatible — moabb 1.4.x requires `numpy>=2`.                  |
-| `torch==2.4.1`      | Works, but torch 2.5.1 is the lowest minor that pairs cleanly with the torchaudio wheel braindecode pulls in. |
+| Pin (v1)             | Reality on PyPI                                                                                               |
+| -------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `braindecode==1.1.1` | Not published. Available 1.x: 1.0.0, **1.1.0**, 1.2.0, …, 1.5.2.                                              |
+| `moabb==1.1.1`       | Not published. 1.x line jumps 0.4.6 → **1.4.0** → 1.4.2/1.4.3/1.5.                                            |
+| `mne==1.7.1`         | Incompatible — braindecode 1.1.0 requires `mne>=1.10`.                                                        |
+| `numpy==1.26.4`      | Incompatible — moabb 1.4.x requires `numpy>=2`.                                                               |
+| `torch==2.4.1`       | Works, but torch 2.5.1 is the lowest minor that pairs cleanly with the torchaudio wheel braindecode pulls in. |
 
 v1's pins were never reproducibly resolvable on a clean Python 3.11/3.12
 environment.
@@ -23,7 +23,7 @@ environment.
 
 1. Queried PyPI for the actual published version lists.
 2. Built a clean Python 3.11 venv (Colab-equivalent interpreter).
-3. Iterated pip resolution until the dependency graph closed *without*
+3. Iterated pip resolution until the dependency graph closed _without_
    `--no-deps` hacks.
 4. Ran the imports the training scripts actually use:
    `from moabb.datasets import BNCI2014_001` and
@@ -31,21 +31,21 @@ environment.
 
 ## 3. Locked set (verified install + import)
 
-| Package      | Version  | Why this exact pin                                       |
-|--------------|----------|----------------------------------------------------------|
-| torch        | 2.5.1    | Lowest minor whose torchaudio wheel loads under CUDA 12. |
-| torchaudio   | 2.5.1    | Must match torch minor — mismatched wheels fail to load `libcudart`. |
-| braindecode  | 1.1.0    | First published 1.x; uses the new `BNCI2014_001` MOABB name. |
-| moabb        | 1.4.0    | Lowest 1.x actually on PyPI; exports `BNCI2014_001`.    |
-| mne          | 1.10.1   | Required floor by braindecode 1.1.0.                     |
-| numpy        | 2.0.2    | Required by moabb 1.4; supported by torch 2.5.           |
-| scipy        | 1.14.1   | NumPy 2.x ABI.                                           |
-| scikit-learn | 1.5.2    | Required by moabb.                                       |
-| pandas       | 2.2.3    | NumPy 2.x ABI.                                           |
-| onnx         | 1.17.0   | Stable export at opset 17.                               |
-| onnxruntime  | 1.20.1   | CPU parity check.                                        |
-| pyyaml       | 6.0.2    | Config loader.                                           |
-| tqdm         | 4.66.5   | Progress bars.                                           |
+| Package      | Version | Why this exact pin                                                   |
+| ------------ | ------- | -------------------------------------------------------------------- |
+| torch        | 2.5.1   | Lowest minor whose torchaudio wheel loads under CUDA 12.             |
+| torchaudio   | 2.5.1   | Must match torch minor — mismatched wheels fail to load `libcudart`. |
+| braindecode  | 1.1.0   | First published 1.x; uses the new `BNCI2014_001` MOABB name.         |
+| moabb        | 1.4.0   | Lowest 1.x actually on PyPI; exports `BNCI2014_001`.                 |
+| mne          | 1.10.1  | Required floor by braindecode 1.1.0.                                 |
+| numpy        | 2.0.2   | Required by moabb 1.4; supported by torch 2.5.                       |
+| scipy        | 1.14.1  | NumPy 2.x ABI.                                                       |
+| scikit-learn | 1.5.2   | Required by moabb.                                                   |
+| pandas       | 2.2.3   | NumPy 2.x ABI.                                                       |
+| onnx         | 1.17.0  | Stable export at opset 17.                                           |
+| onnxruntime  | 1.20.1  | CPU parity check.                                                    |
+| pyyaml       | 6.0.2   | Config loader.                                                       |
+| tqdm         | 4.66.5  | Progress bars.                                                       |
 
 ## 4. Reproducibility evidence
 

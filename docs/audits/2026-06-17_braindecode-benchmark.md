@@ -10,10 +10,10 @@
 
 ## Results
 
-| Adapter                          | Dim | Mean (ms) | P50 (ms) | P95 (ms) | Heap Δ (MB) | Notes |
-|----------------------------------|----:|----------:|---------:|---------:|------------:|-------|
-| `pca-legacy-v1`                  |  64 |       3.1 |      2.9 |      4.4 |         0.1 | Closed-form, JS only |
-| Generic ONNX (placeholder model) |  32 |      18.6 |     17.9 |     25.2 |         5.4 | Same shape as EEGConformer |
+| Adapter                          | Dim | Mean (ms) | P50 (ms) | P95 (ms) | Heap Δ (MB) | Notes                                  |
+| -------------------------------- | --: | --------: | -------: | -------: | ----------: | -------------------------------------- |
+| `pca-legacy-v1`                  |  64 |       3.1 |      2.9 |      4.4 |         0.1 | Closed-form, JS only                   |
+| Generic ONNX (placeholder model) |  32 |      18.6 |     17.9 |     25.2 |         5.4 | Same shape as EEGConformer             |
 | `braindecode-eegconformer-prod`  |  32 |     312.8 |    304.5 |    402.1 |        18.7 | First-call load ~520 ms (cached after) |
 
 ## Interpretation
@@ -41,10 +41,6 @@ import { benchmarkAll } from "@/lib/ai/benchmark";
 import { registerBraindecodeEEGConformer } from "@/lib/ai/models/registry";
 
 registerBraindecodeEEGConformer({ artifact: { kind: "url", url: "/models/eegconformer.onnx" } });
-const rows = await benchmarkAll(
-  ["pca-legacy-v1", "braindecode-eegconformer-prod"],
-  input,
-  20,
-);
+const rows = await benchmarkAll(["pca-legacy-v1", "braindecode-eegconformer-prod"], input, 20);
 console.table(rows);
 ```

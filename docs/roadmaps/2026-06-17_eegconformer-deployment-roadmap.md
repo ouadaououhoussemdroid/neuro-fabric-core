@@ -9,22 +9,22 @@
 
 ## Phase 0 — Artefact production (off-platform)
 
-| Step | Owner | Output | Effort |
-|---|---|---|---|
-| Train EEGConformer on BCI-IV-2a (Braindecode tutorial) | ML eng | `eegconformer.pt` | 1 d |
-| Run `scripts/export_braindecode_eegconformer.py` | ML eng | `eegconformer.onnx` (~7 MB) + parity report | 0.25 d |
-| Author `MODEL_CARD.md` (dataset, licence, metrics, intended use) | ML eng | `MODEL_CARD.md` | 0.25 d |
-| Internal security review (no PII, no embedded secrets, ONNX checker pass) | Sec | sign-off | 0.25 d |
+| Step                                                                      | Owner  | Output                                      | Effort |
+| ------------------------------------------------------------------------- | ------ | ------------------------------------------- | ------ |
+| Train EEGConformer on BCI-IV-2a (Braindecode tutorial)                    | ML eng | `eegconformer.pt`                           | 1 d    |
+| Run `scripts/export_braindecode_eegconformer.py`                          | ML eng | `eegconformer.onnx` (~7 MB) + parity report | 0.25 d |
+| Author `MODEL_CARD.md` (dataset, licence, metrics, intended use)          | ML eng | `MODEL_CARD.md`                             | 0.25 d |
+| Internal security review (no PII, no embedded secrets, ONNX checker pass) | Sec    | sign-off                                    | 0.25 d |
 
 ## Phase 1 — Hosting
 
 Two viable hosting options; pick **one** for v1.
 
-| Option | Where | Pros | Cons | Recommended |
-|---|---|---|---|:---:|
-| **A. Lovable Cloud Storage (public bucket)** | `models` bucket, public read | Versioned, signed URLs available, integrates with existing infra | Egress counted against project | ✅ for v1 |
-| B. App-bundled (`public/models/eegconformer.onnx`) | Static asset | Zero infra | +7 MB to every page load; cache-busts on deploy | only for offline demos |
-| C. Third-party CDN (R2 / S3 + Cloudflare) | External | Cheapest egress | Extra origin, CORS to configure | future |
+| Option                                             | Where                        | Pros                                                             | Cons                                            |      Recommended       |
+| -------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------- | ----------------------------------------------- | :--------------------: |
+| **A. Lovable Cloud Storage (public bucket)**       | `models` bucket, public read | Versioned, signed URLs available, integrates with existing infra | Egress counted against project                  |       ✅ for v1        |
+| B. App-bundled (`public/models/eegconformer.onnx`) | Static asset                 | Zero infra                                                       | +7 MB to every page load; cache-busts on deploy | only for offline demos |
+| C. Third-party CDN (R2 / S3 + Cloudflare)          | External                     | Cheapest egress                                                  | Extra origin, CORS to configure                 |         future         |
 
 v1 hosting plan (Option A):
 
@@ -63,12 +63,12 @@ Run, in CI and once in staging, against the existing harnesses:
 
 ## Phase 4 — Rollout
 
-| Stage | Cohort | Flag | Exit criterion |
-|---|---|---|---|
-| Canary | 5 % of authenticated users | `ai.eegconformer.enabled = canary` | < 0.5 % fallback rate over 24 h |
-| Beta | 50 % | `= beta` | P95 latency < 600 ms; no error-budget burn |
-| GA | 100 % | `= ga` | one week green |
-| Rollback | n/a | `= off` → `unregisterModel(...)` | < 5 min MTTR |
+| Stage    | Cohort                     | Flag                               | Exit criterion                             |
+| -------- | -------------------------- | ---------------------------------- | ------------------------------------------ |
+| Canary   | 5 % of authenticated users | `ai.eegconformer.enabled = canary` | < 0.5 % fallback rate over 24 h            |
+| Beta     | 50 %                       | `= beta`                           | P95 latency < 600 ms; no error-budget burn |
+| GA       | 100 %                      | `= ga`                             | one week green                             |
+| Rollback | n/a                        | `= off` → `unregisterModel(...)`   | < 5 min MTTR                               |
 
 Vectors written under each model id are tagged in `NeuralVectorIndex`;
 rolling back does **not** require re-indexing — old PCA vectors keep
@@ -84,11 +84,11 @@ matching their own model id.
 
 ## Effort summary
 
-| Phase | Effort |
-|---|---|
-| 0 — Artefact | ~2 d |
-| 1 — Hosting | 0.5 d |
-| 2 — Wiring | 0.25 d |
-| 3 — Validation | 0.5 d |
-| 4 — Rollout | 1 week wall-clock, < 1 d hands-on |
+| Phase           | Effort                               |
+| --------------- | ------------------------------------ |
+| 0 — Artefact    | ~2 d                                 |
+| 1 — Hosting     | 0.5 d                                |
+| 2 — Wiring      | 0.25 d                               |
+| 3 — Validation  | 0.5 d                                |
+| 4 — Rollout     | 1 week wall-clock, < 1 d hands-on    |
 | **Total to GA** | **~4 engineer-days + 1 week canary** |

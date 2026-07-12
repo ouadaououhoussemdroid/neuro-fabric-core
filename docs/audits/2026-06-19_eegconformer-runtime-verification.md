@@ -58,8 +58,7 @@ API impact.
 
 ```ts
 if (mod?.env?.wasm && mod.env.wasm.wasmPaths == null) {
-  mod.env.wasm.wasmPaths =
-    "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/";
+  mod.env.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/";
 }
 ```
 
@@ -84,14 +83,14 @@ VERDICT: PASS — EEGConformer ONNX live, 32-D, no fallback
 
 ## Verification matrix
 
-| Check | Result |
-|---|---|
-| `public/models/eegconformer.onnx` served at runtime | ✅ 200, 3 360 306 bytes |
-| `embedEEG()` selects `braindecode-eegconformer-prod` | ✅ |
-| ONNX Runtime executes in the browser (WASM EP) | ✅ after wasmPaths fix |
-| Returned embedding dim = 32 | ✅ |
-| No silent PCA fallback | ✅ `fellBack: false` |
-| L2-normalised, finite | ✅ ‖v‖ = 1.0000 |
+| Check                                                | Result                  |
+| ---------------------------------------------------- | ----------------------- |
+| `public/models/eegconformer.onnx` served at runtime  | ✅ 200, 3 360 306 bytes |
+| `embedEEG()` selects `braindecode-eegconformer-prod` | ✅                      |
+| ONNX Runtime executes in the browser (WASM EP)       | ✅ after wasmPaths fix  |
+| Returned embedding dim = 32                          | ✅                      |
+| No silent PCA fallback                               | ✅ `fellBack: false`    |
+| L2-normalised, finite                                | ✅ ‖v‖ = 1.0000         |
 
 ## Files modified
 

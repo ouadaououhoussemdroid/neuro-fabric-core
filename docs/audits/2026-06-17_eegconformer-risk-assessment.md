@@ -7,23 +7,23 @@
 
 ## Risk matrix
 
-| # | Risk | Category | Likelihood | Impact | Severity | Mitigation | Owner |
-|---|---|---|:--:|:--:|:--:|---|---|
-| R1 | No public pretrained checkpoint exists; in-house training required | Acquisition | High | Medium | **Med** | Train on BCI-IV-2a (Braindecode tutorial), 1–2 d effort | ML |
-| R2 | Dataset licence prevents weight redistribution | Legal | Low (BCI-IV-2a is permissive) | High | Med | Restrict v1 training to BCI-IV-2a + PhysioNet MI; document in MODEL_CARD | ML + Legal |
-| R3 | ONNX export drift — attention op incompatibility | Technical | Low | Medium | Low | Pin `torch==2.3`, `opset=17`; `onnx.checker` + parity smoke test in `scripts/export_braindecode_eegconformer.py` | ML |
-| R4 | Browser ORT version mismatch (opset 17 attention) | Technical | Low | Medium | Low | Pin `onnxruntime-web>=1.18`; CI smoke test on Chromium + Safari | FE |
-| R5 | First-call latency (~500 ms cold load) noticed by users | UX | High | Low | Low | Warm session on app boot when flag enabled | FE |
-| R6 | Heap pressure on low-memory devices | UX | Medium | Medium | Med | Capability probe + automatic PCA fallback (already wired) | FE |
-| R7 | Overfitting to BCI-IV-2a degrades cross-paradigm recall | Quality | High | Medium | Med | Plan Track-B (PhysioNet MI → BCI-IV-2a fine-tune); gate GA on cross-subject holdout | ML |
-| R8 | Mixed-model vectors contaminate similarity results | Data | Medium | High | **Med-High** | `NeuralVectorIndex` tags entries with `modelId`; queries filter by id (already implemented) | BE |
-| R9 | Artefact host outage or CORS misconfiguration | Ops | Low | High | Med | Host on Lovable Cloud Storage with immutable hashed path; CORS allow-list to prod + preview origins; PCA fallback covers any fetch failure | Ops |
-| R10 | Wrong electrode montage upstream | Data | Medium | High | **Med-High** | Adapter validates `[22, 1000]` shape and throws precise error; upstream tutorial documents BCI-IV-2a montage | BE |
-| R11 | Silent regression vs PCA on existing benchmarks | Quality | Low | Medium | Low | Always benchmark both adapters in CI; fail build if EEGConformer recall@10 < PCA recall@10 | ML |
-| R12 | Rollback leaves orphaned vectors | Data | Low | Low | Low | Vectors are model-tagged; `unregisterModel()` is a soft toggle; no migration required | BE |
-| R13 | Artefact tampering / supply-chain | Security | Low | High | Med | Pin sha256 in artefact registry; verify after fetch; serve over HTTPS only | Sec |
-| R14 | PII leakage through embeddings | Privacy | Low | High | Med | 32-D attention-pooled features are not invertible to raw EEG; no PII in logs; document in security review | Sec |
-| R15 | Licence misclassification on publish | Legal | Low | High | Med | Pre-publish MODEL_CARD checklist (dataset, code, weights, intended use) | ML + Legal |
+| #   | Risk                                                               | Category    |          Likelihood           | Impact |   Severity   | Mitigation                                                                                                                                 | Owner      |
+| --- | ------------------------------------------------------------------ | ----------- | :---------------------------: | :----: | :----------: | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| R1  | No public pretrained checkpoint exists; in-house training required | Acquisition |             High              | Medium |   **Med**    | Train on BCI-IV-2a (Braindecode tutorial), 1–2 d effort                                                                                    | ML         |
+| R2  | Dataset licence prevents weight redistribution                     | Legal       | Low (BCI-IV-2a is permissive) |  High  |     Med      | Restrict v1 training to BCI-IV-2a + PhysioNet MI; document in MODEL_CARD                                                                   | ML + Legal |
+| R3  | ONNX export drift — attention op incompatibility                   | Technical   |              Low              | Medium |     Low      | Pin `torch==2.3`, `opset=17`; `onnx.checker` + parity smoke test in `scripts/export_braindecode_eegconformer.py`                           | ML         |
+| R4  | Browser ORT version mismatch (opset 17 attention)                  | Technical   |              Low              | Medium |     Low      | Pin `onnxruntime-web>=1.18`; CI smoke test on Chromium + Safari                                                                            | FE         |
+| R5  | First-call latency (~500 ms cold load) noticed by users            | UX          |             High              |  Low   |     Low      | Warm session on app boot when flag enabled                                                                                                 | FE         |
+| R6  | Heap pressure on low-memory devices                                | UX          |            Medium             | Medium |     Med      | Capability probe + automatic PCA fallback (already wired)                                                                                  | FE         |
+| R7  | Overfitting to BCI-IV-2a degrades cross-paradigm recall            | Quality     |             High              | Medium |     Med      | Plan Track-B (PhysioNet MI → BCI-IV-2a fine-tune); gate GA on cross-subject holdout                                                        | ML         |
+| R8  | Mixed-model vectors contaminate similarity results                 | Data        |            Medium             |  High  | **Med-High** | `NeuralVectorIndex` tags entries with `modelId`; queries filter by id (already implemented)                                                | BE         |
+| R9  | Artefact host outage or CORS misconfiguration                      | Ops         |              Low              |  High  |     Med      | Host on Lovable Cloud Storage with immutable hashed path; CORS allow-list to prod + preview origins; PCA fallback covers any fetch failure | Ops        |
+| R10 | Wrong electrode montage upstream                                   | Data        |            Medium             |  High  | **Med-High** | Adapter validates `[22, 1000]` shape and throws precise error; upstream tutorial documents BCI-IV-2a montage                               | BE         |
+| R11 | Silent regression vs PCA on existing benchmarks                    | Quality     |              Low              | Medium |     Low      | Always benchmark both adapters in CI; fail build if EEGConformer recall@10 < PCA recall@10                                                 | ML         |
+| R12 | Rollback leaves orphaned vectors                                   | Data        |              Low              |  Low   |     Low      | Vectors are model-tagged; `unregisterModel()` is a soft toggle; no migration required                                                      | BE         |
+| R13 | Artefact tampering / supply-chain                                  | Security    |              Low              |  High  |     Med      | Pin sha256 in artefact registry; verify after fetch; serve over HTTPS only                                                                 | Sec        |
+| R14 | PII leakage through embeddings                                     | Privacy     |              Low              |  High  |     Med      | 32-D attention-pooled features are not invertible to raw EEG; no PII in logs; document in security review                                  | Sec        |
+| R15 | Licence misclassification on publish                               | Legal       |              Low              |  High  |     Med      | Pre-publish MODEL_CARD checklist (dataset, code, weights, intended use)                                                                    | ML + Legal |
 
 ## Top three risks to actively manage
 

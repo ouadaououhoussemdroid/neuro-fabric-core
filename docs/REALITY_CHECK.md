@@ -1,5 +1,7 @@
 # Reality Check: NeuroSync Technical Due Diligence
 
+> **⚠️ Historical document — superseded.** Retained as a baseline for traceability. The current project state is documented in `docs/audits/2026-06-19_project_state_audit.md`, and the active task catalogue is `docs/roadmaps/2026-06-19_open_source_execution_blueprint.md`.
+
 **Prepared For:** Investors, Scientific Review, Technical Due Diligence  
 **Date:** 2026-06-06  
 **Repository:** ouadaououhoussemdroid/neuro-fabric-core
@@ -15,7 +17,6 @@
 - **EDF Parser:** Correctly implements EDF v1.0 specification with proper scaling
   - File: `src/lib/eeg/parsers/edf.ts` Lines 55-100
   - Evidence: Correct digital-to-physical conversion formula verified
-  
 - **Digital Filtering:** Industry-standard IIR biquad filters with zero-phase correction
   - File: `src/lib/eeg/preprocessing/filters.ts` Lines 8-98
   - Evidence: Forward-backward (filtfilt) implementation matches scipy.signal.filtfilt
@@ -52,6 +53,7 @@
 **Reality:** No ML whatsoever
 
 **Evidence:**
+
 ```
 package.json dependencies: 0 ML libraries
   - No TensorFlow
@@ -71,9 +73,10 @@ Source code imports: 0 ML frameworks
 ```
 
 **File:** `src/lib/embeddings/autoencoder.ts` Lines 20-27
+
 ```typescript
 export function fitAutoencoder(X: number[][], latentDim: number): AutoencoderModel {
-  const pca: PCAModel = fitPCA(X, latentDim);  // <-- JUST PCA, NO LEARNING
+  const pca: PCAModel = fitPCA(X, latentDim); // <-- JUST PCA, NO LEARNING
   const encoder = pca.components;
   // ... transpose ...
   return { kind: "linear-ae", latentDim, encoder, decoder, mean: pca.mean };
@@ -88,6 +91,7 @@ export function fitAutoencoder(X: number[][], latentDim: number): AutoencoderMod
 **Reality:** Hardcoded spectral ratios with zero ground truth
 
 **File:** `src/lib/decoder/index.ts` Lines 36-38
+
 ```typescript
 const attentionRatio = b.beta / Math.max(1e-9, b.alpha + b.theta);
 const workloadRatio = b.theta / Math.max(1e-9, b.alpha);
@@ -95,6 +99,7 @@ const arousalFrac = b.beta + b.gamma;
 ```
 
 **Issues:**
+
 - ❌ No validation against eye-tracking (attention)
 - ❌ No validation against task difficulty (workload)
 - ❌ No validation against physiological arousal (pupil dilation, heart rate)
@@ -103,6 +108,7 @@ const arousalFrac = b.beta + b.gamma;
 - ❌ No subject population specificity
 
 **The code itself admits this (Line 10):**
+
 ```typescript
 // "They are NOT trained classifiers"
 ```
@@ -112,6 +118,7 @@ const arousalFrac = b.beta + b.gamma;
 **File:** `src/routes/api/eeg/upload.ts` Lines 28-127
 
 The endpoint processes a file and returns results, but:
+
 - ❌ Results are NOT stored to database
 - ❌ No user data is tracked
 - ❌ No audit trail
@@ -123,11 +130,13 @@ The endpoint processes a file and returns results, but:
 #### 4. No Authentication Integration
 
 **File:** `src/start.ts` Line 4
+
 ```typescript
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 ```
 
 **Reality:**
+
 - ✅ Supabase client library is imported
 - ❌ Not integrated into API endpoint
 - ❌ No JWT validation visible
@@ -152,25 +161,25 @@ No authentication check in route handler.
 
 **File:** `src/lib/eeg/loaders/`
 
-| Dataset | Status | Notes |
-|---------|--------|-------|
-| PhysioNet | ✅ Works | 1,526 records auto-listed |
-| TUH EEG | ⚠️ Requires Mirror | Not usable without external HTTPS |
-| BCI Competition | ⚠️ Requires Mirror | Same as TUH |
-| Sleep-EDF | ❌ Missing | Not implemented |
-| CHB-MIT | ❌ Missing | Not implemented |
+| Dataset         | Status             | Notes                             |
+| --------------- | ------------------ | --------------------------------- |
+| PhysioNet       | ✅ Works           | 1,526 records auto-listed         |
+| TUH EEG         | ⚠️ Requires Mirror | Not usable without external HTTPS |
+| BCI Competition | ⚠️ Requires Mirror | Same as TUH                       |
+| Sleep-EDF       | ❌ Missing         | Not implemented                   |
+| CHB-MIT         | ❌ Missing         | Not implemented                   |
 
 **Impact:** Cannot benchmark against standard datasets
 
 #### 7. Security Vulnerabilities
 
-| Issue | Severity | Evidence | Fix |
-|-------|----------|----------|-----|
-| No file size limit | HIGH | `src/routes/api/eeg/upload.ts` line 39 reads `file.size` but never compares | Add: `if (file.size > 10MB) return 413` |
-| No rate limiting | HIGH | No middleware visible | Add rate limiter |
-| Silent NaN→0 in CSV | MEDIUM | `src/lib/eeg/parsers/csv.ts` line 28 | Log warning or reject |
-| No timeout on processing | MEDIUM | Processing could hang indefinitely | Add abort signal with timeout |
-| Results not encrypted | MEDIUM | Even if stored, no encryption | Add at-rest encryption |
+| Issue                    | Severity | Evidence                                                                    | Fix                                     |
+| ------------------------ | -------- | --------------------------------------------------------------------------- | --------------------------------------- |
+| No file size limit       | HIGH     | `src/routes/api/eeg/upload.ts` line 39 reads `file.size` but never compares | Add: `if (file.size > 10MB) return 413` |
+| No rate limiting         | HIGH     | No middleware visible                                                       | Add rate limiter                        |
+| Silent NaN→0 in CSV      | MEDIUM   | `src/lib/eeg/parsers/csv.ts` line 28                                        | Log warning or reject                   |
+| No timeout on processing | MEDIUM   | Processing could hang indefinitely                                          | Add abort signal with timeout           |
+| Results not encrypted    | MEDIUM   | Even if stored, no encryption                                               | Add at-rest encryption                  |
 
 #### 8. Scientific Claims Cannot Be Substantiated
 
@@ -178,6 +187,7 @@ No authentication check in route handler.
 **Reality:** No peer review, no validation, no benchmarks
 
 **Missing:**
+
 - ❌ Cross-subject validation
 - ❌ Cross-dataset validation
 - ❌ Comparison to baselines
@@ -247,12 +257,14 @@ No authentication check in route handler.
 ### Reputational Risk: CRITICAL ⚠️
 
 **If this is marketed as "AI-powered neurotechnology":**
+
 - ❌ Claims are demonstrably false
 - ❌ Could attract regulatory scrutiny (FDA if marketed as medical device)
 - ❌ Could attract legal action (false advertising)
 - ❌ Could damage credibility if discovered
 
 **Recommendation:** Immediately revise marketing to reflect reality:
+
 - ✅ "EEG signal processing toolkit"
 - ✅ "Spectral analysis platform"
 - ✅ NOT "AI-powered" or "machine learning"
@@ -269,6 +281,7 @@ No authentication check in route handler.
 ### Scientific Risk: CRITICAL ⚠️
 
 **If marketed for research or clinical use:**
+
 - ❌ Metrics are unvalidated
 - ❌ No ground truth
 - ❌ No comparison to baselines
@@ -280,6 +293,7 @@ No authentication check in route handler.
 ### Regulatory Risk: HIGH ⚠️
 
 **If marketed as medical device (diagnosis/treatment):**
+
 - ❌ No FDA clearance
 - ❌ Unvalidated metrics
 - ❌ Could violate FDA regulations on medical claims
@@ -368,21 +382,22 @@ No authentication check in route handler.
 
 ## BOTTOM LINE
 
-| Dimension | Reality | Gap |
-|-----------|---------|-----|
-| **Signal Processing** | 7/10 ✅ | Minor (no FFT optimization) |
-| **Heuristic Decoding** | 2/10 | Unvalidated (no ground truth) |
-| **Data Persistence** | 0/10 | CRITICAL (no storage at all) |
-| **Authentication** | 0/10 | CRITICAL (not integrated) |
-| **ML/AI** | 0/10 | CRITICAL (claims false) |
-| **Scientific Validation** | 0/10 | CRITICAL (no validation) |
-| **Production Readiness** | 2/10 | CRITICAL (multiple gaps) |
+| Dimension                 | Reality | Gap                           |
+| ------------------------- | ------- | ----------------------------- |
+| **Signal Processing**     | 7/10 ✅ | Minor (no FFT optimization)   |
+| **Heuristic Decoding**    | 2/10    | Unvalidated (no ground truth) |
+| **Data Persistence**      | 0/10    | CRITICAL (no storage at all)  |
+| **Authentication**        | 0/10    | CRITICAL (not integrated)     |
+| **ML/AI**                 | 0/10    | CRITICAL (claims false)       |
+| **Scientific Validation** | 0/10    | CRITICAL (no validation)      |
+| **Production Readiness**  | 2/10    | CRITICAL (multiple gaps)      |
 
-**Verdict:** 
+**Verdict:**
 
 This is a **competent signal processing library masquerading as an AI platform.**
 
 If marketed as:
+
 - ✅ **"EEG signal processing toolkit"** → Credible (7/10 maturity)
 - ❌ **"AI-powered neurotechnology"** → False (0/10 AI)
 - ❌ **"Validated cognitive decoder"** → False (0/10 validation)
@@ -395,4 +410,3 @@ If marketed as:
 **For regulators:** If marketed medically, this would face FDA enforcement action.
 
 ---
-

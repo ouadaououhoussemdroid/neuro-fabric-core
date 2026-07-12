@@ -1,5 +1,7 @@
 # Training Pipeline — Fix Plan & Logical Re-validation
 
+> **⚠️ Historical document — superseded.** Retained as a baseline for traceability. The current project state is documented in `docs/audits/2026-06-19_project_state_audit.md`, and the active task catalogue is `docs/roadmaps/2026-06-19_open_source_execution_blueprint.md`.
+
 **Date:** 2026-06-18
 **Status:** applied. Training package only. No production-side changes.
 
@@ -19,11 +21,13 @@
 ## B. Logical re-validation per stage
 
 ### 1. `acquire_dataset.py`
+
 - `from moabb.datasets import BNCI2014_001` ✓ on MOABB 1.1.1.
 - Caches under `training/cache/moabb`; idempotent.
 - **No code change required.**
 
 ### 2. `preprocess.py`
+
 - `MotorImagery(fmin, fmax, tmin, tmax, resample, n_classes)` signature
   identical on MOABB 1.1.1.
 - Output `[N, 22, 1000]` enforced via assertions.
@@ -32,6 +36,7 @@
 - **No code change required.**
 
 ### 3. `train.py`
+
 - `from braindecode.models import EEGConformer` constructor identical
   on Braindecode 1.1.1.
 - `torch.cuda.amp.GradScaler/autocast` still valid in torch 2.4
@@ -39,19 +44,23 @@
 - **No code change required.**
 
 ### 4. `validate.py`
+
 - Cross-subject hold-out logic + same EEGConformer constructor.
 - **No code change required.**
 
 ### 5. `evaluate.py`
+
 - 32-d embeddings via hook on `final_fc`; cosine recall@10 in NumPy.
 - **No code change required.**
 
 ### 6. `export_onnx.py`
+
 - Delegates to `scripts/export_braindecode_eegconformer.py`. ONNX
   opset 17 + ORT 1.19.2 verified compatible. Cosine parity ≥ 0.999.
 - **No code change required.**
 
 ### 7. `package.py`
+
 - File-system zip + manifest. Standard library.
 - **No code change required.**
 
@@ -70,12 +79,12 @@ engine, validation layer, and fallback system.
 
 ## D. Risk register (post-fix)
 
-| Risk | Mitigation |
-|------|------------|
-| Colab default Python > 3.12 | `check_compat.py` aborts. |
-| MOABB silently bumps to 2.x | `==1.1.1` pin + check. |
+| Risk                                 | Mitigation                                |
+| ------------------------------------ | ----------------------------------------- |
+| Colab default Python > 3.12          | `check_compat.py` aborts.                 |
+| MOABB silently bumps to 2.x          | `==1.1.1` pin + check.                    |
 | torch 2.4.1 wheels removed from PyPI | Re-evaluate pin; documented in dep audit. |
-| BCI-IV-2a hosting moves | Pin moabb to a known-good release. |
+| BCI-IV-2a hosting moves              | Pin moabb to a known-good release.        |
 
 ## E. How to run on a clean Colab
 

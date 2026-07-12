@@ -19,34 +19,61 @@ The output ONNX file is drop-in compatible with the existing
 registration in `src/lib/ai/models/registry.ts` — no platform code is
 modified by this package.
 
+## Reproducible training container (T-020)
+
+A pinned Docker container ensures bit-reproducible training runs:
+
+```bash
+# Build the container
+docker build -t neuro-fabric-train -f training/Dockerfile .
+
+# Run the full pipeline (preprocess → train → export → evaluate → validate)
+docker run --gpus all \
+  -v $(pwd)/training/artefacts:/app/training/artefacts \
+  -v $(pwd)/training/cache:/app/training/cache \
+  neuro-fabric-train make all MODEL=eegconformer DATASET=bciiv2a
+
+# Or run individual steps
+docker run neuro-fabric-train make train MODEL=eegconformer DATASET=bciiv2a
+docker run neuro-fabric-train make export MODEL=eegconformer
+```
+
+Without Docker, use the Makefile directly (requires the pinned deps from
+`requirements.txt`):
+
+```bash
+cd training/
+make train MODEL=eegconformer DATASET=bciiv2a
+```
+
 ## Layout
 
-| Path | Purpose |
-|---|---|
-| `configs/eegconformer-bciiv2a.yaml` | Single source of truth for the contract (22ch · 250Hz · 1000 samples · 32-d). |
-| `scripts/acquire_dataset.py` | Downloads BCI-IV-2a via MOABB into a local cache. |
-| `scripts/preprocess.py` | Bandpass + resample + epoch + standardise → `.npz`. |
-| `scripts/train.py` | EEGConformer training with fixed seeds, cross-session split. |
-| `scripts/validate.py` | Cross-subject hold-out validation. |
-| `scripts/evaluate.py` | Cosine recall@10, embedding norm/variance. |
-| `scripts/export_onnx.py` | Wraps `scripts/export_braindecode_eegconformer.py` (in repo root `scripts/`). |
-| `scripts/package.py` | Builds the artefact directory + `manifest.json`. |
-| `scripts/run_all.sh` | Convenience wrapper. |
-| `notebooks/EEGConformer_BCIIV2a.ipynb` | Colab-ready notebook calling the same scripts. |
-| `docs/TRAINING_GUIDE.md` | Full operator guide. |
-| `docs/MODEL_CARD.md` | Shipped with the artefact. |
+| Path                                   | Purpose                                                                       |
+| -------------------------------------- | ----------------------------------------------------------------------------- |
+| `configs/eegconformer-bciiv2a.yaml`    | Single source of truth for the contract (22ch · 250Hz · 1000 samples · 32-d). |
+| `scripts/acquire_dataset.py`           | Downloads BCI-IV-2a via MOABB into a local cache.                             |
+| `scripts/preprocess.py`                | Bandpass + resample + epoch + standardise → `.npz`.                           |
+| `scripts/train.py`                     | EEGConformer training with fixed seeds, cross-session split.                  |
+| `scripts/validate.py`                  | Cross-subject hold-out validation.                                            |
+| `scripts/evaluate.py`                  | Cosine recall@10, embedding norm/variance.                                    |
+| `scripts/export_onnx.py`               | Wraps `scripts/export_braindecode_eegconformer.py` (in repo root `scripts/`). |
+| `scripts/package.py`                   | Builds the artefact directory + `manifest.json`.                              |
+| `scripts/run_all.sh`                   | Convenience wrapper.                                                          |
+| `notebooks/EEGConformer_BCIIV2a.ipynb` | Colab-ready notebook calling the same scripts.                                |
+| `docs/TRAINING_GUIDE.md`               | Full operator guide.                                                          |
+| `docs/MODEL_CARD.md`                   | Shipped with the artefact.                                                    |
 
 ## Contract (matches `docs/audits/2026-06-17_braindecode-model-selection.md`)
 
-| Field | Value |
-|---|---|
-| Channels | 22 |
-| Sample rate | 250 Hz |
-| Window | 1000 samples (4 s) |
-| Classes | 4 (left hand, right hand, feet, tongue) |
-| Embedding dim | 32 |
-| ONNX opset | 17 |
-| Outputs | `embedding` (Nx32), `logits` (Nx4) |
+| Field         | Value                                   |
+| ------------- | --------------------------------------- |
+| Channels      | 22                                      |
+| Sample rate   | 250 Hz                                  |
+| Window        | 1000 samples (4 s)                      |
+| Classes       | 4 (left hand, right hand, feet, tongue) |
+| Embedding dim | 32                                      |
+| ONNX opset    | 17                                      |
+| Outputs       | `embedding` (Nx32), `logits` (Nx4)      |
 
 ## Quick start (local)
 

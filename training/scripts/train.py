@@ -1,6 +1,8 @@
 """Train EEGConformer on preprocessed BCI-IV-2a.
 
 Saves the best-validation checkpoint to artefacts/<name>/eegconformer.pt.
+
+T-021: logs params, metrics, and artefact hashes to MLflow when available.
 """
 from __future__ import annotations
 
@@ -12,6 +14,7 @@ from pathlib import Path
 import numpy as np
 
 from _common import Paths, load_config, set_seed
+from mlflow_integration import MLflowTracker
 
 
 def main() -> None:
@@ -21,6 +24,18 @@ def main() -> None:
     cfg = load_config(args.config)
     set_seed(cfg["training"]["seed"])
     paths = Paths.from_config(cfg)
+
+    # T-021: start MLflow tracking (degrades to no-op if not installed).
+    tracker = MLflowTracker(experiment=cfg["name"])
+    tracker.start_run({
+        "model": "EEGConformer",
+        "dataset": cfg.get("dataset", {}).get("name", "unknown"),
+        "seed": cfg["training"]["seed"],
+        "lr": cfg["training"]["lr"],
+        "batch_size": cfg["training"]["batch_size"],
+        "epochs": cfg["training"]["epochs"],
+    })
+    tracker.log_param("weight_decay", cfg["training"]["weight_decay"])
 
     import torch
     from torch.utils.data import DataLoader, TensorDataset
@@ -98,6 +113,7 @@ def main() -> None:
         vl /= max(1, vn); va = vc / max(1, vn)
         history.append({"epoch": epoch, "val_loss": vl, "val_acc": va})
         print(f"[train] epoch={epoch:03d}  val_loss={vl:.4f}  val_acc={va:.4f}")
+        tracker.log_metrics({"val_loss": vl, "val_acc": va}, step=epoch)
 
         if vl < best_val - 1e-4:
             best_val = vl; best_acc = va; stale = 0
@@ -111,6 +127,12 @@ def main() -> None:
     with (paths.artefacts / "train_history.json").open("w") as f:
         json.dump({"history": history, "best_val_loss": best_val, "best_val_acc": best_acc}, f, indent=2)
     print(f"[train] best val_loss={best_val:.4f} val_acc={best_acc:.4f}  ckpt={out_pt}")
+
+    # T-021: log final metrics and artefact hash to MLflow.
+    tracker.log_metrics({"best_val_loss": best_val, "best_val_acc": best_acc})
+    tracker.log_artifact(out_pt)
+    tracker.log_artifact(paths.artefacts / "train_history.json")
+    tracker.end_run()
 
 
 if __name__ == "__main__":

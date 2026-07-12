@@ -14,6 +14,7 @@ import type { EEGModelAdapter } from "./types";
 import type { EmbeddingOutput, ModelDescriptor, ModelInput, PredictionOutput } from "../types";
 import { bandPowerFeatures } from "../../embeddings/features";
 import { segment } from "../../eeg/preprocessing/segment";
+import { getExecutionProviders } from "./webgpu-flag";
 
 // Minimal structural typing of the ort surface we depend on. Keeps tests
 // trivial to mock without pulling the full type graph.
@@ -78,26 +79,23 @@ async function defaultRuntime(): Promise<OrtRuntime> {
   // import.meta.url and breaks under Vite's dev `?v=hash` proxy + the
   // sandboxed preview origin (manifested as "Aborted(both async and sync
   // fetching of the wasm failed)" → "no available backend found"). Pinning
-  // `wasmPaths` to a stable release directory is the canonical fix.
+  // `wasmPaths` to a same-origin directory is the canonical fix.
   //
-  // Resolution order:
+  // T-008: the WASM bundle is now self-hosted under `/ort/` via the
+  // `ortWasmSelfHostPlugin` Vite plugin (copies from node_modules at build
+  // time, generates `integrity.json` with SHA-384 hashes). Resolution order:
   //   1. `VITE_ORT_WASM_PATHS` build-time env override (operators can point
-  //      this at a self-hosted bucket / same-origin path once available).
-  //   2. `/ort/` if a same-origin loader is shipped under `public/ort/`
-  //      (see `public/ort/README.md`).
-  //   3. The pinned jsdelivr release matching the installed runtime.
-  //
-  // NOTE: We currently fall through to (3) by default — the WASM artefacts
-  // (~12 MB and ~25 MB) exceed the per-file repo commit limit and the asset
-  // CDN refuses `application/wasm`, so true same-origin self-hosting is
-  // pending platform support. See `public/ort/README.md`.
+  //      this at a bucket / different same-origin path).
+  //   2. `/ort/` — the self-hosted bundle shipped from our own origin.
+  //   3. (legacy) the pinned jsdelivr release, only if the self-hosted
+  //      directory is absent at runtime (e.g. during unit tests that don't
+  //      run the Vite plugin).
   if (mod?.env?.wasm && mod.env.wasm.wasmPaths == null) {
     const envOverride =
       typeof import.meta !== "undefined"
         ? (import.meta as { env?: Record<string, string | undefined> }).env?.VITE_ORT_WASM_PATHS
         : undefined;
-    mod.env.wasm.wasmPaths =
-      envOverride ?? "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/";
+    mod.env.wasm.wasmPaths = envOverride ?? "/ort/";
   }
   return mod as OrtRuntime;
 }
@@ -161,7 +159,7 @@ export class ONNXAdapter implements EEGModelAdapter {
       throw new Error(`ONNXAdapter "${this.descriptor.id}": runtime unavailable`);
     }
     this.session = await this.runtime.InferenceSession.create(this.opts.artifact, {
-      executionProviders: this.opts.executionProviders ?? ["wasm"],
+      executionProviders: this.opts.executionProviders ?? getExecutionProviders(),
     });
   }
 

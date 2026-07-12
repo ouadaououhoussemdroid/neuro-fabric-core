@@ -19,8 +19,11 @@ CREATE TABLE IF NOT EXISTS public.eeg_analyses (
   created_at           TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_eeg_analyses_user_id    ON public.eeg_analyses (user_id);
-CREATE INDEX idx_eeg_analyses_created_at ON public.eeg_analyses (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_eeg_analyses_user_id
+ON public.eeg_analyses (user_id);
+
+CREATE INDEX IF NOT EXISTS idx_eeg_analyses_created_at
+ON public.eeg_analyses (created_at DESC);
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.eeg_analyses TO authenticated;
 GRANT ALL ON public.eeg_analyses TO service_role;

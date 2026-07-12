@@ -30,16 +30,16 @@ the first **live neural embedding model** in production routing. As of
 the ONNX adapter.
 
 The single biggest bottleneck identified by the 2026-06-17 strategic
-audit — *"the trained EEGConformer ONNX file does not exist"* — is now
+audit — _"the trained EEGConformer ONNX file does not exist"_ — is now
 resolved. However, the embedding-quality audit run on 2026-06-19 is
 **INCONCLUSIVE**: on a synthetic motor-imagery probe the model showed a
 negligible intra/inter-class separation (Cohen's d = 0.027, 1-NN cosine
 = 30 % vs chance 25 %). The probe is plausibly OOD, but it means the
-production embedding space has not been *empirically* shown to be
+production embedding space has not been _empirically_ shown to be
 discriminative on the device the user runs.
 
-**Net verdict:** the platform has crossed the *technical* foundation
-threshold but has **not** crossed the *scientific validation*
+**Net verdict:** the platform has crossed the _technical_ foundation
+threshold but has **not** crossed the _scientific validation_
 threshold. It is suitable for prototype and research-platform use today,
 gated for pilot, and not ready for an MVP that promises clinical or
 decision-grade output.
@@ -81,7 +81,7 @@ see §11 for derivation).
 - **Backend:** Lovable Cloud (Supabase). 7 SQL migrations; tables
   include eeg_analyses, experiments, role tables. RLS + GRANTs present.
 - **AI layer:** `src/lib/ai/{adapters,artifacts,benchmark,embeddings,
-  inference,models,validation,vector-bridge}` with 26/26 tests passing
+inference,models,validation,vector-bridge}` with 26/26 tests passing
   prior to this audit window.
 - **Adapters registered:** `pca-legacy-v1`, `pytorch-export-placeholder`,
   `eegpt-placeholder`, `braindecode-eegnetv4-default`,
@@ -142,28 +142,28 @@ see §11 for derivation).
 
 ## 4. AI / EEG Stack Assessment
 
-| Layer | State | Evidence |
-|---|---|---|
-| Signal I/O (EDF/CSV/NPY) | Implemented | parsers + tests |
-| IIR bandpass / notch | Implemented | `signal/` modules |
-| Band-power features | Implemented (slow DFT) | `embeddings/features.ts` |
-| Artifact rejection + quality | Implemented | `preprocessing/artifact-rejection`, `signal-quality/` |
-| Synthetic generator | Implemented | `synthetic/` |
-| PCA embedder | Implemented | `pca-adapter.ts` |
-| ONNX runtime adapter | Implemented (CDN-pinned WASM) | `onnx-adapter.ts` |
-| Braindecode bridge | Implemented | `braindecode-onnx-bridge.ts` |
-| EEGConformer (prod) | **Live** | `public/models/eegconformer.onnx` 3 360 306 B; runtime PASS |
-| EEGNet v4 default | Registered, untested in browser | `braindecode-eegnetv4-default` |
-| EEGPT | Stub only | `eegpt-adapter.ts` |
-| Validation + L2 norm | Implemented | `validation/` |
-| Benchmark harness | Implemented | `benchmark/` |
-| Vector index (in-memory) | Implemented | `vector-bridge/` |
-| Vector index (pgvector) | **Missing** | no migration |
-| Cognitive decoder (trained) | **Missing** | heuristic ratios |
-| EEG reconstruction | Route scaffold only | `src/routes/synthetic.tsx` |
-| EEG2IMG | Route scaffold only | `src/routes/eeg2image.tsx` |
-| Empirical embedding quality | **Inconclusive** | synthetic probe only |
-| Real dataset evaluation | Not done in-platform | needs Colab/off-platform |
+| Layer                        | State                           | Evidence                                                    |
+| ---------------------------- | ------------------------------- | ----------------------------------------------------------- |
+| Signal I/O (EDF/CSV/NPY)     | Implemented                     | parsers + tests                                             |
+| IIR bandpass / notch         | Implemented                     | `signal/` modules                                           |
+| Band-power features          | Implemented (slow DFT)          | `embeddings/features.ts`                                    |
+| Artifact rejection + quality | Implemented                     | `preprocessing/artifact-rejection`, `signal-quality/`       |
+| Synthetic generator          | Implemented                     | `synthetic/`                                                |
+| PCA embedder                 | Implemented                     | `pca-adapter.ts`                                            |
+| ONNX runtime adapter         | Implemented (CDN-pinned WASM)   | `onnx-adapter.ts`                                           |
+| Braindecode bridge           | Implemented                     | `braindecode-onnx-bridge.ts`                                |
+| EEGConformer (prod)          | **Live**                        | `public/models/eegconformer.onnx` 3 360 306 B; runtime PASS |
+| EEGNet v4 default            | Registered, untested in browser | `braindecode-eegnetv4-default`                              |
+| EEGPT                        | Stub only                       | `eegpt-adapter.ts`                                          |
+| Validation + L2 norm         | Implemented                     | `validation/`                                               |
+| Benchmark harness            | Implemented                     | `benchmark/`                                                |
+| Vector index (in-memory)     | Implemented                     | `vector-bridge/`                                            |
+| Vector index (pgvector)      | **Missing**                     | no migration                                                |
+| Cognitive decoder (trained)  | **Missing**                     | heuristic ratios                                            |
+| EEG reconstruction           | Route scaffold only             | `src/routes/synthetic.tsx`                                  |
+| EEG2IMG                      | Route scaffold only             | `src/routes/eeg2image.tsx`                                  |
+| Empirical embedding quality  | **Inconclusive**                | synthetic probe only                                        |
+| Real dataset evaluation      | Not done in-platform            | needs Colab/off-platform                                    |
 
 **Routing chain (verified 2026-06-19):**
 
@@ -199,29 +199,29 @@ production-hardened.**
 
 ## 6. Product Readiness Assessment
 
-| Tier | Verdict | Why |
-|---|---|---|
-| **Prototype** | ✅ Ready | Live neural embedder, end-to-end pipeline, auth, persistence. |
-| **Research platform** | ✅ Ready (with caveats) | Adapter pattern + benchmark + structured logs make it a fine harness for ML researchers; however dataset loaders are missing, so research is BYO-data. |
-| **Pilot deployment** | ⚠️ Conditional | Embedding quality unproven on real data; CDN-WASM dependency; no rate limiting; in-memory vectors. Acceptable for an internal closed pilot, not a customer pilot. |
-| **MVP (paid users)** | ❌ Not ready | No CI, no rate limiting, no upload cap, no SLO instrumentation, no cognitive decoder, no pgvector persistence, no validated discriminative embedding space. |
-| **Clinical / decision-grade** | ❌ Out of scope | Would require IRB / regulatory pathway, none of which exists. |
+| Tier                          | Verdict                 | Why                                                                                                                                                               |
+| ----------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Prototype**                 | ✅ Ready                | Live neural embedder, end-to-end pipeline, auth, persistence.                                                                                                     |
+| **Research platform**         | ✅ Ready (with caveats) | Adapter pattern + benchmark + structured logs make it a fine harness for ML researchers; however dataset loaders are missing, so research is BYO-data.            |
+| **Pilot deployment**          | ⚠️ Conditional          | Embedding quality unproven on real data; CDN-WASM dependency; no rate limiting; in-memory vectors. Acceptable for an internal closed pilot, not a customer pilot. |
+| **MVP (paid users)**          | ❌ Not ready            | No CI, no rate limiting, no upload cap, no SLO instrumentation, no cognitive decoder, no pgvector persistence, no validated discriminative embedding space.       |
+| **Clinical / decision-grade** | ❌ Out of scope         | Would require IRB / regulatory pathway, none of which exists.                                                                                                     |
 
 ---
 
 ## 7. Risk Matrix
 
-| # | Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|---|
-| R1 | jsdelivr CDN outage → all inference falls back to PCA silently | Medium | High | Vendor ORT `.wasm` into `public/ort/`; pin `wasmPaths` to self-host. |
-| R2 | Embedding space not discriminative on real EEG | Medium | Critical | Run BCI-IV-2a holdout eval off-platform; gate model behind a flag tied to recall@10 vs PCA. |
-| R3 | No CI → regressions ship undetected | High | Medium | Add `bunx vitest run` + typecheck workflow on PR. |
-| R4 | Unbounded upload / no rate limit | Medium | High | Add size cap + per-user quota on `/api/eeg/upload`. |
-| R5 | Repo-bundled ONNX inflates app weight, no SHA verify | High | Low–Medium | Move artefact to content-hashed Cloud Storage URL; record SHA in `artifacts/index.ts`. |
-| R6 | In-memory vector index loses state on reload | High | Medium | Migrate to pgvector with cosine ANN. |
-| R7 | Heuristic cognitive decoder marketed as ML | Medium | High (trust) | Either retire feature, label "heuristic v0", or train decoder. |
-| R8 | Architectural drift between blueprint and implementation | Medium | Medium | Either update the blueprint or schedule reconciliation work; do not let docs and code diverge silently. |
-| R9 | Worker runtime ≠ Node — Node-only deps would break prod silently | Low (today) | High (when triggered) | Existing rules in `server-runtime` directive; codify with a CI guard. |
+| #   | Risk                                                             | Likelihood  | Impact                | Mitigation                                                                                              |
+| --- | ---------------------------------------------------------------- | ----------- | --------------------- | ------------------------------------------------------------------------------------------------------- |
+| R1  | jsdelivr CDN outage → all inference falls back to PCA silently   | Medium      | High                  | Vendor ORT `.wasm` into `public/ort/`; pin `wasmPaths` to self-host.                                    |
+| R2  | Embedding space not discriminative on real EEG                   | Medium      | Critical              | Run BCI-IV-2a holdout eval off-platform; gate model behind a flag tied to recall@10 vs PCA.             |
+| R3  | No CI → regressions ship undetected                              | High        | Medium                | Add `bunx vitest run` + typecheck workflow on PR.                                                       |
+| R4  | Unbounded upload / no rate limit                                 | Medium      | High                  | Add size cap + per-user quota on `/api/eeg/upload`.                                                     |
+| R5  | Repo-bundled ONNX inflates app weight, no SHA verify             | High        | Low–Medium            | Move artefact to content-hashed Cloud Storage URL; record SHA in `artifacts/index.ts`.                  |
+| R6  | In-memory vector index loses state on reload                     | High        | Medium                | Migrate to pgvector with cosine ANN.                                                                    |
+| R7  | Heuristic cognitive decoder marketed as ML                       | Medium      | High (trust)          | Either retire feature, label "heuristic v0", or train decoder.                                          |
+| R8  | Architectural drift between blueprint and implementation         | Medium      | Medium                | Either update the blueprint or schedule reconciliation work; do not let docs and code diverge silently. |
+| R9  | Worker runtime ≠ Node — Node-only deps would break prod silently | Low (today) | High (when triggered) | Existing rules in `server-runtime` directive; codify with a CI guard.                                   |
 
 ---
 
@@ -257,18 +257,18 @@ remains coherent in its **layered intent** (signal → embedding →
 representation → cognitive → reconstruction → cross-modal). The drift
 is in **delivery vehicles**, not in the architectural shape:
 
-| Blueprint assumption | Reality | Reconciliation |
-|---|---|---|
-| Foundation model served from object storage with signed URL | App-bundled in `public/models/` | Move to Cloud Storage with content-hashed path before MVP. |
-| ORT runtime self-hosted | Pulled from jsdelivr CDN | Vendor `.wasm` into `public/ort/`. |
-| pgvector persistence | In-memory only | Add migration + ANN index. |
-| Trained cognitive decoder | Heuristic | Train a small decoder (TF.js or ONNX). |
-| Multiple foundation models | One live (EEGConformer), two stubs | Either ship EEGPT/EEGNet or remove the registrations. |
-| Real datasets | Synthetic only | Wire Sleep-EDF (smallest realistic loader). |
+| Blueprint assumption                                        | Reality                            | Reconciliation                                             |
+| ----------------------------------------------------------- | ---------------------------------- | ---------------------------------------------------------- |
+| Foundation model served from object storage with signed URL | App-bundled in `public/models/`    | Move to Cloud Storage with content-hashed path before MVP. |
+| ORT runtime self-hosted                                     | Pulled from jsdelivr CDN           | Vendor `.wasm` into `public/ort/`.                         |
+| pgvector persistence                                        | In-memory only                     | Add migration + ANN index.                                 |
+| Trained cognitive decoder                                   | Heuristic                          | Train a small decoder (TF.js or ONNX).                     |
+| Multiple foundation models                                  | One live (EEGConformer), two stubs | Either ship EEGPT/EEGNet or remove the registrations.      |
+| Real datasets                                               | Synthetic only                     | Wire Sleep-EDF (smallest realistic loader).                |
 
 **Verdict:** the blueprint is still the right north star; the
 implementation has reached its first layer (signal → embedding) end to
-end and is *not yet* into the second (representation persistence) or
+end and is _not yet_ into the second (representation persistence) or
 third (cognitive decoding).
 
 ---
@@ -321,24 +321,24 @@ regulatory pathway.
 
 ## 11. Final Readiness Score
 
-| Component | Weight | Score | Contribution |
-|---|---:|---:|---:|
-| Signal processing | 10 | 8 / 10 | 8.0 |
-| Embedding (technical) | 12 | 9 / 10 | 10.8 |
-| Embedding (empirical quality) | 10 | 3 / 10 | 3.0 |
-| Foundation models breadth | 10 | 4 / 10 | 4.0 |
-| Cognitive decoder | 8 | 2 / 10 | 1.6 |
-| Reconstruction / EEG2IMG | 4 | 1 / 10 | 0.4 |
-| Persistence (Postgres+RLS) | 8 | 8 / 10 | 6.4 |
-| Vector retrieval | 8 | 4 / 10 | 3.2 |
-| Auth & security posture | 8 | 7 / 10 | 5.6 |
-| Deployment & ops | 8 | 5 / 10 | 4.0 |
-| Observability | 6 | 7 / 10 | 4.2 |
-| Documentation | 4 | 9 / 10 | 3.6 |
-| Tests / CI | 4 | 5 / 10 | 2.0 |
-| Datasets & evaluation | 6 | 2 / 10 | 1.2 |
-| Scalability primitives | 4 | 2 / 10 | 0.8 |
-| **Total** | **100** | — | **≈ 63 / 100** |
+| Component                     |  Weight |  Score |   Contribution |
+| ----------------------------- | ------: | -----: | -------------: |
+| Signal processing             |      10 | 8 / 10 |            8.0 |
+| Embedding (technical)         |      12 | 9 / 10 |           10.8 |
+| Embedding (empirical quality) |      10 | 3 / 10 |            3.0 |
+| Foundation models breadth     |      10 | 4 / 10 |            4.0 |
+| Cognitive decoder             |       8 | 2 / 10 |            1.6 |
+| Reconstruction / EEG2IMG      |       4 | 1 / 10 |            0.4 |
+| Persistence (Postgres+RLS)    |       8 | 8 / 10 |            6.4 |
+| Vector retrieval              |       8 | 4 / 10 |            3.2 |
+| Auth & security posture       |       8 | 7 / 10 |            5.6 |
+| Deployment & ops              |       8 | 5 / 10 |            4.0 |
+| Observability                 |       6 | 7 / 10 |            4.2 |
+| Documentation                 |       4 | 9 / 10 |            3.6 |
+| Tests / CI                    |       4 | 5 / 10 |            2.0 |
+| Datasets & evaluation         |       6 | 2 / 10 |            1.2 |
+| Scalability primitives        |       4 | 2 / 10 |            0.8 |
+| **Total**                     | **100** |      — | **≈ 63 / 100** |
 
 - Previous (2026-06-17 strategic audit): **58 / 100**
 - Current (2026-06-19): **63 / 100** — Δ **+5**

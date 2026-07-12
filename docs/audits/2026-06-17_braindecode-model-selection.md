@@ -25,25 +25,25 @@ All candidates are first-class Braindecode architectures already wired
 through `BraindecodeAdapter` (`src/lib/ai/adapters/braindecode-adapter.ts`,
 `BRAINDECODE_MODELS`).
 
-| Model              | Year | Type                    | Default win.      | Embed dim | Notes |
-|--------------------|------|-------------------------|-------------------|----------:|-------|
-| ShallowFBCSPNet    | 2017 | Shallow ConvNet         | 4.5 s @ 250 Hz    |        40 | Strong on motor-imagery, weak general representations |
-| Deep4Net           | 2017 | Deep ConvNet            | 4.5 s @ 250 Hz    |       200 | Higher capacity, but feature head is task-specific |
-| EEGNetv4           | 2018 | Compact CNN             | 2 s @ 128 Hz      |        16 | Tiny + fast; embedding too small for fine-grained similarity |
-| **EEGConformer**   | 2022 | Conv + Transformer      | 4 s @ 250 Hz      |        32 | Attention-pooled features generalise across paradigms |
+| Model            | Year | Type               | Default win.   | Embed dim | Notes                                                        |
+| ---------------- | ---- | ------------------ | -------------- | --------: | ------------------------------------------------------------ |
+| ShallowFBCSPNet  | 2017 | Shallow ConvNet    | 4.5 s @ 250 Hz |        40 | Strong on motor-imagery, weak general representations        |
+| Deep4Net         | 2017 | Deep ConvNet       | 4.5 s @ 250 Hz |       200 | Higher capacity, but feature head is task-specific           |
+| EEGNetv4         | 2018 | Compact CNN        | 2 s @ 128 Hz   |        16 | Tiny + fast; embedding too small for fine-grained similarity |
+| **EEGConformer** | 2022 | Conv + Transformer | 4 s @ 250 Hz   |        32 | Attention-pooled features generalise across paradigms        |
 
 ### Scoring (1 = poor, 5 = excellent)
 
-| Criterion                            | Shallow | Deep4 | EEGNetv4 | **EEGConformer** |
-|--------------------------------------|:-------:|:-----:|:--------:|:----------------:|
-| Embedding quality for similarity     | 2 | 3 | 2 | **5** |
-| Transfer / cross-paradigm generality | 2 | 3 | 2 | **5** |
-| ONNX-export simplicity (opset 17)    | 5 | 5 | 5 | **4** |
-| Inference latency (browser, WASM)    | 5 | 3 | 5 | **4** |
-| Memory footprint                     | 5 | 2 | 5 | **4** |
-| Community traction (2024-2026)       | 3 | 3 | 4 | **5** |
-| Roadmap fit (self-supervised pre-tr.)| 2 | 2 | 2 | **5** |
-| **Total / 35**                       | 24 | 21 | 25 | **32** |
+| Criterion                             | Shallow | Deep4 | EEGNetv4 | **EEGConformer** |
+| ------------------------------------- | :-----: | :---: | :------: | :--------------: |
+| Embedding quality for similarity      |    2    |   3   |    2     |      **5**       |
+| Transfer / cross-paradigm generality  |    2    |   3   |    2     |      **5**       |
+| ONNX-export simplicity (opset 17)     |    5    |   5   |    5     |      **4**       |
+| Inference latency (browser, WASM)     |    5    |   3   |    5     |      **4**       |
+| Memory footprint                      |    5    |   2   |    5     |      **4**       |
+| Community traction (2024-2026)        |    3    |   3   |    4     |      **5**       |
+| Roadmap fit (self-supervised pre-tr.) |    2    |   2   |    2     |      **5**       |
+| **Total / 35**                        |   24    |  21   |    25    |      **32**      |
 
 ## Decision
 
@@ -80,7 +80,7 @@ reference export script.
 
 ## References
 
-- Song, Zheng, Ko (2022) — *EEG Conformer*.
+- Song, Zheng, Ko (2022) — _EEG Conformer_.
 - Braindecode docs: https://braindecode.org
 - ADR 0001 — `docs/adr/0001-braindecode-execution-strategy.md`
 - `src/lib/ai/adapters/braindecode-adapter.ts`

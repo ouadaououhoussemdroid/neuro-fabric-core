@@ -11,21 +11,21 @@ task: motor-imagery-4class
 signal:
   channels: 22
   sample_rate_hz: 250
-  window_samples: 1000      # 4 s
+  window_samples: 1000 # 4 s
   tmin_s: 0.0
   tmax_s: 4.0
   bandpass_hz: [4.0, 38.0]
 
 model:
   n_classes: 4
-  embedding_dim: 32         # final_fc pooled features captured by hook
+  embedding_dim: 32 # final_fc pooled features captured by hook
   final_fc_length: auto
 
 dataset:
   loader: moabb
-  name: BNCI2014_001        # BCI Competition IV 2a
+  name: BNCI2014_001 # BCI Competition IV 2a
   subjects: [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  holdout_subjects: [9]     # cross-subject hold-out
+  holdout_subjects: [9] # cross-subject hold-out
 
 training:
   seed: 20260617
