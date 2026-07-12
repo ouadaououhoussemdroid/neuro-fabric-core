@@ -16,26 +16,26 @@ Four execution strategies were considered.
 
 ## Options
 
-| #  | Strategy | Where it runs | Real model? | Browser cost | SSR safe? | Maintenance |
-|----|---------|---------------|-------------|--------------|-----------|-------------|
-| A  | Braindecode via Pyodide + PyTorch wheel | Browser | Yes | ~80 MB cold start, no WebGPU, single-threaded | No (window/document at import) | High — PyTorch on Pyodide is unofficial, frequent breakage |
-| B  | Braindecode exported to ONNX → ONNX Runtime Web | Browser | Yes | 5–30 MB per model, WASM SIMD + optional WebGPU | Yes (lazy import) | Low — same artefact format as every other ONNX model |
-| C  | Hybrid: browser ONNX + optional server inference | Both | Yes | Same as B in browser; server path is opt-in | Yes | Medium — requires a server endpoint contract |
-| D  | Hosted-only inference (REST) | Server | Yes | 0 | Yes | Highest infra cost; no offline path |
+| #   | Strategy                                         | Where it runs | Real model? | Browser cost                                   | SSR safe?                      | Maintenance                                                |
+| --- | ------------------------------------------------ | ------------- | ----------- | ---------------------------------------------- | ------------------------------ | ---------------------------------------------------------- |
+| A   | Braindecode via Pyodide + PyTorch wheel          | Browser       | Yes         | ~80 MB cold start, no WebGPU, single-threaded  | No (window/document at import) | High — PyTorch on Pyodide is unofficial, frequent breakage |
+| B   | Braindecode exported to ONNX → ONNX Runtime Web  | Browser       | Yes         | 5–30 MB per model, WASM SIMD + optional WebGPU | Yes (lazy import)              | Low — same artefact format as every other ONNX model       |
+| C   | Hybrid: browser ONNX + optional server inference | Both          | Yes         | Same as B in browser; server path is opt-in    | Yes                            | Medium — requires a server endpoint contract               |
+| D   | Hosted-only inference (REST)                     | Server        | Yes         | 0                                              | Yes                            | Highest infra cost; no offline path                        |
 
 ### Decision Matrix (1 = poor, 5 = excellent)
 
-| Criterion                    | A: Pyodide | B: ONNX | C: Hybrid | D: Server-only |
-|------------------------------|:---------:|:-------:|:---------:|:--------------:|
-| Technical feasibility        | 2 | 5 | 4 | 5 |
-| Browser compatibility        | 2 | 5 | 5 | 5 |
-| Performance (P50 latency)    | 2 | 4 | 4 | 3 |
-| Memory consumption           | 1 | 4 | 4 | 5 |
-| Maintainability              | 2 | 5 | 3 | 4 |
-| Scalability                  | 3 | 4 | 5 | 4 |
-| Production readiness         | 2 | 5 | 4 | 5 |
-| Fits current architecture    | 2 | 5 | 4 | 3 |
-| **Total / 40**               | **16** | **37** | **33** | **34** |
+| Criterion                 | A: Pyodide | B: ONNX | C: Hybrid | D: Server-only |
+| ------------------------- | :--------: | :-----: | :-------: | :------------: |
+| Technical feasibility     |     2      |    5    |     4     |       5        |
+| Browser compatibility     |     2      |    5    |     5     |       5        |
+| Performance (P50 latency) |     2      |    4    |     4     |       3        |
+| Memory consumption        |     1      |    4    |     4     |       5        |
+| Maintainability           |     2      |    5    |     3     |       4        |
+| Scalability               |     3      |    4    |     5     |       4        |
+| Production readiness      |     2      |    5    |     4     |       5        |
+| Fits current architecture |     2      |    5    |     4     |       3        |
+| **Total / 40**            |   **16**   | **37**  |  **33**   |     **34**     |
 
 ## Decision
 

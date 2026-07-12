@@ -23,15 +23,15 @@ the contract. The defaults match the runtime expectations of
 
 ## 3. Pipeline (per stage)
 
-| Stage | Command | Output |
-|---|---|---|
-| Acquire | `python scripts/acquire_dataset.py` | `cache/moabb/` |
-| Preprocess | `python scripts/preprocess.py` | `cache/processed/<name>/{train,holdout}.npz` |
-| Train | `python scripts/train.py` | `artefacts/<name>/eegconformer.pt`, `train_history.json` |
-| Validate | `python scripts/validate.py` | `artefacts/<name>/validation_report.json` |
-| Evaluate | `python scripts/evaluate.py` | `artefacts/<name>/evaluation_report.json` |
-| Export | `python scripts/export_onnx.py` | `artefacts/<name>/eegconformer.onnx` |
-| Package | `python scripts/package.py` | `artefacts/<name>/manifest.json` (+ MODEL_CARD copy) |
+| Stage      | Command                             | Output                                                   |
+| ---------- | ----------------------------------- | -------------------------------------------------------- |
+| Acquire    | `python scripts/acquire_dataset.py` | `cache/moabb/`                                           |
+| Preprocess | `python scripts/preprocess.py`      | `cache/processed/<name>/{train,holdout}.npz`             |
+| Train      | `python scripts/train.py`           | `artefacts/<name>/eegconformer.pt`, `train_history.json` |
+| Validate   | `python scripts/validate.py`        | `artefacts/<name>/validation_report.json`                |
+| Evaluate   | `python scripts/evaluate.py`        | `artefacts/<name>/evaluation_report.json`                |
+| Export     | `python scripts/export_onnx.py`     | `artefacts/<name>/eegconformer.onnx`                     |
+| Package    | `python scripts/package.py`         | `artefacts/<name>/manifest.json` (+ MODEL_CARD copy)     |
 
 Or run the whole chain:
 
@@ -78,9 +78,9 @@ untouched.
 
 ## 7. Troubleshooting
 
-| Symptom | Likely cause | Fix |
-|---|---|---|
-| MOABB download stalls | Mirror unreachable | Set `MNE_DATA` / `MOABB_DATA` to a pre-staged path |
-| `channel mismatch: 25 != 22` | Wrong dataset class | Confirm `BNCI2014_001` (BCI-IV-2a) in `_common.acquire_dataset.py` |
-| Parity check < 0.999 | Wrong opset / hook target | Re-run exporter with `--opset 17`; ensure `model.fc` exists |
-| CUDA OOM | Batch too large | Drop `training.batch_size` to 32 |
+| Symptom                      | Likely cause              | Fix                                                                |
+| ---------------------------- | ------------------------- | ------------------------------------------------------------------ |
+| MOABB download stalls        | Mirror unreachable        | Set `MNE_DATA` / `MOABB_DATA` to a pre-staged path                 |
+| `channel mismatch: 25 != 22` | Wrong dataset class       | Confirm `BNCI2014_001` (BCI-IV-2a) in `_common.acquire_dataset.py` |
+| Parity check < 0.999         | Wrong opset / hook target | Re-run exporter with `--opset 17`; ensure `model.fc` exists        |
+| CUDA OOM                     | Batch too large           | Drop `training.batch_size` to 32                                   |

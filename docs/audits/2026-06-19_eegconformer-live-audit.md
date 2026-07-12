@@ -32,21 +32,21 @@ Trace:
 1. Caller invokes `embedEEG(input, opts?)` from
    `src/lib/ai/inference/embed-eeg.ts`.
 2. `embedEEG` resolves `preferred = opts.preferredModelId ??
-   "braindecode-eegnetv4-onnx"`. When the caller does not override and
+"braindecode-eegnetv4-onnx"`. When the caller does not override and
    `hasModel(preferred)` is false, `startId` falls through to the first
    entry in `chain` (PCA). To route through EEGConformer, callers
    should pass `preferredModelId: "braindecode-eegconformer-prod"`;
    the current registry registers
    `braindecode-eegconformer-prod`, **not** `braindecode-eegnetv4-onnx`.
 3. `embedEEG` calls `embed(input, { modelId: startId, fallbackChain,
-   fallbackToPCA: true, ... })` from `src/lib/ai/embeddings/index.ts`.
+fallbackToPCA: true, ... })` from `src/lib/ai/embeddings/index.ts`.
 4. `embed()` calls `createAdapter(id)` from
    `src/lib/ai/models/registry.ts`, which returns a
    `BraindecodeAdapter` whose bridge is the ONNX bridge constructed by
    `createONNXBraindecodeBridge({ artifact: "/models/eegconformer.onnx",
-   architecture: "EEGConformer", channels: 22, sampleRate: 250,
-   windowSamples: 1000, embeddingDim: 32, embeddingOutputName:
-   "embedding" })`.
+architecture: "EEGConformer", channels: 22, sampleRate: 250,
+windowSamples: 1000, embeddingDim: 32, embeddingOutputName:
+"embedding" })`.
 5. On adapter `load()` / `embed()` failure (no WASM runtime, fetch
    error, parity issue), `embed()` walks `fallbackChain` and finally
    `pca-legacy-v1`, returning `{ fellBack: true, fallbackReason }`.
@@ -131,11 +131,11 @@ overrides.
 
 ## 6. Updated maturity scores
 
-| Score | Previous | Current | Δ |
-|---|---|---|---|
-| Overall Platform Maturity | 58 / 100 | 64 / 100 | +6 |
-| Production Readiness | 55 / 100 | 62 / 100 | +7 |
-| AI Layer Readiness | 60 / 100 | 72 / 100 | +12 |
+| Score                     | Previous | Current  | Δ   |
+| ------------------------- | -------- | -------- | --- |
+| Overall Platform Maturity | 58 / 100 | 64 / 100 | +6  |
+| Production Readiness      | 55 / 100 | 62 / 100 | +7  |
+| AI Layer Readiness        | 60 / 100 | 72 / 100 | +12 |
 
 Justification:
 

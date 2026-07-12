@@ -34,11 +34,13 @@ import { Route as AuthenticatedExperimentsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedDatasetsRouteImport } from './routes/_authenticated/datasets'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as ApiPublicNotebooksRouteImport } from './routes/api/public/notebooks'
 import { Route as ApiEegUploadRouteImport } from './routes/api/eeg/upload'
 import { Route as AuthenticatedDashboardResearcherRouteImport } from './routes/_authenticated/dashboard.researcher'
 import { Route as AuthenticatedDashboardIndividualRouteImport } from './routes/_authenticated/dashboard.individual'
 import { Route as AuthenticatedDashboardEnterpriseRouteImport } from './routes/_authenticated/dashboard.enterprise'
 import { Route as AuthenticatedDashboardAnalysesRouteImport } from './routes/_authenticated/dashboard.analyses'
+import { Route as ApiPublicCronRecallRouteImport } from './routes/api/public/cron/recall'
 
 const SyntheticRoute = SyntheticRouteImport.update({
   id: '/synthetic',
@@ -166,6 +168,11 @@ const AuthenticatedDashboardIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const ApiPublicNotebooksRoute = ApiPublicNotebooksRouteImport.update({
+  id: '/api/public/notebooks',
+  path: '/api/public/notebooks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiEegUploadRoute = ApiEegUploadRouteImport.update({
   id: '/api/eeg/upload',
   path: '/api/eeg/upload',
@@ -195,6 +202,11 @@ const AuthenticatedDashboardAnalysesRoute =
     path: '/analyses',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const ApiPublicCronRecallRoute = ApiPublicCronRecallRouteImport.update({
+  id: '/api/public/cron/recall',
+  path: '/api/public/cron/recall',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -225,7 +237,9 @@ export interface FileRoutesByFullPath {
   '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
+  '/api/public/notebooks': typeof ApiPublicNotebooksRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -255,7 +269,9 @@ export interface FileRoutesByTo {
   '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
+  '/api/public/notebooks': typeof ApiPublicNotebooksRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -288,7 +304,9 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/_authenticated/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
+  '/api/public/notebooks': typeof ApiPublicNotebooksRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -321,7 +339,9 @@ export interface FileRouteTypes {
     | '/dashboard/individual'
     | '/dashboard/researcher'
     | '/api/eeg/upload'
+    | '/api/public/notebooks'
     | '/dashboard/'
+    | '/api/public/cron/recall'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -351,7 +371,9 @@ export interface FileRouteTypes {
     | '/dashboard/individual'
     | '/dashboard/researcher'
     | '/api/eeg/upload'
+    | '/api/public/notebooks'
     | '/dashboard'
+    | '/api/public/cron/recall'
   id:
     | '__root__'
     | '/'
@@ -383,7 +405,9 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/individual'
     | '/_authenticated/dashboard/researcher'
     | '/api/eeg/upload'
+    | '/api/public/notebooks'
     | '/_authenticated/dashboard/'
+    | '/api/public/cron/recall'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -404,6 +428,8 @@ export interface RootRouteChildren {
   StudioRoute: typeof StudioRoute
   SyntheticRoute: typeof SyntheticRoute
   ApiEegUploadRoute: typeof ApiEegUploadRoute
+  ApiPublicNotebooksRoute: typeof ApiPublicNotebooksRoute
+  ApiPublicCronRecallRoute: typeof ApiPublicCronRecallRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -583,6 +609,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/api/public/notebooks': {
+      id: '/api/public/notebooks'
+      path: '/api/public/notebooks'
+      fullPath: '/api/public/notebooks'
+      preLoaderRoute: typeof ApiPublicNotebooksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/eeg/upload': {
       id: '/api/eeg/upload'
       path: '/api/eeg/upload'
@@ -617,6 +650,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/analyses'
       preLoaderRoute: typeof AuthenticatedDashboardAnalysesRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/api/public/cron/recall': {
+      id: '/api/public/cron/recall'
+      path: '/api/public/cron/recall'
+      fullPath: '/api/public/cron/recall'
+      preLoaderRoute: typeof ApiPublicCronRecallRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -689,6 +729,8 @@ const rootRouteChildren: RootRouteChildren = {
   StudioRoute: StudioRoute,
   SyntheticRoute: SyntheticRoute,
   ApiEegUploadRoute: ApiEegUploadRoute,
+  ApiPublicNotebooksRoute: ApiPublicNotebooksRoute,
+  ApiPublicCronRecallRoute: ApiPublicCronRecallRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

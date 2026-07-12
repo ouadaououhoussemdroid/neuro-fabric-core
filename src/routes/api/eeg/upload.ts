@@ -8,11 +8,34 @@ import { authenticateRequest, AuthError } from "@/integrations/supabase/request-
 import { checkRateLimit } from "@/integrations/supabase/rate-limit";
 import type { EEGSignal } from "@/lib/eeg/types";
 
-const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const MAX_FILE_BYTES = 50 * 1024 * 1024; // T-028: 50 MB cap
 const ALLOWED_TYPES = [".edf", ".bdf", ".csv", ".tsv", ".npy"];
 
 const RATE_LIMIT_MAX = 20;
 const RATE_LIMIT_WINDOW_SECONDS = 60;
+
+/**
+ * T-028 — Magic-number (content sniff) checks for each allowed format.
+ * Prevents a renamed .txt file from being passed to the parser, which
+ * could trigger unhandled errors or DoS via large allocations.
+ */
+const MAGIC_NUMBERS: Record<string, number[]> = {
+  // EDF/BDF: version field is "0" (0x30) for EDF, 0xFF for BDF.
+  ".edf": [0x30],
+  ".bdf": [0xff],
+  // CSV/TSV: no reliable magic number — skip (rely on parser validation).
+  ".csv": [],
+  ".tsv": [],
+  // NPY: starts with the numpy magic "\x93NUMPY".
+  ".npy": [0x93, 0x4e, 0x55, 0x4d, 0x50, 0x59],
+};
+
+function checkMagicNumber(bytes: Uint8Array, ext: string): boolean {
+  const expected = MAGIC_NUMBERS[ext];
+  if (!expected || expected.length === 0) return true; // no check for this format
+  if (bytes.length < expected.length) return false;
+  return expected.every((b, i) => bytes[i] === b);
+}
 
 export const Route = createFileRoute("/api/eeg/upload")({
   server: {
@@ -78,11 +101,27 @@ export const Route = createFileRoute("/api/eeg/upload")({
 
           const filename = file.name || "upload";
           const lower = filename.toLowerCase();
-          const isAllowed = ALLOWED_TYPES.some((ext) => lower.endsWith(ext));
-          if (!isAllowed) {
+          const ext = ALLOWED_TYPES.find((e) => lower.endsWith(e));
+          if (!ext) {
             return json(
               { error: `Unsupported file type: ${filename}. Allowed: ${ALLOWED_TYPES.join(", ")}` },
               415,
+            );
+          }
+
+          // T-028: magic-number content sniff — read the first few bytes
+          // and verify they match the expected signature for this format.
+          const fileBuffer = await file.arrayBuffer();
+          const head = new Uint8Array(fileBuffer.slice(0, 16));
+          if (!checkMagicNumber(head, ext)) {
+            log("warn", "eeg.upload.magic_number_mismatch", {
+              filename,
+              ext,
+              headBytes: Array.from(head.slice(0, 8)).join(","),
+            });
+            return json(
+              { error: `File content does not match ${ext} format (magic number check failed).` },
+              422,
             );
           }
 
@@ -93,18 +132,18 @@ export const Route = createFileRoute("/api/eeg/upload")({
           const tUpload = startTimer("eeg.upload.parse", { filename, sizeBytes });
           let signal: EEGSignal;
           try {
-            if (lower.endsWith(".edf") || lower.endsWith(".bdf")) {
-              signal = parseEDF(await file.arrayBuffer());
-            } else if (lower.endsWith(".csv") || lower.endsWith(".tsv")) {
+            if (ext === ".edf" || ext === ".bdf") {
+              signal = parseEDF(fileBuffer);
+            } else if (ext === ".csv" || ext === ".tsv") {
               const fs = Number(sampleRateRaw);
               if (!Number.isFinite(fs) || fs <= 0)
                 return json({ error: "sampleRate required for CSV" }, 400);
-              signal = parseCSV(await file.text(), fs);
-            } else if (lower.endsWith(".npy")) {
+              signal = parseCSV(new TextDecoder().decode(fileBuffer), fs);
+            } else if (ext === ".npy") {
               const fs = Number(sampleRateRaw);
               if (!Number.isFinite(fs) || fs <= 0)
                 return json({ error: "sampleRate required for NPY" }, 400);
-              signal = parseNPY(await file.arrayBuffer(), fs);
+              signal = parseNPY(fileBuffer, fs);
             } else {
               return json({ error: `Unsupported file type: ${filename}` }, 415);
             }

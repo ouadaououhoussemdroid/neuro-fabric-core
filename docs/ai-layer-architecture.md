@@ -25,13 +25,13 @@ site needs to change.
 
 ## New modules (`src/lib/ai/*`)
 
-| Module | Purpose |
-| --- | --- |
-| `artifacts/` | Declarative metadata: id, kind, runtime, input/output schema, source, provenance. |
-| `validation/` | `validateEmbedding`, `l2Normalize`, `isUnitNorm`. |
-| `benchmark/` | `benchmarkAdapter`, `benchmarkAll` — latency p50/p95, dim, heap delta. |
-| `vector-bridge/` | `NeuralVectorIndex` — embed + upsert + cosine search in one call. |
-| `embeddings/` | `embed()` facade — observability, validation, normalisation, fallback. |
+| Module           | Purpose                                                                           |
+| ---------------- | --------------------------------------------------------------------------------- |
+| `artifacts/`     | Declarative metadata: id, kind, runtime, input/output schema, source, provenance. |
+| `validation/`    | `validateEmbedding`, `l2Normalize`, `isUnitNorm`.                                 |
+| `benchmark/`     | `benchmarkAdapter`, `benchmarkAll` — latency p50/p95, dim, heap delta.            |
+| `vector-bridge/` | `NeuralVectorIndex` — embed + upsert + cosine search in one call.                 |
+| `embeddings/`    | `embed()` facade — observability, validation, normalisation, fallback.            |
 
 ## Embedding contract
 
@@ -39,9 +39,9 @@ site needs to change.
 
 ```ts
 interface EmbedResult {
-  vector: number[];      // L2-normalised by default
+  vector: number[]; // L2-normalised by default
   dim: number;
-  modelId: string;       // actual model used (may be pca-legacy-v1 after fallback)
+  modelId: string; // actual model used (may be pca-legacy-v1 after fallback)
   durationMs: number;
   fellBack: boolean;
   fallbackReason?: string;
@@ -73,15 +73,15 @@ downstream.
 
 ## Migration safety
 
-| Concern | Status |
-| --- | --- |
-| Legacy `embedSignal` callers | Untouched — `src/lib/embeddings` unchanged. |
-| PCA adapter | Unchanged. Still the default. |
-| ONNX adapter / runtime | Unchanged. Phase-2 capability probe + fallback preserved. |
-| Vector search API | Unchanged. New wrapper added alongside. |
-| EEG preprocessing | Unchanged. |
-| Database schema | Unchanged. |
-| Tests | 18 / 18 passing (was 8). |
+| Concern                      | Status                                                    |
+| ---------------------------- | --------------------------------------------------------- |
+| Legacy `embedSignal` callers | Untouched — `src/lib/embeddings` unchanged.               |
+| PCA adapter                  | Unchanged. Still the default.                             |
+| ONNX adapter / runtime       | Unchanged. Phase-2 capability probe + fallback preserved. |
+| Vector search API            | Unchanged. New wrapper added alongside.                   |
+| EEG preprocessing            | Unchanged.                                                |
+| Database schema              | Unchanged.                                                |
+| Tests                        | 18 / 18 passing (was 8).                                  |
 
 No files were removed. No public exports were renamed. Every new export is
 additive.

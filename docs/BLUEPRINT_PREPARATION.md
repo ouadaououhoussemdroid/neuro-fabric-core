@@ -1,5 +1,7 @@
 # Blueprint Preparation: Next Development Phase
 
+> **⚠️ Historical document — superseded.** Retained as a baseline for traceability. The current project state is documented in `docs/audits/2026-06-19_project_state_audit.md`, and the active task catalogue is `docs/roadmaps/2026-06-19_open_source_execution_blueprint.md`.
+
 **Planning Horizon:** 6-12 months  
 **Goal:** Transform prototype into production neurotechnology platform  
 **Date:** 2026-06-06
@@ -13,6 +15,7 @@
 **Why:** Current code computes embeddings but discards them. Users cannot retrieve past analyses.
 
 **What to Build:**
+
 - Supabase PostgreSQL schema for:
   - `users` (identity)
   - `eeg_files` (uploaded files + metadata)
@@ -20,6 +23,7 @@
   - `analysis_logs` (preprocessing steps + timings)
 
 **Expected Impact:**
+
 - ✅ Users can retrieve past analyses
 - ✅ Foundational for audit trails
 - ✅ Enables experiment tracking
@@ -28,6 +32,7 @@
 **Implementation Priority:** HIGHEST (blocks everything else)
 
 **SQL Schema Example:**
+
 ```sql
 CREATE TABLE eeg_analyses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -37,26 +42,26 @@ CREATE TABLE eeg_analyses (
   sample_rate INT NOT NULL,
   num_channels INT NOT NULL,
   num_samples INT NOT NULL,
-  
+
   -- Results
   embedding FLOAT8[] NOT NULL,
   embedding_dimensions INT NOT NULL,
   embedding_model TEXT NOT NULL,  -- 'pca', 'linear-ae', 'raw-bandpower'
-  
+
   -- Cognitive metrics
   attention FLOAT8 NOT NULL,
   workload FLOAT8 NOT NULL,
   arousal FLOAT8 NOT NULL,
-  
+
   -- Preprocessing
   bandpass_low FLOAT8,
   bandpass_high FLOAT8,
   notch_frequency INT,
-  
+
   -- Metadata
   created_at TIMESTAMPTZ DEFAULT now(),
   processing_time_ms INT NOT NULL,
-  
+
   UNIQUE(user_id, file_name, created_at)
 );
 
@@ -78,32 +83,38 @@ CREATE TABLE preprocessing_logs (
 **Why:** API endpoint currently accessible without authentication. Security vulnerability.
 
 **What to Build:**
+
 - JWT validation middleware
 - User context injection into request handlers
 - Row-level security (RLS) in Supabase
 
 **Expected Impact:**
+
 - ✅ Only authenticated users can call API
 - ✅ Users see only their own analyses
 - ✅ Audit trail shows who performed which analyses
 - ✅ Foundation for rate limiting per user
 
 **Implementation:**
+
 ```typescript
 // Add middleware to src/start.ts
 const authMiddleware = createMiddleware().server(async ({ next, request }) => {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new Error('Missing authorization header');
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    throw new Error("Missing authorization header");
   }
-  
+
   const token = authHeader.slice(7);
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-  
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser(token);
+
   if (error || !user) {
-    throw new Error('Invalid token');
+    throw new Error("Invalid token");
   }
-  
+
   // Inject user into context
   return next({ user });
 });
@@ -118,12 +129,14 @@ const authMiddleware = createMiddleware().server(async ({ next, request }) => {
 **Why:** No file size limits, no rate limiting, silent data corruption.
 
 **What to Build:**
+
 - 10MB file size limit
 - Rate limiting (10 requests/minute per user)
 - Fix NaN→0 silent conversion
 - Add comprehensive error logging
 
 **Expected Impact:**
+
 - ✅ Prevent DoS attacks
 - ✅ Detect data quality issues
 - ✅ Easier debugging in production
@@ -140,6 +153,7 @@ const authMiddleware = createMiddleware().server(async ({ next, request }) => {
 **Why:** When ML models are trained (future phase), need to track versions and compare performance.
 
 **What to Build:**
+
 - `model_versions` table tracking:
   - Model ID, version, creation timestamp
   - Performance metrics (AUC, F1, etc.)
@@ -153,35 +167,37 @@ const authMiddleware = createMiddleware().server(async ({ next, request }) => {
   - `POST /api/models/{id}/promote` — promote to production
 
 **Expected Impact:**
+
 - ✅ Can compare model performance over time
 - ✅ Can rollback to previous models if needed
 - ✅ Can A/B test different models
 - ✅ Scientific reproducibility (can cite model version)
 
 **Supabase Schema:**
+
 ```sql
 CREATE TABLE model_versions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   model_name TEXT NOT NULL,
   version_semver TEXT NOT NULL,  -- e.g., "1.0.0"
   model_type TEXT NOT NULL,  -- 'embedding-pca', 'embedding-ae', 'decoder-baseline'
-  
+
   -- Training metadata
   training_dataset TEXT,
   n_training_samples INT,
   hyperparameters JSONB,
-  
+
   -- Performance metrics
   validation_auc FLOAT8,
   validation_f1 FLOAT8,
   test_auc FLOAT8,
   test_f1 FLOAT8,
-  
+
   -- Status
   status TEXT DEFAULT 'draft',  -- draft | validated | production
   promoted_by_user UUID REFERENCES auth.users(id),
   promoted_at TIMESTAMPTZ,
-  
+
   created_at TIMESTAMPTZ DEFAULT now()
 );
 ```
@@ -195,6 +211,7 @@ CREATE TABLE model_versions (
 **Why:** Need to log which parameters were used for each analysis so experiments are reproducible.
 
 **What to Build:**
+
 - Store preprocessing parameters with each analysis:
   - Bandpass range, notch frequency
   - Segmentation window size, overlap
@@ -207,12 +224,14 @@ CREATE TABLE model_versions (
   - Export experiment data for publication
 
 **Expected Impact:**
+
 - ✅ Reproducible research (can rerun experiment with same params)
 - ✅ Ablation studies (test effect of each parameter)
 - ✅ Scientific transparency
 - ✅ Data for meta-analysis
 
 **SQL Extension:**
+
 ```sql
 ALTER TABLE eeg_analyses ADD COLUMN experiment_id UUID;
 ALTER TABLE eeg_analyses ADD COLUMN preprocessing_params JSONB;
@@ -236,6 +255,7 @@ CREATE TABLE experiments (
 **Why:** Eye blinks, muscle noise contaminate embeddings. Need automatic detection.
 
 **What to Build:**
+
 - Implement amplitude thresholding:
   - Flag samples > 5 standard deviations
   - Log flagged window count
@@ -249,6 +269,7 @@ CREATE TABLE experiments (
   ```
 
 **Expected Impact:**
+
 - ✅ Better embedding quality
 - ✅ Downstream ML models will be more accurate
 - ✅ Reproducible artifact handling
@@ -262,6 +283,7 @@ CREATE TABLE experiments (
 **Why:** Need to assess whether input signal is suitable for analysis.
 
 **What to Build:**
+
 - Per-analysis quality score combining:
   - Signal-to-noise ratio (SNR)
   - Flatness detection (electrode disconnection)
@@ -283,6 +305,7 @@ CREATE TABLE experiments (
   ```
 
 **Expected Impact:**
+
 - ✅ Users know if their data is bad
 - ✅ Can reject analyses that won't be reliable
 - ✅ Transparency about data quality
@@ -298,6 +321,7 @@ CREATE TABLE experiments (
 **Why:** Cognitive metrics are unvalidated. Need to compare against physiological ground truth.
 
 **What to Build:**
+
 - Web interface for annotating analyses:
   - Video playback of task during EEG recording
   - Experimenter can mark:
@@ -320,6 +344,7 @@ CREATE TABLE experiments (
   ```
 
 **Expected Impact:**
+
 - ✅ Can validate heuristic metrics
 - ✅ Can train ML models with labeled data
 - ✅ Foundation for publishing results
@@ -333,11 +358,13 @@ CREATE TABLE experiments (
 **Why:** Need to test generalization across subjects.
 
 **What to Build:**
+
 - Leave-one-subject-out (LOSO) evaluation framework:
+
   ```typescript
   async function evaluateLOSO(
     analyses: Analysis[],
-    subjects: string[]
+    subjects: string[],
   ): Promise<{
     auc: number;
     f1: number;
@@ -355,6 +382,7 @@ CREATE TABLE experiments (
   - Returns per-subject metrics + aggregate
 
 **Expected Impact:**
+
 - ✅ Know if metrics generalize across people
 - ✅ Identify individual differences
 - ✅ Honest assessment of system performance
@@ -368,6 +396,7 @@ CREATE TABLE experiments (
 **Why:** Need to compare against published baselines.
 
 **What to Build:**
+
 - Test on standard datasets:
   - PhysioNet (already supported)
   - BCI Competition IV (dataset loader ready)
@@ -380,6 +409,7 @@ CREATE TABLE experiments (
   - Correlation with published baselines
 
 **Expected Impact:**
+
 - ✅ Can cite performance vs. published work
 - ✅ Identifies dataset-specific performance
 - ✅ Foundation for paper publication
@@ -393,6 +423,7 @@ CREATE TABLE experiments (
 **Why:** Need proper statistical rigor for scientific claims.
 
 **What to Build:**
+
 - Compute for each metric:
   - Mean ± std across subjects
   - 95% confidence intervals
@@ -402,12 +433,13 @@ CREATE TABLE experiments (
 
 - Generate publication-ready tables:
   ```markdown
-  | Metric | Mean | Std | 95% CI | p-value |
-  |--------|------|-----|--------|---------|
-  | Attention | 0.72 | 0.15 | (0.68-0.76) | <0.001 |
+  | Metric    | Mean | Std  | 95% CI      | p-value |
+  | --------- | ---- | ---- | ----------- | ------- |
+  | Attention | 0.72 | 0.15 | (0.68-0.76) | <0.001  |
   ```
 
 **Expected Impact:**
+
 - ✅ Can submit to peer-reviewed journals
 - ✅ Results are reproducible and verifiable
 - ✅ Scientific credibility
@@ -423,6 +455,7 @@ CREATE TABLE experiments (
 **Why:** Currently no training infrastructure. To make real AI claims, need to build it.
 
 **What to Build:**
+
 - TensorFlow.js or ONNX Runtime for inference
 - Training pipeline with:
   - Dataset loading from Supabase
@@ -433,40 +466,40 @@ CREATE TABLE experiments (
   - Early stopping
 
 **Example:**
+
 ```typescript
-import * as tf from '@tensorflow/tfjs';
+import * as tf from "@tensorflow/tfjs";
 
 async function trainEmbeddingModel(trainingData) {
   const model = tf.sequential({
     layers: [
-      tf.layers.dense({ units: 128, activation: 'relu', inputShape: [C*5] }),
+      tf.layers.dense({ units: 128, activation: "relu", inputShape: [C * 5] }),
       tf.layers.dropout({ rate: 0.2 }),
-      tf.layers.dense({ units: 64, activation: 'relu' }),
+      tf.layers.dense({ units: 64, activation: "relu" }),
       tf.layers.dropout({ rate: 0.2 }),
-      tf.layers.dense({ units: latentDim })
-    ]
+      tf.layers.dense({ units: latentDim }),
+    ],
   });
-  
+
   model.compile({
     optimizer: tf.train.adam(0.001),
-    loss: 'meanSquaredError'
+    loss: "meanSquaredError",
   });
-  
+
   await model.fit(trainingData.x, trainingData.y, {
     epochs: 100,
     batchSize: 32,
     validationSplit: 0.2,
-    callbacks: [
-      new tf.callbacks.EarlyStopping({ monitor: 'val_loss', patience: 10 })
-    ]
+    callbacks: [new tf.callbacks.EarlyStopping({ monitor: "val_loss", patience: 10 })],
   });
-  
+
   // Save model
-  await model.save('indexeddb://embedding-v1.0');
+  await model.save("indexeddb://embedding-v1.0");
 }
 ```
 
 **Expected Impact:**
+
 - ✅ Can now make legitimate AI claims
 - ✅ Better embeddings than PCA
 - ✅ Foundation for deep learning
@@ -480,9 +513,11 @@ async function trainEmbeddingModel(trainingData) {
 **Why:** PCA is shallow; deep autoencoders can learn richer representations.
 
 **What to Build:**
+
 - Variational autoencoder (VAE) for embeddings:
+
   ```
-  Input → Dense(128) → ReLU → Dense(64) → 
+  Input → Dense(128) → ReLU → Dense(64) →
   Split → Mean & LogVar (latent) →
   Sample → Dense(64) → ReLU → Dense(128) → Output
   ```
@@ -492,6 +527,7 @@ async function trainEmbeddingModel(trainingData) {
 - Train on unlabeled EEG data (self-supervised)
 
 **Expected Impact:**
+
 - ✅ Better feature representations
 - ✅ Can cluster similar EEG patterns
 - ✅ Interpretable latent space
@@ -505,9 +541,11 @@ async function trainEmbeddingModel(trainingData) {
 **Why:** Replace heuristics with trained classifier.
 
 **What to Build:**
+
 - Neural network classifier:
+
   ```
-  Embedding (latent) → Dense(64) → ReLU → Dense(32) → 
+  Embedding (latent) → Dense(64) → ReLU → Dense(32) →
   Dense(3) → Softmax → [Attention, Workload, Arousal]
   ```
 
@@ -515,6 +553,7 @@ async function trainEmbeddingModel(trainingData) {
 - Use cross-entropy loss
 
 **Expected Impact:**
+
 - ✅ Learned model that captures cognitive states
 - ✅ Can validate against ground truth
 - ✅ Publishable results
@@ -528,6 +567,7 @@ async function trainEmbeddingModel(trainingData) {
 **Why:** Manual tuning won't find optimal settings.
 
 **What to Build:**
+
 - Bayesian optimization over:
   - Embedding dimensions (32-256)
   - Classifier hidden layers (1-3)
@@ -538,6 +578,7 @@ async function trainEmbeddingModel(trainingData) {
 - Use Optuna or Hyperband framework
 
 **Expected Impact:**
+
 - ✅ Best-possible model performance
 - ✅ Reproducible hyperparameter selection
 - ✅ Published results that are properly tuned
@@ -605,21 +646,25 @@ Month 8-12: Machine Learning
 ## SUCCESS METRICS
 
 ### Phase 1 (Foundation)
+
 - ✅ Users can retrieve past analyses
 - ✅ 100% API endpoint coverage with auth
 - ✅ Zero security issues in penetration test
 
 ### Phase 2 (Scalability)
+
 - ✅ Model versions tracked in registry
 - ✅ Experiment parameters logged for all analyses
 - ✅ Artifact rejection reduces embedding variance by 20%
 
 ### Phase 3 (Validation)
+
 - ✅ >50 subjects with ground truth labels
 - ✅ LOSO validation shows >0.8 AUC
 - ✅ Results publishable in peer-reviewed journal
 
 ### Phase 4 (ML)
+
 - ✅ Deep model achieves >90% accuracy on benchmark datasets
 - ✅ Hyperparameter optimization improves test AUC by 10%
 - ✅ Can make legitimate AI claims
@@ -631,11 +676,12 @@ Month 8-12: Machine Learning
 Current codebase provides solid foundation for EEG signal processing. Roadmap outlines path to production neurotechnology platform with validated AI components.
 
 **Key Dependencies:**
+
 1. Authentication (blocks Phases 1-4)
 2. Ground truth (blocks Phases 3-4)
 3. ML infrastructure (blocks Phase 4)
 
 **Critical Decision Point (Month 4):**
+
 - If Phase 3 validation fails → recalibrate heuristics, focus on Phase 2 scalability
 - If validation succeeds → proceed to Phase 4 ML with confidence
-

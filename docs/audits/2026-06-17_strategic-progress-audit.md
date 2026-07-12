@@ -12,18 +12,18 @@
 
 ## 0. Executive Comparison
 
-| Dimension | Audit #1 | Audit #2 | Current | Δ (A1→Now) |
-|---|---:|---:|---:|---:|
-| Overall platform maturity | 22 / 100 | 41 / 100 | **58 / 100** | **+36** |
-| Production readiness | 15 / 100 | 34 / 100 | **49 / 100** | **+34** |
-| AI / ML infrastructure | 0 / 10 | 3 / 10 | **6.5 / 10** | **+6.5** |
-| EEG pipeline | 7 / 10 | 7.5 / 10 | **7.5 / 10** | **+0.5** |
-| Data infrastructure | 1 / 10 | 6 / 10 | **6 / 10** | **+5** |
-| Embeddings | 2 / 10 | 3 / 10 | **6 / 10** | **+4** |
-| Reconstruction (EEG→IMG) | 0 / 10 | 1 / 10 | **1 / 10** | **+1** |
-| Cognitive intelligence | 3 / 10 | 3 / 10 | **3 / 10** | **0** |
-| Security | 1 / 10 | 5 / 10 | **5 / 10** | **+4** |
-| Scalability | 1 / 10 | 3 / 10 | **3 / 10** | **+2** |
+| Dimension                 | Audit #1 | Audit #2 |      Current | Δ (A1→Now) |
+| ------------------------- | -------: | -------: | -----------: | ---------: |
+| Overall platform maturity | 22 / 100 | 41 / 100 | **58 / 100** |    **+36** |
+| Production readiness      | 15 / 100 | 34 / 100 | **49 / 100** |    **+34** |
+| AI / ML infrastructure    |   0 / 10 |   3 / 10 | **6.5 / 10** |   **+6.5** |
+| EEG pipeline              |   7 / 10 | 7.5 / 10 | **7.5 / 10** |   **+0.5** |
+| Data infrastructure       |   1 / 10 |   6 / 10 |   **6 / 10** |     **+5** |
+| Embeddings                |   2 / 10 |   3 / 10 |   **6 / 10** |     **+4** |
+| Reconstruction (EEG→IMG)  |   0 / 10 |   1 / 10 |   **1 / 10** |     **+1** |
+| Cognitive intelligence    |   3 / 10 |   3 / 10 |   **3 / 10** |      **0** |
+| Security                  |   1 / 10 |   5 / 10 |   **5 / 10** |     **+4** |
+| Scalability               |   1 / 10 |   3 / 10 |   **3 / 10** |     **+2** |
 
 The platform has moved through three distinct phases: frontend-only signal demo
 (A1) → authenticated, persistence-backed app with ML surface scaffolding (A2)
@@ -37,20 +37,20 @@ PCA remains the universal fallback throughout.
 
 Classification scale: **Not Started · Early · Developing · Advanced · Near Complete**.
 
-| Blueprint Domain | Original Vision | Audit #1 | Audit #2 | Current | Progress | Remaining Work |
-|---|---|---|---|---|---|---|
-| **EEG Processing** | Production-grade EDF/CSV/NPY parsing, filtering, artifact rejection, quality metrics | Developing (parsers + IIR + bandpower) | Advanced (+artifact rejection, signal quality, synthetic gen) | **Advanced** | High | Replace O(M²) DFT with FFT; multi-rate handling; MNE-style ICA |
-| **Data Infrastructure** | Persistent storage, RLS, experiment tracking | Not Started | Developing (4 tables + RLS + GRANTs + `app_role`) | **Developing** | High | pgvector store, dataset registry, audit log table |
-| **Embeddings** | PCA → autoencoder → neural embeddings | Early (PCA only) | Early (PCA + AE wrapper) | **Developing** | High | Production neural artifact, batch path, multi-window pooling |
-| **Representations** | Validated, L2-normalised, model-tagged vectors | Not Started | Not Started | **Advanced** (`src/lib/ai/validation`, `vector-bridge`) | High | Multi-model A/B store, drift monitoring |
-| **Foundation Models** | Braindecode / EEGPT / EEGConformer in browser | Not Started | Not Started | **Developing** (EEGConformer wired; awaiting ONNX artifact) | Medium | Ship trained `eegconformer.onnx`; boot registration; flip default id |
-| **Cognitive Intelligence** | Trained attention / workload / arousal decoders | Early (heuristic ratios) | Early (heuristic ratios) | **Early** | None this cycle | Replace heuristics with trained TF.js / ONNX decoder |
-| **EEG Reconstruction** | Generative EEG synthesis | Not Started | Early (route scaffold) | **Early** | Low | Real generative model; loss-based reconstruction |
-| **EEG2IMG** | Cross-modal EEG → image | Not Started | Early (route scaffold) | **Early** | Low | Conditioning model; image decoder; eval harness |
-| **Search & Retrieval** | Cosine vector search over neural embeddings | Not Started | Developing (in-memory `vector-search`) | **Developing** (`NeuralVectorIndex` + model-id tagging) | High | pgvector persistence; ANN index; recall@k eval |
-| **APIs & Platform Services** | Auth, upload, analyses, experiments | Early (`/api/eeg/upload`) | Developing (+ auth gate + analyses) | **Developing** | Medium | Public API surface, rate limiting, webhooks |
-| **Security** | RLS, role-based access, signed artifacts | Early | Developing (RLS + roles + auth middleware) | **Developing** | Medium | Rate limiting, upload size cap, artifact SHA pinning |
-| **Scalability** | Multi-tenant, batched inference, edge runtime | Not Started | Early | **Early** | Low | Batched embedding API; server-side inference path |
+| Blueprint Domain             | Original Vision                                                                      | Audit #1                               | Audit #2                                                      | Current                                                     | Progress        | Remaining Work                                                       |
+| ---------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------- | --------------- | -------------------------------------------------------------------- |
+| **EEG Processing**           | Production-grade EDF/CSV/NPY parsing, filtering, artifact rejection, quality metrics | Developing (parsers + IIR + bandpower) | Advanced (+artifact rejection, signal quality, synthetic gen) | **Advanced**                                                | High            | Replace O(M²) DFT with FFT; multi-rate handling; MNE-style ICA       |
+| **Data Infrastructure**      | Persistent storage, RLS, experiment tracking                                         | Not Started                            | Developing (4 tables + RLS + GRANTs + `app_role`)             | **Developing**                                              | High            | pgvector store, dataset registry, audit log table                    |
+| **Embeddings**               | PCA → autoencoder → neural embeddings                                                | Early (PCA only)                       | Early (PCA + AE wrapper)                                      | **Developing**                                              | High            | Production neural artifact, batch path, multi-window pooling         |
+| **Representations**          | Validated, L2-normalised, model-tagged vectors                                       | Not Started                            | Not Started                                                   | **Advanced** (`src/lib/ai/validation`, `vector-bridge`)     | High            | Multi-model A/B store, drift monitoring                              |
+| **Foundation Models**        | Braindecode / EEGPT / EEGConformer in browser                                        | Not Started                            | Not Started                                                   | **Developing** (EEGConformer wired; awaiting ONNX artifact) | Medium          | Ship trained `eegconformer.onnx`; boot registration; flip default id |
+| **Cognitive Intelligence**   | Trained attention / workload / arousal decoders                                      | Early (heuristic ratios)               | Early (heuristic ratios)                                      | **Early**                                                   | None this cycle | Replace heuristics with trained TF.js / ONNX decoder                 |
+| **EEG Reconstruction**       | Generative EEG synthesis                                                             | Not Started                            | Early (route scaffold)                                        | **Early**                                                   | Low             | Real generative model; loss-based reconstruction                     |
+| **EEG2IMG**                  | Cross-modal EEG → image                                                              | Not Started                            | Early (route scaffold)                                        | **Early**                                                   | Low             | Conditioning model; image decoder; eval harness                      |
+| **Search & Retrieval**       | Cosine vector search over neural embeddings                                          | Not Started                            | Developing (in-memory `vector-search`)                        | **Developing** (`NeuralVectorIndex` + model-id tagging)     | High            | pgvector persistence; ANN index; recall@k eval                       |
+| **APIs & Platform Services** | Auth, upload, analyses, experiments                                                  | Early (`/api/eeg/upload`)              | Developing (+ auth gate + analyses)                           | **Developing**                                              | Medium          | Public API surface, rate limiting, webhooks                          |
+| **Security**                 | RLS, role-based access, signed artifacts                                             | Early                                  | Developing (RLS + roles + auth middleware)                    | **Developing**                                              | Medium          | Rate limiting, upload size cap, artifact SHA pinning                 |
+| **Scalability**              | Multi-tenant, batched inference, edge runtime                                        | Not Started                            | Early                                                         | **Early**                                                   | Low             | Batched embedding API; server-side inference path                    |
 
 **Blueprint Completion Score: 42 / 100** (weighted across 12 domains; see §9).
 
@@ -58,15 +58,15 @@ Classification scale: **Not Started · Early · Developing · Advanced · Near C
 
 ## 2. Architecture Evolution (evidence)
 
-| Category | Audit #1 | Audit #2 | Current (new since A2) |
-|---|---|---|---|
-| New modules | — | `synthetic/`, `signal-quality/`, `model-registry/`, `training/pipeline`, `vector-search/`, `preprocessing/artifact-rejection` | `src/lib/ai/{adapters,artifacts,benchmark,embeddings,inference,models,validation,vector-bridge}` |
-| New adapters | — | — | `pca-adapter`, `onnx-adapter`, `braindecode-adapter`, `braindecode-onnx-bridge`, `eegpt-adapter` (stub), `pytorch-export-adapter` |
-| New registries | — | `model-registry/index.ts` (single decoder) | `src/lib/ai/models/registry.ts` (`registerONNXModel`, `registerBraindecodeONNX`, `registerBraindecodeEEGConformer`), `src/lib/ai/artifacts/index.ts` |
-| New AI infra | — | ONNX trainer hook, TF.js decoder, Pyodide/MOABB hook | Real `onnxruntime-web` adapter, capability probe, LRU adapter cache, structured `ai.embed.*` logging, `benchmarkAdapter`/`benchmarkAll`, `validateEmbedding` + `l2Normalize`, `NeuralVectorIndex` |
-| New services | — | `_authenticated` gate, role dashboards | `embedEEG()` orchestrator (`src/lib/ai/inference/embed-eeg.ts`) with cascading fallback Braindecode → ONNX → PCA |
-| New docs | `AUDIT_REPORT.md` | `delta-audit.md` | `ai-layer-architecture.md`, `adr/0001`, `braindecode-deployment-guide.md`, 3 Braindecode audits, `eeg-foundation-model-implementation.md`, `eegconformer-registration.test.ts` |
-| Tests | sparse | sparse | **26/26 passing** across `src/lib/ai/**/__tests__/*` |
+| Category       | Audit #1          | Audit #2                                                                                                                      | Current (new since A2)                                                                                                                                                                            |
+| -------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| New modules    | —                 | `synthetic/`, `signal-quality/`, `model-registry/`, `training/pipeline`, `vector-search/`, `preprocessing/artifact-rejection` | `src/lib/ai/{adapters,artifacts,benchmark,embeddings,inference,models,validation,vector-bridge}`                                                                                                  |
+| New adapters   | —                 | —                                                                                                                             | `pca-adapter`, `onnx-adapter`, `braindecode-adapter`, `braindecode-onnx-bridge`, `eegpt-adapter` (stub), `pytorch-export-adapter`                                                                 |
+| New registries | —                 | `model-registry/index.ts` (single decoder)                                                                                    | `src/lib/ai/models/registry.ts` (`registerONNXModel`, `registerBraindecodeONNX`, `registerBraindecodeEEGConformer`), `src/lib/ai/artifacts/index.ts`                                              |
+| New AI infra   | —                 | ONNX trainer hook, TF.js decoder, Pyodide/MOABB hook                                                                          | Real `onnxruntime-web` adapter, capability probe, LRU adapter cache, structured `ai.embed.*` logging, `benchmarkAdapter`/`benchmarkAll`, `validateEmbedding` + `l2Normalize`, `NeuralVectorIndex` |
+| New services   | —                 | `_authenticated` gate, role dashboards                                                                                        | `embedEEG()` orchestrator (`src/lib/ai/inference/embed-eeg.ts`) with cascading fallback Braindecode → ONNX → PCA                                                                                  |
+| New docs       | `AUDIT_REPORT.md` | `delta-audit.md`                                                                                                              | `ai-layer-architecture.md`, `adr/0001`, `braindecode-deployment-guide.md`, 3 Braindecode audits, `eeg-foundation-model-implementation.md`, `eegconformer-registration.test.ts`                    |
+| Tests          | sparse            | sparse                                                                                                                        | **26/26 passing** across `src/lib/ai/**/__tests__/*`                                                                                                                                              |
 
 Evidence verified by file listing (`src/lib/ai/**`), test file enumeration, and
 presence of artifacts in `docs/adr/`, `docs/audits/`, `scripts/`.
@@ -101,62 +101,63 @@ invocation at boot. See `docs/audits/2026-06-17_braindecode-production-readiness
 
 Legend: **I**mplemented · **P**artial · **M**ock · **X** Missing
 
-| Feature | A1 | A2 | Current | Δ |
-|---|:-:|:-:|:-:|---|
-| EDF / CSV / NPY parsing | I | I | I | — |
-| IIR bandpass / notch | I | I | I | — |
-| Band-power features | I | I | I | DFT still O(M²) |
-| Artifact rejection | X | I | I | +I |
-| Signal-quality metrics | X | I | I | +I |
-| Synthetic EEG generator | X | I | I | +I |
-| Persistence (Postgres + RLS) | X | I | I | +I |
-| Authentication + role gates | X | I | I | +I |
-| Experiment tracking tables | X | I | I | +I |
-| PCA embeddings | I | I | I | now wrapped by adapter |
-| Autoencoder | M | M | M | unchanged |
-| ONNX runtime (real) | X | M (hook only) | **I** | +I |
-| Model registry (multi-model) | X | P | **I** | +I |
-| Adapter pattern + LRU cache | X | X | **I** | +I |
-| Embedding validation (NaN/dim/zero) | X | X | **I** | +I |
-| L2 normalisation | X | X | **I** | +I |
-| Benchmark harness (p50/p95/heap) | X | X | **I** | +I |
-| Neural vector index (model-tagged) | X | P | **I** | +I |
-| Braindecode bridge | X | X | **I** (ONNX-backed) | +I |
-| EEGConformer registration helper | X | X | **I** (code) | artifact pending |
-| Production ONNX artifact shipped | X | X | **X** | bottleneck |
-| Trained cognitive decoder | X | X | X | heuristic only |
-| EEG reconstruction model | X | X | X | route scaffold only |
-| EEG2IMG model | X | X | X | route scaffold only |
-| pgvector persistence | X | X | X | in-memory only |
-| Rate limiting | X | X | X | — |
-| Upload size cap | X | X | X | — |
-| Server-side inference path | X | X | P (bridge supports bytes) | inactive |
-| Webhooks / public API | X | X | X | — |
-| Observability (structured logs) | X | P | **I** | `ai.embed.*` events |
-| CI/CD pipeline | X | X | X | — |
+| Feature                             | A1  |      A2       |          Current          | Δ                      |
+| ----------------------------------- | :-: | :-----------: | :-----------------------: | ---------------------- |
+| EDF / CSV / NPY parsing             |  I  |       I       |             I             | —                      |
+| IIR bandpass / notch                |  I  |       I       |             I             | —                      |
+| Band-power features                 |  I  |       I       |             I             | DFT still O(M²)        |
+| Artifact rejection                  |  X  |       I       |             I             | +I                     |
+| Signal-quality metrics              |  X  |       I       |             I             | +I                     |
+| Synthetic EEG generator             |  X  |       I       |             I             | +I                     |
+| Persistence (Postgres + RLS)        |  X  |       I       |             I             | +I                     |
+| Authentication + role gates         |  X  |       I       |             I             | +I                     |
+| Experiment tracking tables          |  X  |       I       |             I             | +I                     |
+| PCA embeddings                      |  I  |       I       |             I             | now wrapped by adapter |
+| Autoencoder                         |  M  |       M       |             M             | unchanged              |
+| ONNX runtime (real)                 |  X  | M (hook only) |           **I**           | +I                     |
+| Model registry (multi-model)        |  X  |       P       |           **I**           | +I                     |
+| Adapter pattern + LRU cache         |  X  |       X       |           **I**           | +I                     |
+| Embedding validation (NaN/dim/zero) |  X  |       X       |           **I**           | +I                     |
+| L2 normalisation                    |  X  |       X       |           **I**           | +I                     |
+| Benchmark harness (p50/p95/heap)    |  X  |       X       |           **I**           | +I                     |
+| Neural vector index (model-tagged)  |  X  |       P       |           **I**           | +I                     |
+| Braindecode bridge                  |  X  |       X       |    **I** (ONNX-backed)    | +I                     |
+| EEGConformer registration helper    |  X  |       X       |       **I** (code)        | artifact pending       |
+| Production ONNX artifact shipped    |  X  |       X       |           **X**           | bottleneck             |
+| Trained cognitive decoder           |  X  |       X       |             X             | heuristic only         |
+| EEG reconstruction model            |  X  |       X       |             X             | route scaffold only    |
+| EEG2IMG model                       |  X  |       X       |             X             | route scaffold only    |
+| pgvector persistence                |  X  |       X       |             X             | in-memory only         |
+| Rate limiting                       |  X  |       X       |             X             | —                      |
+| Upload size cap                     |  X  |       X       |             X             | —                      |
+| Server-side inference path          |  X  |       X       | P (bridge supports bytes) | inactive               |
+| Webhooks / public API               |  X  |       X       |             X             | —                      |
+| Observability (structured logs)     |  X  |       P       |           **I**           | `ai.embed.*` events    |
+| CI/CD pipeline                      |  X  |       X       |             X             | —                      |
 
 ---
 
 ## 5. Technical Debt Evolution
 
-| Debt | A1 | A2 | Current | Trend |
-|---|:-:|:-:|:-:|---|
-| O(M²) DFT in band-power | ⚠️ | ⚠️ | ⚠️ | Unchanged — moderate latency cost |
-| Autoencoder is a PCA wrapper | ⚠️ | ⚠️ | ⚠️ | Superseded by adapter layer; module retained for back-compat |
-| Heuristic cognitive decoder | ⚠️ | ⚠️ | ⚠️ | Unchanged |
-| Upload route lacks size cap | ⚠️ | ⚠️ | ⚠️ | Unchanged |
-| No rate limiting | ⚠️ | ⚠️ | ⚠️ | Unchanged |
-| Missing dataset loaders (Sleep-EDF, CHB-MIT, TUH real) | ⚠️ | ⚠️ | ⚠️ | Unchanged |
-| Model artifact provenance (SHA, license) | n/a | ⚠️ | ⚠️ | Schema present in `artifacts/`, values absent |
-| **New:** EEGConformer artifact missing | — | — | 🔴 | **Highest impact** — gates real neural path |
-| **New:** No startup `register*()` call site | — | — | 🔴 | One-line fix once artifact ships |
-| **New:** `embedEEG` default id is `braindecode-eegnetv4-onnx` (not EEGConformer) | — | — | 🟠 | Constant flip after artifact rollout |
-| **Resolved:** No persistence | 🔴 | ✅ | ✅ | Removed |
-| **Resolved:** No auth | 🔴 | ✅ | ✅ | Removed |
-| **Resolved:** No artifact rejection | 🔴 | ✅ | ✅ | Removed |
-| **Resolved:** No model registry | 🔴 | 🟠 | ✅ | Removed |
+| Debt                                                                             | A1  | A2  | Current | Trend                                                        |
+| -------------------------------------------------------------------------------- | :-: | :-: | :-----: | ------------------------------------------------------------ |
+| O(M²) DFT in band-power                                                          | ⚠️  | ⚠️  |   ⚠️    | Unchanged — moderate latency cost                            |
+| Autoencoder is a PCA wrapper                                                     | ⚠️  | ⚠️  |   ⚠️    | Superseded by adapter layer; module retained for back-compat |
+| Heuristic cognitive decoder                                                      | ⚠️  | ⚠️  |   ⚠️    | Unchanged                                                    |
+| Upload route lacks size cap                                                      | ⚠️  | ⚠️  |   ⚠️    | Unchanged                                                    |
+| No rate limiting                                                                 | ⚠️  | ⚠️  |   ⚠️    | Unchanged                                                    |
+| Missing dataset loaders (Sleep-EDF, CHB-MIT, TUH real)                           | ⚠️  | ⚠️  |   ⚠️    | Unchanged                                                    |
+| Model artifact provenance (SHA, license)                                         | n/a | ⚠️  |   ⚠️    | Schema present in `artifacts/`, values absent                |
+| **New:** EEGConformer artifact missing                                           |  —  |  —  |   🔴    | **Highest impact** — gates real neural path                  |
+| **New:** No startup `register*()` call site                                      |  —  |  —  |   🔴    | One-line fix once artifact ships                             |
+| **New:** `embedEEG` default id is `braindecode-eegnetv4-onnx` (not EEGConformer) |  —  |  —  |   🟠    | Constant flip after artifact rollout                         |
+| **Resolved:** No persistence                                                     | 🔴  | ✅  |   ✅    | Removed                                                      |
+| **Resolved:** No auth                                                            | 🔴  | ✅  |   ✅    | Removed                                                      |
+| **Resolved:** No artifact rejection                                              | 🔴  | ✅  |   ✅    | Removed                                                      |
+| **Resolved:** No model registry                                                  | 🔴  | 🟠  |   ✅    | Removed                                                      |
 
 **Ranked by impact (current):**
+
 1. Missing trained EEGConformer ONNX artifact.
 2. No startup model registration / default-id flip.
 3. Cognitive decoder still heuristic (blocks real product claims).
@@ -170,13 +171,13 @@ Legend: **I**mplemented · **P**artial · **M**ock · **X** Missing
 
 ## 6. Production Readiness
 
-| Surface | A1 | A2 | Current | Notes |
-|---|:-:|:-:|:-:|---|
-| EEG platform readiness | 35 % | 60 % | **70 %** | Pipeline solid; FFT + dataset loaders outstanding |
-| AI infrastructure readiness | 0 % | 20 % | **85 %** | All scaffolding done; awaits artifact |
-| Foundation-model readiness | 0 % | 5 % | **75 %** | EEGConformer wired end-to-end; artifact missing |
-| API readiness | 20 % | 40 % | **45 %** | Auth + analyses live; no public API, no rate limit |
-| SaaS readiness | 10 % | 30 % | **40 %** | Roles + dashboards live; billing, quotas, observability gaps |
+| Surface                     |  A1  |  A2  | Current  | Notes                                                        |
+| --------------------------- | :--: | :--: | :------: | ------------------------------------------------------------ |
+| EEG platform readiness      | 35 % | 60 % | **70 %** | Pipeline solid; FFT + dataset loaders outstanding            |
+| AI infrastructure readiness | 0 %  | 20 % | **85 %** | All scaffolding done; awaits artifact                        |
+| Foundation-model readiness  | 0 %  | 5 %  | **75 %** | EEGConformer wired end-to-end; artifact missing              |
+| API readiness               | 20 % | 40 % | **45 %** | Auth + analyses live; no public API, no rate limit           |
+| SaaS readiness              | 10 % | 30 % | **40 %** | Roles + dashboards live; billing, quotas, observability gaps |
 
 ---
 
@@ -255,9 +256,9 @@ Now|█████████████████            | 42
 
 ## 9. Scores
 
-| Score | Value |
-|---|---:|
-| **Blueprint Completion Score** | **42 / 100** |
+| Score                                 |        Value |
+| ------------------------------------- | -----------: |
+| **Blueprint Completion Score**        | **42 / 100** |
 | **Overall NeuroWeave Maturity Score** | **58 / 100** |
 
 Weighting (blueprint score): EEG 12, Data 10, Embeddings 10, Representations 8,

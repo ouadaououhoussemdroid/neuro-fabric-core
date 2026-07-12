@@ -105,7 +105,8 @@
   --sidebar-border: oklch(1 0 0 / 8%);
   --sidebar-ring: oklch(0.64 0.15 35);
 
-  --gradient-aurora: radial-gradient(60% 60% at 20% 10%, oklch(0.64 0.15 35 / 0.22), transparent 60%),
+  --gradient-aurora:
+    radial-gradient(60% 60% at 20% 10%, oklch(0.64 0.15 35 / 0.22), transparent 60%),
     radial-gradient(50% 50% at 80% 0%, oklch(0.75 0.09 70 / 0.18), transparent 60%),
     radial-gradient(80% 60% at 50% 100%, oklch(0.55 0.1 260 / 0.12), transparent 60%);
   --gradient-neuro: linear-gradient(135deg, oklch(0.64 0.15 35), oklch(0.75 0.09 70));
@@ -132,9 +133,15 @@
 }
 
 @layer utilities {
-  .font-mono { font-family: var(--font-mono); }
-  .bg-aurora { background-image: var(--gradient-aurora); }
-  .bg-neuro-gradient { background-image: var(--gradient-neuro); }
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+  .bg-aurora {
+    background-image: var(--gradient-aurora);
+  }
+  .bg-neuro-gradient {
+    background-image: var(--gradient-neuro);
+  }
   .text-gradient {
     background: var(--gradient-neuro);
     -webkit-background-clip: text;
@@ -147,7 +154,9 @@
     -webkit-backdrop-filter: blur(14px) saturate(140%);
     border: 1px solid color-mix(in oklab, white 8%, transparent);
   }
-  .glow { box-shadow: var(--shadow-glow); }
+  .glow {
+    box-shadow: var(--shadow-glow);
+  }
   .grid-bg {
     background-image:
       linear-gradient(to right, oklch(1 0 0 / 0.04) 1px, transparent 1px),
@@ -155,25 +164,49 @@
     background-size: 48px 48px;
     mask-image: radial-gradient(ellipse at center, black 40%, transparent 75%);
   }
-  .ring-glow { box-shadow: 0 0 0 1px oklch(0.64 0.15 35 / 0.4), 0 0 30px oklch(0.64 0.15 35 / 0.25); }
+  .ring-glow {
+    box-shadow:
+      0 0 0 1px oklch(0.64 0.15 35 / 0.4),
+      0 0 30px oklch(0.64 0.15 35 / 0.25);
+  }
   @keyframes pulse-glow {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
   }
-  .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
   }
-  .animate-float { animation: float 6s ease-in-out infinite; }
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
   @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
   }
   .animate-shimmer {
     background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.06), transparent);
     background-size: 200% 100%;
     animation: shimmer 2.4s linear infinite;
   }
-  .tabular-nums { font-variant-numeric: tabular-nums; }
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
 }

@@ -14,27 +14,27 @@ NPY         notch               + PCA / AE      cosine top-k            workload
 
 ## Modules
 
-| Path                                  | Responsibility                                    |
-|---------------------------------------|---------------------------------------------------|
-| `src/lib/eeg/types.ts`                | Shared `EEGSignal`, `EEGWindow`, report types     |
-| `src/lib/eeg/parsers/`                | EDF (16-bit LE), CSV, NumPy `.npy` v1/v2 readers  |
-| `src/lib/eeg/preprocessing/filters`   | Biquad zero-phase bandpass + notch (filtfilt)     |
-| `src/lib/eeg/preprocessing/normalize` | Per-channel z-score, demean                       |
-| `src/lib/eeg/preprocessing/segment`   | Fixed-length overlapping window slicer            |
-| `src/lib/eeg/preprocessing/index.ts`  | `preprocess()` orchestrator + timing report       |
-| `src/lib/eeg/loaders/physionet.ts`    | PhysioNet `eegmmidb` v1.0.0 HTTPS loader          |
-| `src/lib/eeg/loaders/bci-competition` | BCI Competition IV 2a loader (mirror-based)       |
-| `src/lib/eeg/loaders/tuh.ts`          | TUH EEG loader scaffold (mirror + index required) |
-| `src/lib/embeddings/features.ts`      | Per-channel band-power features via DFT (Hann)    |
-| `src/lib/embeddings/pca.ts`           | Power-iteration PCA with deflation                |
-| `src/lib/embeddings/autoencoder.ts`   | Linear AE scaffold (encoder = top-k PCA basis)    |
-| `src/lib/embeddings/index.ts`         | `embedSignal()` - windows to latent vector        |
-| `src/lib/vector-search/cosine.ts`     | Cosine + L2 distance                              |
-| `src/lib/vector-search/index.ts`      | `VectorIndex` brute-force top-k                   |
-| `src/lib/decoder/features.ts`         | Whole-signal normalised band stats                |
-| `src/lib/decoder/index.ts`            | Baseline spectral decoders (atten/workload/arousal)|
-| `src/lib/synthetic/index.ts`          | 1/f pink-noise + band-bump EEG synth              |
-| `src/lib/logging/index.ts`            | Structured JSON logger + `startTimer()`           |
+| Path                                  | Responsibility                                      |
+| ------------------------------------- | --------------------------------------------------- |
+| `src/lib/eeg/types.ts`                | Shared `EEGSignal`, `EEGWindow`, report types       |
+| `src/lib/eeg/parsers/`                | EDF (16-bit LE), CSV, NumPy `.npy` v1/v2 readers    |
+| `src/lib/eeg/preprocessing/filters`   | Biquad zero-phase bandpass + notch (filtfilt)       |
+| `src/lib/eeg/preprocessing/normalize` | Per-channel z-score, demean                         |
+| `src/lib/eeg/preprocessing/segment`   | Fixed-length overlapping window slicer              |
+| `src/lib/eeg/preprocessing/index.ts`  | `preprocess()` orchestrator + timing report         |
+| `src/lib/eeg/loaders/physionet.ts`    | PhysioNet `eegmmidb` v1.0.0 HTTPS loader            |
+| `src/lib/eeg/loaders/bci-competition` | BCI Competition IV 2a loader (mirror-based)         |
+| `src/lib/eeg/loaders/tuh.ts`          | TUH EEG loader scaffold (mirror + index required)   |
+| `src/lib/embeddings/features.ts`      | Per-channel band-power features via DFT (Hann)      |
+| `src/lib/embeddings/pca.ts`           | Power-iteration PCA with deflation                  |
+| `src/lib/embeddings/autoencoder.ts`   | Linear AE scaffold (encoder = top-k PCA basis)      |
+| `src/lib/embeddings/index.ts`         | `embedSignal()` - windows to latent vector          |
+| `src/lib/vector-search/cosine.ts`     | Cosine + L2 distance                                |
+| `src/lib/vector-search/index.ts`      | `VectorIndex` brute-force top-k                     |
+| `src/lib/decoder/features.ts`         | Whole-signal normalised band stats                  |
+| `src/lib/decoder/index.ts`            | Baseline spectral decoders (atten/workload/arousal) |
+| `src/lib/synthetic/index.ts`          | 1/f pink-noise + band-bump EEG synth                |
+| `src/lib/logging/index.ts`            | Structured JSON logger + `startTimer()`             |
 
 ## Data Flow
 
@@ -45,7 +45,7 @@ NPY         notch               + PCA / AE      cosine top-k            workload
    - Notch 50 or 60 Hz (Q ~ 30).
    - Per-channel z-score.
    - Segmentation into 2 s / 50 % overlap windows.
-   Each step records its duration in `report.steps[]`.
+     Each step records its duration in `report.steps[]`.
 3. **Embed** - `embedSignal()` extracts 5-band power features per channel per
    window (Hann-windowed DFT, capped at 512 points), mean-pools across
    windows, and projects through a linear autoencoder fit on the
@@ -59,8 +59,8 @@ NPY         notch               + PCA / AE      cosine top-k            workload
    attention, workload, and arousal, derived only from real spectral
    ratios of the input signal:
    - attention proportional to beta / (alpha + theta) (Pope-index style)
-   - workload  proportional to theta / alpha
-   - arousal   proportional to beta + gamma (already normalised to total)
+   - workload proportional to theta / alpha
+   - arousal proportional to beta + gamma (already normalised to total)
 
 ## Synthetic Data
 

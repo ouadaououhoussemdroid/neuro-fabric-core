@@ -300,6 +300,89 @@ export type Database = {
         };
         Relationships: [];
       };
+      // T-011: pgvector embeddings table
+      embeddings: {
+        Row: {
+          id: string;
+          user_id: string;
+          model_id: string;
+          embedding: number[];
+          embedding_dim: number;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          model_id: string;
+          embedding: number[];
+          embedding_dim?: number;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          model_id?: string;
+          embedding?: number[];
+          embedding_dim?: number;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      // T-019: datasets manifest table
+      datasets: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          name: string;
+          license: string;
+          raw_sha256: string | null;
+          source_url: string | null;
+          n_subjects: number | null;
+          n_channels: number | null;
+          sample_rate: number | null;
+          n_classes: number | null;
+          preprocessing_sha256: string | null;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          name: string;
+          license: string;
+          raw_sha256?: string | null;
+          source_url?: string | null;
+          n_subjects?: number | null;
+          n_channels?: number | null;
+          sample_rate?: number | null;
+          n_classes?: number | null;
+          preprocessing_sha256?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          name?: string;
+          license?: string;
+          raw_sha256?: string | null;
+          source_url?: string | null;
+          n_subjects?: number | null;
+          n_channels?: number | null;
+          sample_rate?: number | null;
+          n_classes?: number | null;
+          preprocessing_sha256?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -314,6 +397,20 @@ export type Database = {
         Returns: {
           allowed: boolean;
           retry_after_ms: number;
+        }[];
+      };
+      // T-011: pgvector ANN search RPC
+      match_embeddings: {
+        Args: {
+          query_embedding: number[];
+          match_count?: number;
+          filter_model_id?: string | null;
+          filter_user_id?: string | null;
+        };
+        Returns: {
+          id: string;
+          similarity: number;
+          metadata: Json;
         }[];
       };
     };

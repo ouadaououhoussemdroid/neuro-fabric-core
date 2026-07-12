@@ -35,6 +35,7 @@ research builds that prefer Pyodide.
 - `docs/audits/2026-06-17_eeg-foundation-model-implementation.md` — this report.
 
 Modified (additive only):
+
 - `src/lib/ai/adapters/index.ts` — re-export bridge.
 - `src/lib/ai/inference/index.ts` — re-export `embedEEG`.
 - `src/lib/ai/models/registry.ts` — `registerBraindecodeONNX()` helper.
@@ -55,12 +56,12 @@ Measured with `benchmarkAdapter()` on the same input. Numbers from CI
 (JIT warm, no WebGPU). Heap values are best-effort and only populated in
 Chromium.
 
-| Adapter                                | dim | Mean ms | P50 ms | P95 ms | Heap Δ | Success |
-|----------------------------------------|----:|--------:|-------:|-------:|-------:|--------:|
-| `pca-legacy-v1`                        |  64 |    2–10 |   2–6  |   8–12 |  ~0    | 100%    |
-| `onnx-generic` (mock runtime)          |  16 |    1–3  |   1–2  |   2–4  |  ~0    | 100%    |
-| `braindecode-eegnetv4-onnx` (mock)     |  16 |    1–4  |   1–3  |   3–5  |  ~0    | 100%    |
-| `braindecode-eegnetv4-default` (stub)  |   – |   n/a   |   n/a  |   n/a  |  n/a   | 0% → PCA |
+| Adapter                               | dim | Mean ms | P50 ms | P95 ms | Heap Δ |  Success |
+| ------------------------------------- | --: | ------: | -----: | -----: | -----: | -------: |
+| `pca-legacy-v1`                       |  64 |    2–10 |    2–6 |   8–12 |     ~0 |     100% |
+| `onnx-generic` (mock runtime)         |  16 |     1–3 |    1–2 |    2–4 |     ~0 |     100% |
+| `braindecode-eegnetv4-onnx` (mock)    |  16 |     1–4 |    1–3 |    3–5 |     ~0 |     100% |
+| `braindecode-eegnetv4-default` (stub) |   – |     n/a |    n/a |    n/a |    n/a | 0% → PCA |
 
 Production numbers depend on the exported ONNX file; the harness in
 `src/lib/ai/benchmark/index.ts` is now wired to compare all three paths
@@ -84,19 +85,19 @@ head-to-head on real artefacts.
 
 ## 7. Production Readiness Assessment
 
-| Dimension                | Status | Notes |
-|--------------------------|--------|-------|
-| Real model execution     | ✅ | ONNX session via `onnxruntime-web` |
-| Runtime capability check | ✅ | `isONNXRuntimeAvailable()` memoised |
-| Automatic fallback chain | ✅ | Braindecode-ONNX → ONNX → PCA |
-| Error recovery           | ✅ | every adapter unloads in `finally`, chain continues |
-| Validation               | ✅ | dim / NaN / zero-vector / optional clamp |
-| Observability            | ✅ | structured logs `ai.embedEEG.start`, `ai.embed.{start,fail,fallback.try,done}` |
-| Vector search compat     | ✅ | L2-normalised, plug-in compatible |
-| SSR safety               | ✅ | runtime imported lazily inside `load()` |
-| Artefact provenance      | ⚠️ | depends on operator-supplied ONNX file (recommend SHA + license in `provenance`) |
-| WebGPU acceleration      | ⚠️ | available via `executionProviders: ["webgpu","wasm"]` (opt-in) |
-| Multi-window batching    | 🟡 | current bridge forwards first window only; batch API planned |
+| Dimension                | Status | Notes                                                                            |
+| ------------------------ | ------ | -------------------------------------------------------------------------------- |
+| Real model execution     | ✅     | ONNX session via `onnxruntime-web`                                               |
+| Runtime capability check | ✅     | `isONNXRuntimeAvailable()` memoised                                              |
+| Automatic fallback chain | ✅     | Braindecode-ONNX → ONNX → PCA                                                    |
+| Error recovery           | ✅     | every adapter unloads in `finally`, chain continues                              |
+| Validation               | ✅     | dim / NaN / zero-vector / optional clamp                                         |
+| Observability            | ✅     | structured logs `ai.embedEEG.start`, `ai.embed.{start,fail,fallback.try,done}`   |
+| Vector search compat     | ✅     | L2-normalised, plug-in compatible                                                |
+| SSR safety               | ✅     | runtime imported lazily inside `load()`                                          |
+| Artefact provenance      | ⚠️     | depends on operator-supplied ONNX file (recommend SHA + license in `provenance`) |
+| WebGPU acceleration      | ⚠️     | available via `executionProviders: ["webgpu","wasm"]` (opt-in)                   |
+| Multi-window batching    | 🟡     | current bridge forwards first window only; batch API planned                     |
 
 **Overall: Production-Ready (single-window path), with batching as the
 next incremental upgrade. PCA remains the guaranteed fallback so platform

@@ -12,6 +12,7 @@ const ENV_SCHEMAS = {
   SUPABASE_URL: z.string().url(),
   SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  CRON_SECRET: z.string().min(1),
 } as const;
 
 type EnvKey = keyof typeof ENV_SCHEMAS;
