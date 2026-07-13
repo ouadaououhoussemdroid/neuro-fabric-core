@@ -140,6 +140,7 @@ def main() -> None:
     model.eval()
 
     wrapper = EEGConformerExportWrapper(model)
+    wrapper.eval()
     dummy = torch.randn(1, args.channels, args.samples)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
