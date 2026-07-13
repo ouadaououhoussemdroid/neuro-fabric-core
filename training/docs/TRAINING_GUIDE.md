@@ -5,7 +5,7 @@ Operator-facing instructions for producing the first production
 
 ## 1. Prerequisites
 
-- Python 3.10–3.11.
+- Python 3.10–3.12.
 - GPU recommended (Colab T4 / local CUDA). CPU works but is slow
   (~10× wall-clock on BCI-IV-2a).
 - ~3 GB free disk for the MOABB cache.
@@ -82,5 +82,5 @@ untouched.
 | ---------------------------- | ------------------------- | ------------------------------------------------------------------ |
 | MOABB download stalls        | Mirror unreachable        | Set `MNE_DATA` / `MOABB_DATA` to a pre-staged path                 |
 | `channel mismatch: 25 != 22` | Wrong dataset class       | Confirm `BNCI2014_001` (BCI-IV-2a) in `_common.acquire_dataset.py` |
-| Parity check < 0.999         | Wrong opset / hook target | Re-run exporter with `--opset 17`; ensure `model.fc` exists        |
+| Parity check < 0.999         | Wrapper in train mode     | Ensure `wrapper.eval()` is called after construction (see export script) |
 | CUDA OOM                     | Batch too large           | Drop `training.batch_size` to 32                                   |

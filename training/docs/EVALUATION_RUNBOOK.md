@@ -7,11 +7,11 @@
 
 ## Prerequisites
 
-1. A trained checkpoint at `training/artefacts/eegconformer-bciiv2a/eegconformer.pt`.
+1. A trained checkpoint at `training/artefacts/eegconformer-bciiv2a-v1/eegconformer.pt`.
    - Currently **missing** — the shipped ONNX is random-init.
    - To produce one: `cd training && make train MODEL=eegconformer DATASET=bciiv2a`
-   - Or run the Colab notebook: `training/notebooks/EEGConformer_BCIIV2a.ipynb`
-2. The holdout data at `training/cache/processed/eegconformer-bciiv2a/holdout.npz`.
+   - Or run the Colab notebook: `training/notebooks/EEGConformer_BCIIV2a_Colab.ipynb`
+2. The holdout data at `training/cache/processed/eegconformer-bciiv2a-v1/holdout.npz`.
    - Produced by `make preprocess` (step 1 of the pipeline).
 3. GPU recommended (CPU works but is ~10× slower for the 9-subject dataset).
 
@@ -22,7 +22,7 @@
 ```bash
 python scripts/export_braindecode_eegconformer.py \
   --architecture EEGConformer \
-  --checkpoint training/artefacts/eegconformer-bciiv2a/eegconformer.pt \
+  --checkpoint training/artefacts/eegconformer-bciiv2a-v1/eegconformer.pt \
   --out public/models/eegconformer.onnx \
   --channels 22 --samples 1000 --classes 4 --opset 17
 ```
@@ -30,22 +30,12 @@ python scripts/export_braindecode_eegconformer.py \
 This runs the PyTorch→ONNX export **with** the trained weights, then verifies:
 
 - `onnx.checker.check_model` (graph validity)
-- PyTorch↔ORT cosine > 0.999 (export parity)
+- PyTorch↔ORT cosine > 0.999 (export parity, enforced by `wrapper.eval()`)
 - `onnx-simplifier` + `onnxoptimizer` (graph optimisation, T-023)
 
 ### Step 2: Re-generate the artefact manifest
 
 The Vite plugin regenerates `public/models/manifest.json` at build time.
-To regenerate manually:
-
-```bash
-node -e "
-  const { generateArtefactManifest, writeArtefactManifest } =
-    require('./vite-plugins/artefact-manifest.ts');
-  writeArtefactManifest('public/models');
-"
-```
-
 Or simply run `bun run build` (the `artefactManifestPlugin` runs automatically).
 
 ### Step 3: Run the evaluation
@@ -55,7 +45,7 @@ cd training/scripts
 python evaluate.py --config ../configs/eegconformer-bciiv2a.yaml --k 10
 ```
 
-This produces `training/artefacts/eegconformer-bciiv2a/evaluation_report.json`
+This produces `training/artefacts/eegconformer-bciiv2a-v1/evaluation_report.json`
 containing:
 
 - `cosine_analysis`: intra/inter-class cosine similarity (mean ± std)
@@ -108,5 +98,6 @@ and `train_history`, and copies everything to `artefacts/eegconformer-bciiv2a-v1
 - **Artefact:** Random-init (untrained). Provenance warning in `MODEL_CARD.md`.
 - **Evaluation script:** Ready (`evaluate.py` extended in T-010).
 - **Validation script:** Ready (`validate.py`).
+- **Export parity:** Fixed (`wrapper.eval()` ensures cosine ≥ 0.999).
 - **Holdout data:** Not generated (requires `preprocess.py` which downloads BCI-IV-2a via MOABB).
 - **Blocking:** This is the single highest-leverage action in the 180-day roadmap.

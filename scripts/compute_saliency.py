@@ -7,9 +7,9 @@ the TS-side `/embeddings` route for topomap overlays.
 
 Usage:
     python scripts/compute_saliency.py \
-        --checkpoint training/artefacts/eegconformer-bciiv2a/eegconformer.pt \
+        --checkpoint training/artefacts/eegconformer-bciiv2a-v1/eegconformer.pt \
         --onnx public/models/eegconformer.onnx \
-        --out training/artefacts/eegconformer-bciiv2a/saliency.npz
+        --out training/artefacts/eegconformer-bciiv2a-v1/saliency.npz
 
 Dependencies (already in training/requirements.txt):
     torch, braindecode, numpy

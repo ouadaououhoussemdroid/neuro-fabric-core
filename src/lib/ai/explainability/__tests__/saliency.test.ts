@@ -3,7 +3,7 @@ import { parseSaliencySidecar, normalizeSaliency } from "../saliency";
 
 const validSidecar = {
   artefact_hash: "abc123",
-  saliency_path: "training/artefacts/eegconformer-bciiv2a/saliency.npz",
+  saliency_path: "training/artefacts/eegconformer-bciiv2a-v1/saliency.npz",
   n_samples: 5,
   channels: 22,
   samples: 1000,
