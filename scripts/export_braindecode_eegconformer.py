@@ -143,6 +143,10 @@ def main() -> None:
     wrapper.eval()
     dummy = torch.randn(1, args.channels, args.samples)
 
+    # Compute PyTorch reference outputs once — used for all parity checks.
+    with torch.no_grad():
+        pt_emb, pt_logits = wrapper(dummy)
+
     args.out.parent.mkdir(parents=True, exist_ok=True)
     torch.onnx.export(
         wrapper,
@@ -159,63 +163,85 @@ def main() -> None:
         do_constant_folding=True,
     )
 
-    # T-023: simplify + shape-infer the exported graph for smaller artefacts
-    # and faster cold starts. Falls back to the raw export if the tools are
-    # not installed (onnx-simplifier and onnxoptimizer are optional deps).
-    _simplify_and_optimize(args.out)
-
-    # Validate the exported graph.
     import onnx
+    import onnxruntime as ort
+
+    def _check_parity(path: Path, label: str) -> float:
+        """Verify ONNX outputs match PyTorch reference. Returns cosine."""
+        sess = ort.InferenceSession(path.as_posix(), providers=["CPUExecutionProvider"])
+        ort_emb, _ = sess.run(None, {"input": dummy.numpy()})
+        cos = torch.nn.functional.cosine_similarity(
+            pt_emb.flatten().unsqueeze(0),
+            torch.from_numpy(ort_emb).flatten().unsqueeze(0),
+        ).item()
+        if cos > 0.999:
+            print(f"[export] {label}: parity OK (cosine={cos:.6f})")
+        else:
+            print(f"[export] {label}: parity BROKEN (cosine={cos:.6f})")
+        return cos
+
+    # Step 1: Verify raw export parity.
+    raw_cos = _check_parity(args.out, "raw export")
+    assert raw_cos > 0.999, f"Raw ONNX export parity failed (cosine={raw_cos:.6f})"
+
+    # Step 2: Try onnx-simplifier (revert if it breaks parity).
+    _try_optimize(args.out, "onnx-simplifier", _apply_onnxsim, _check_parity, pt_emb, dummy)
+
+    # Step 3: Try onnxoptimizer (revert if it breaks parity).
+    _try_optimize(args.out, "onnxoptimizer", _apply_onnxoptimizer, _check_parity, pt_emb, dummy)
+
+    # Validate the final exported graph.
     onnx.checker.check_model(onnx.load(args.out.as_posix()))
 
-    # Smoke-test parity with onnxruntime.
-    import onnxruntime as ort
-    sess = ort.InferenceSession(args.out.as_posix(), providers=["CPUExecutionProvider"])
-    ort_emb, ort_logits = sess.run(None, {"input": dummy.numpy()})
-    with torch.no_grad():
-        pt_emb, pt_logits = wrapper(dummy)
-    cos = torch.nn.functional.cosine_similarity(
-        pt_emb.flatten().unsqueeze(0),
-        torch.from_numpy(ort_emb).flatten().unsqueeze(0),
-    ).item()
-    print(f"ONNX export OK: {args.out}  (PyTorch↔ORT cosine = {cos:.6f})")
-    assert cos > 0.999, "PyTorch / ONNX parity check failed"
+    # Final parity check on the final file.
+    final_cos = _check_parity(args.out, "final")
+    print(f"ONNX export OK: {args.out}  (PyTorch to ORT cosine = {final_cos:.6f})")
+    assert final_cos > 0.999, f"PyTorch / ONNX parity check failed (cosine={final_cos:.6f})"
 
 
-def _simplify_and_optimize(path: Path) -> None:
-    """Apply onnx-simplifier + onnxoptimizer to reduce graph size.
+def _try_optimize(path, label, apply_fn, check_fn, pt_emb, dummy):
+    """Apply an optimisation step; revert if it breaks parity."""
+    import shutil
+    backup = path.with_suffix(".bak.onnx")
+    shutil.copy2(path, backup)
+    try:
+        apply_fn(path)
+        cos = check_fn(path, label)
+        if cos <= 0.999:
+            print(f"[export] {label} broke parity (cosine={cos:.6f}), reverting to pre-optimisation version")
+            shutil.copy2(backup, path)
+        backup.unlink()
+    except ImportError:
+        print(f"[export] {label} not installed, skipping")
+        backup.unlink()
+    except Exception as e:
+        print(f"[export] {label} failed: {e}, reverting")
+        shutil.copy2(backup, path)
+        backup.unlink()
 
-    Idempotent: if neither package is installed, the raw export is kept.
-    """
+
+def _apply_onnxsim(path):
+    from onnxsim import simplify
     import onnx
+    model = onnx.load(path.as_posix())
+    simplified, check = simplify(model)
+    if check:
+        original_size = path.stat().st_size
+        onnx.save(simplified, path.as_posix())
+        print(f"[export] onnx-simplifier: {original_size} -> {path.stat().st_size} bytes")
+    else:
+        print("[export] onnx-simplifier: check failed, skipping")
 
+
+def _apply_onnxoptimizer(path):
+    import onnxoptimizer
+    import onnx
+    model = onnx.load(path.as_posix())
+    passes = onnxoptimizer.get_fuse_and_elimination_passes()
+    optimized = onnxoptimizer.optimize(model, passes)
     original_size = path.stat().st_size
-
-    # Step 1: onnx-simplifier (constant folding + shape inference).
-    try:
-        from onnxsim import simplify
-        model = onnx.load(path.as_posix())
-        simplified, check = simplify(model)
-        if check:
-            onnx.save(simplified, path.as_posix())
-            print(f"[export] onnx-simplifier: {original_size} → {path.stat().st_size} bytes")
-    except ImportError:
-        print("[export] onnx-simplifier not installed, skipping simplification")
-    except Exception as e:
-        print(f"[export] onnx-simplifier failed: {e}")
-
-    # Step 2: onnxoptimizer (graph-level optimizations).
-    try:
-        import onnxoptimizer
-        model = onnx.load(path.as_posix())
-        passes = onnxoptimizer.get_fuse_and_elimination_passes()
-        optimized = onnxoptimizer.optimize(model, passes)
-        onnx.save(optimized, path.as_posix())
-        print(f"[export] onnxoptimizer: applied {len(passes)} passes → {path.stat().st_size} bytes")
-    except ImportError:
-        print("[export] onnxoptimizer not installed, skipping optimization")
-    except Exception as e:
-        print(f"[export] onnxoptimizer failed: {e}")
+    onnx.save(optimized, path.as_posix())
+    print(f"[export] onnxoptimizer: applied {len(passes)} passes, {original_size} -> {path.stat().st_size} bytes")
 
 
 if __name__ == "__main__":
