@@ -1,0 +1,27 @@
+{
+  "task": "eegconformer_empirical_validation",
+  "dataset": "eegconformer-bciiv2a-v1",
+  "n": 576,
+  "n_classes": 4,
+  "embedding_dim": 32,
+  "recall_at_k": {
+    "10": 0.9409722222222222
+  },
+  "cosine_analysis": {
+    "intra_mean": 0.5212470822898201,
+    "intra_std": 0.3178517131849254,
+    "inter_mean": 0.29129556009383406,
+    "inter_std": 0.32331239026850184,
+    "separation_margin": 0.22995152219598602,
+    "n_intra_pairs": 41184,
+    "n_inter_pairs": 124416
+  },
+  "pca_baseline": {
+    "pca_dim": 32,
+    "recall_at_k": 0.9427083333333334
+  },
+  "beats_pca": false,
+  "norm_mean": 40.49626922607422,
+  "norm_std": 18.823331832885742,
+  "feature_variance_mean": 42.48152160644531
+}

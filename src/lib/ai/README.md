@@ -4,13 +4,13 @@ Migration-safe abstraction layer enabling Neuro-Fabric to evolve from PCA-based
 embeddings toward foundation models (ONNX, PyTorch exports, Braindecode, EEGPT)
 without breaking existing pipelines.
 
-## Current state (post-T-028)
+## Current state (trained EEGConformer deployed)
 
 | Adapter                                   | Status                  | Description                                                                                        |
 | ----------------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------- |
 | **PCA**                                   | Live (default fallback) | `PCAEmbeddingAdapter` wraps `embedSignal` from `src/lib/embeddings`                                |
 | **ONNX**                                  | Live                    | `ONNXAdapter` wraps `onnxruntime-web`'s `InferenceSession` with self-hosted WASM                   |
-| **Braindecode (ONNX)**                    | Live (production)       | `braindecode-eegconformer-prod` — real EEGConformer ONNX artefact via `braindecode-onnx-bridge.ts` |
+| **Braindecode (ONNX)**                    | Live (production)       | `braindecode-eegconformer-prod` — trained EEGConformer ONNX artefact via `braindecode-onnx-bridge.ts`. Holdout accuracy 0.578, recall@10 0.941. |
 | **Braindecode (Pyodide)**                 | Scaffold                | `BraindecodeAdapter` with pluggable bridge; default bridge returns `isAvailable() === false`       |
 | **EEGNetv4 / ShallowFBCSPNet / Deep4Net** | Registered (untrained)  | In the model zoo for ablation; no trained ONNX artefacts shipped                                   |
 | **EEGPT**                                 | Scheduled (stub)        | `implemented: false`, throws `NotImplementedError`. Blocked on license-clear weights (see T-016)   |

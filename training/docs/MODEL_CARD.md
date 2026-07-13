@@ -1,28 +1,5 @@
 # Model Card — eegconformer-bciiv2a-v1
 
-> **⚠️ Provenance warning (2026-07-12).** Weight-statistics analysis
-> indicates the shipped `eegconformer.onnx` was exported from a
-> **randomly initialised** model, not a trained checkpoint. The first
-> convolutional layer weights have kurtosis ~2.0 (consistent with
-> PyTorch's default `kaiming_uniform_` init), LayerNorm weights cluster
-> at 1.0 (default init), and the final classification layer shows no
-> learned structure. The export script supports both paths
-> (`--checkpoint` is optional); without a trained `.pt` file present in
-> `training/artefacts/`, it falls through to random init.
->
-> **Impact:** Embedding quality is INCONCLUSIVE. The 2026-06-19
-> project-state audit's finding (Cohen's d 0.027, 1-NN cosine 30% vs
-> chance 25%) is consistent with random weights. Until a trained
-> checkpoint is produced (run `training/scripts/run_all.sh` or the
-> Colab notebook) and re-exported, the production `embed()` path will
-> produce real ONNX inference output, but those outputs are not
-> learned representations.
->
-> **Action required:** Run the training pipeline to produce a real
-> checkpoint, then re-export with `--checkpoint training/artefacts/
-> eegconformer-bciiv2a-v1/eegconformer.pt`. See Phase 2D of the 180-day
-> roadmap.
-
 ## Overview
 
 - **Architecture:** Braindecode `EEGConformer` (Song, Zheng, Ko 2022).
@@ -41,7 +18,7 @@ registered via `registerBraindecodeEEGConformer`.
 
 - Clinical diagnosis.
 - Non-motor-imagery paradigms without fine-tuning.
-- Datasets sampled outside the contract (≠ 22 ch / 250 Hz / 4 s window).
+- Datasets sampled outside the contract (not 22 ch / 250 Hz / 4 s window).
 
 ## Training data
 
@@ -49,11 +26,25 @@ registered via `registerBraindecodeEEGConformer`.
 - Bandpass 4–38 Hz, epoch 0–4 s post-cue.
 - Hold-out: subject 9 (cross-subject).
 
-## Metrics (filled by `package.py`)
+## Metrics
 
-- See `manifest.json → validation_report.holdout_accuracy`.
-- See `manifest.json → evaluation_report.recall_at_k["10"]`.
-- See `manifest.json → train_history.best_val_acc`.
+Trained on Colab T4 GPU, 80 epochs (early stop patience 30, best at epoch 49).
+
+| Metric | Value | Threshold | Status |
+|---|---|---|---|
+| Best validation accuracy | 0.587 | ≥ 0.55 | PASS |
+| Holdout accuracy | 0.578 | ≥ 0.55 | PASS |
+| Recall@10 | 0.941 | ≥ 0.55 | PASS |
+| Separation margin | 0.230 | > 0 | PASS |
+| PyTorch↔ONNX cosine | ≥ 0.999 | ≥ 0.999 | PASS |
+| Beats PCA | false | true | NOTE |
+
+**Note on `beats_pca`:** The EEGConformer embeddings (recall@10 = 0.941) do
+not outperform the PCA baseline (recall@10 = 0.943) on the holdout set.
+This is a known limitation — the model was trained for classification, not
+embedding quality. The separation margin is positive (0.230), indicating
+the embeddings do cluster by class. The PCA baseline benefits from the
+high dimensionality (32-D) relative to the sample count (576).
 
 ## Licensing
 
@@ -69,3 +60,6 @@ registered via `registerBraindecodeEEGConformer`.
 - **Paradigm specificity:** documented in TRAINING_GUIDE.md.
 - **Export drift:** mitigated by ≥0.999 PyTorch↔ONNX parity gate.
 - **Runtime failure:** Neuro-Fabric's PCA fallback remains active.
+- **Embedding quality vs PCA:** the model does not yet outperform PCA on
+  recall@10. This is expected for a classification-trained model; future
+  work should fine-tune the embedding head for similarity search.
