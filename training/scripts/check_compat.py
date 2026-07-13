@@ -20,14 +20,16 @@ except ImportError:  # pragma: no cover
 EXPECTED: list[tuple[str, str, bool]] = [
     ("torch",         "2.5.1",   True),
     ("torchaudio",    "2.5.1",   True),
-    ("braindecode",   "1.1.0",   True),
-    ("moabb",         "1.4.0",   True),
+    ("braindecode",   "1.1.0",  True),
+    ("moabb",         "1.4.0",  True),
     ("mne",           "1.10.1",  True),
-    ("numpy",         "2.0.2",   True),
+    ("numpy",         "2.0.2",  True),
     ("scipy",         "1.14.1",  False),
-    ("sklearn",       "1.5.2",   False),  # package name: scikit-learn
+    ("sklearn",       "1.5.2",  False),  # package name: scikit-learn
     ("onnx",          "1.17.0",  False),
     ("onnxruntime",   "1.20.1",  False),
+    ("onnxsim",       "0.6.5",  False),  # optional; cp312-abi3 wheel
+    ("onnxoptimizer", "0.4.2",  False),  # optional; cp312-abi3 wheel
 ]
 
 

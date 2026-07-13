@@ -1,6 +1,6 @@
 # Strictly pinned, reproducible training environment.
-# Verified end-to-end via clean `pip install` on Python 3.11 (Colab parity).
-# See docs/audits/training-dependency-resolution-v2.md for the resolution log.
+# Verified for Python 3.10–3.12 (cp312 wheels confirmed on PyPI for all
+# compiled packages; pure-Python packages use py3 wheels).
 #
 # Resolution rules locked in by this set:
 #   • braindecode 1.1.0 uses the NEW `BNCI2014_001` MOABB name.
@@ -9,8 +9,9 @@
 #   • torch and torchaudio must share the same minor (2.5.1) — otherwise
 #     torchaudio's prebuilt CUDA extension fails to load (libcudart mismatch).
 #   • numpy 2.x is required by moabb 1.4 and is supported by torch 2.5.
-#
-# All versions below are publicly available on PyPI for cp310/cp311/cp312.
+#   • onnxsim 0.6.5 and onnxoptimizer 0.4.2 provide cp312-abi3 stable-ABI
+#     wheels; the export script (scripts/export_braindecode_eegconformer.py)
+#     catches ImportError/Exception if either is absent.
 
 # --- Deep learning (torch + torchaudio MUST match minor) ---
 torch==2.5.1
@@ -31,9 +32,12 @@ pandas==2.2.3
 onnx==1.17.0
 onnxruntime==1.20.1
 
-# --- T-023: ONNX graph simplification & optimization (optional) ---
-onnxsim==0.4.17
-onnxoptimizer==0.9.3
+# --- T-023: ONNX graph simplification & optimization ---
+# 0.6.5 provides cp312-abi3 wheel (was 0.4.17, sdist-only on 3.12)
+onnxsim==0.6.5
+# 0.4.2 is the latest published version with cp312-abi3 wheel
+# (requirements previously listed 0.9.3, which does not exist on PyPI)
+onnxoptimizer==0.4.2
 
 # --- Misc ---
 pyyaml==6.0.2
