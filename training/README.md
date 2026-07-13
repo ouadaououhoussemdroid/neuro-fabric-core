@@ -59,7 +59,7 @@ make train MODEL=eegconformer DATASET=bciiv2a
 | `scripts/export_onnx.py`               | Wraps `scripts/export_braindecode_eegconformer.py` (in repo root `scripts/`). |
 | `scripts/package.py`                   | Builds the artefact directory + `manifest.json`.                              |
 | `scripts/run_all.sh`                   | Convenience wrapper.                                                          |
-| `notebooks/EEGConformer_BCIIV2a.ipynb` | Colab-ready notebook calling the same scripts.                                |
+| `notebooks/EEGConformer_BCIIV2a_Colab.ipynb` | Colab-ready notebook (Python 3.12, T4 GPU). Calling the same scripts. |
 | `docs/TRAINING_GUIDE.md`               | Full operator guide.                                                          |
 | `docs/MODEL_CARD.md`                   | Shipped with the artefact.                                                    |
 
@@ -89,7 +89,7 @@ and `MODEL_CARD.md`.
 
 ## Quick start (Colab)
 
-Open `notebooks/EEGConformer_BCIIV2a.ipynb` in Google Colab, runtime
+Open `notebooks/EEGConformer_BCIIV2a_Colab.ipynb` in Google Colab, runtime
 = GPU (T4 is sufficient), run all cells. The final cell downloads the
 packaged artefact.
 

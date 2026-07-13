@@ -20,7 +20,7 @@
 >
 > **Action required:** Run the training pipeline to produce a real
 > checkpoint, then re-export with `--checkpoint training/artefacts/
-eegconformer-bciiv2a/eegconformer.pt`. See Phase 2D of the 180-day
+> eegconformer-bciiv2a-v1/eegconformer.pt`. See Phase 2D of the 180-day
 > roadmap.
 
 ## Overview
