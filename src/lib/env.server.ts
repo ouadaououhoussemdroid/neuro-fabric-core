@@ -56,3 +56,29 @@ export function requireServerEnv<K extends EnvKey>(keys: readonly K[]): Record<K
 
   return out;
 }
+
+/**
+ * EEGConformer rollout stage, read from the AI_EEGCONFORMER_ENABLED env var.
+ * Defaults to "off" when unset or invalid — the feature is opt-in.
+ */
+export type EEGConformerRolloutStage = "off" | "canary" | "beta" | "ga";
+
+/**
+ * Read the current EEGConformer rollout stage from the environment.
+ * Reuses the ENV_SCHEMAS validation so an invalid value is treated the
+ * same as "off" rather than crashing the request.
+ */
+export function getEEGConformerRolloutStage(): EEGConformerRolloutStage {
+  const raw = process.env.AI_EEGCONFORMER_ENABLED;
+  if (raw === undefined || raw === "") return "off";
+  const result = ENV_SCHEMAS.AI_EEGCONFORMER_ENABLED.safeParse(raw);
+  return result.success ? result.data : "off";
+}
+
+/**
+ * Whether the EEGConformer model should be active for the current request.
+ * True for canary / beta / ga; false for off.
+ */
+export function isEEGConformerEnabled(): boolean {
+  return getEEGConformerRolloutStage() !== "off";
+}
