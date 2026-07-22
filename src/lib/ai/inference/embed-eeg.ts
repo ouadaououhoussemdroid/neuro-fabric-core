@@ -15,6 +15,7 @@ import { embed, type EmbedResult } from "../embeddings";
 import { hasModel } from "../models/registry";
 import type { ModelInput } from "../types";
 import { log } from "../../logging";
+import { isEEGConformerEnabledForUser } from "../rollout";
 
 export interface EmbedEEGOptions {
   /** Preferred EEG foundation model id. Defaults to Braindecode ONNX export. */
@@ -25,6 +26,8 @@ export interface EmbedEEGOptions {
   normalize?: boolean;
   /** Validate against this dim if known up-front. */
   expectedDim?: number;
+  /** Authenticated user id for per-user cohort routing. */
+  userId?: string;
 }
 
 const DEFAULT_PREFERRED = "braindecode-eegconformer-prod";
@@ -38,7 +41,9 @@ export async function embedEEG(
   if (opts.onnxModelId && hasModel(opts.onnxModelId)) chain.push(opts.onnxModelId);
   chain.push("pca-legacy-v1");
 
-  const startId = hasModel(preferred) ? preferred : chain[0];
+  const isEEGConformer = preferred === DEFAULT_PREFERRED;
+  const enabled = isEEGConformer ? isEEGConformerEnabledForUser(opts.userId) : true;
+  const startId = (enabled && hasModel(preferred)) ? preferred : chain[0];
   log("info", "ai.embedEEG.start", { startId, chain });
 
   return embed(input, {
