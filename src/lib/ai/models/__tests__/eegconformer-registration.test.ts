@@ -6,6 +6,7 @@ import {
   getDescriptor,
 } from "../registry";
 import { embedEEG } from "../../inference/embed-eeg";
+import { setRolloutStage } from "../../rollout";
 import type { ModelInput } from "../../types";
 
 function makeInput(C: number, T: number, sr: number): ModelInput {
@@ -34,6 +35,7 @@ describe("EEGConformer production registration", () => {
   });
 
   it("falls back to PCA when the underlying ONNX runtime is unavailable", async () => {
+    setRolloutStage("ga");
     registerBraindecodeEEGConformer({
       artifact: new Uint8Array([0]),
       // Force unavailable runtime to exercise the production fallback chain.
