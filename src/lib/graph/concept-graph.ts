@@ -101,8 +101,33 @@ export async function getEmbeddingProvenance(
     p_embedding_id: embeddingId,
   });
   if (error || !data) return null;
-  const row = (data as EmbeddingProvenance[])[0];
-  return row ?? null;
+  
+  // Handle two possible RPC response formats:
+  // 1. { data: [{...}], error: null } (wrapped format)
+  // 2. [{...}] (direct array format)
+  let rows: unknown[] = [];
+  
+  if (Array.isArray(data)) {
+    // Format 2: Direct array format [{...}]
+    rows = data;
+  } else if (typeof data === 'object' && data !== null && 'data' in data) {
+    // Format 1: Wrapped format { data: [...], error: null }
+    const response = data as { data?: unknown[]; error?: unknown };
+    rows = response?.data ?? [];
+  }
+  
+  if (!rows || !Array.isArray(rows) || rows.length === 0) return null;
+  
+  // Transform snake_case database keys to camelCase for the application
+  const row = rows[0] as Record<string, unknown>;
+  
+  return {
+    subjectCode: row.subject_code as string,
+    dataset: row.dataset as string,
+    sessionCode: row.session_code as string,
+    windowIndex: row.window_index as number,
+    labels: Array.isArray(row.labels) ? (row.labels as string[]) : [],
+  };
 }
 
 /**
