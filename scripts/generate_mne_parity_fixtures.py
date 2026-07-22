@@ -45,11 +45,25 @@ def main() -> None:
     raw = mne.io.RawArray(raw_data, info)
 
     # Bandpass 8-30 Hz (same params as TS test).
-    raw_bp = raw.copy().filter(8, 30, method="iir", iir_params={"order": 2})
+    # TS uses biquad with Q=1/sqrt(2) for lowpass and highpass (Butterworth order 2).
+    # Use IIR Butterworth order 2.
+    raw_bp = raw.copy().filter(
+        8,
+        30,
+        method="iir",
+        iir_params={"order": 2, "ftype": "butter"},
+    )
     bandpass_out = raw_bp.get_data()
 
-    # Notch at 50 Hz.
-    raw_notch = raw.copy().notch_filter(50.0, method="iir", iir_params={"order": 2})
+# Notch at 50 Hz.
+    # TS uses a notch with Q=30 (equivalent to bandwidth ~50/30=1.666 Hz).
+    # MNE's notch_filter expects freqs and notch_widths.
+    bandwidth = 50.0 / 30.0  # ~1.6667 Hz
+    raw_notch = raw.copy().notch_filter(
+        freqs=[50.0],
+        notch_widths=bandwidth,
+        method="iir",
+    )
     notch_out = raw_notch.get_data()
 
     # Segmentation: 2 s windows, 50% overlap.
@@ -61,7 +75,7 @@ def main() -> None:
         s = i * step
         seg_out[i] = raw_data[:, s : s + window_samples]
 
-    np.savez_compressed(
+    np.savez(
         OUT / "mne_golden.npz",
         raw=raw_data,
         bandpass=bandpass_out.astype(np.float32),
