@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { requireServerEnv } from "../env.server";
+import { requireServerEnv, getEEGConformerRolloutStage, isEEGConformerEnabled } from "../env.server";
 
 const ORIGINAL_ENV = { ...process.env };
 
@@ -42,5 +42,47 @@ describe("requireServerEnv", () => {
     expect(() => requireServerEnv(["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"])).toThrow(
       "Server misconfigured (missing: SUPABASE_SERVICE_ROLE_KEY; invalid: SUPABASE_URL). Connect Supabase in Lovable Cloud.",
     );
+  });
+});
+
+describe("EEGConformer rollout gate", () => {
+  afterEach(() => {
+    process.env = { ...ORIGINAL_ENV };
+  });
+
+  it("defaults to off when AI_EEGCONFORMER_ENABLED is unset", () => {
+    delete process.env.AI_EEGCONFORMER_ENABLED;
+    expect(getEEGConformerRolloutStage()).toBe("off");
+    expect(isEEGConformerEnabled()).toBe(false);
+  });
+
+  it("defaults to off when AI_EEGCONFORMER_ENABLED is empty", () => {
+    process.env.AI_EEGCONFORMER_ENABLED = "";
+    expect(getEEGConformerRolloutStage()).toBe("off");
+    expect(isEEGConformerEnabled()).toBe(false);
+  });
+
+  it("returns canary and enables when set to canary", () => {
+    process.env.AI_EEGCONFORMER_ENABLED = "canary";
+    expect(getEEGConformerRolloutStage()).toBe("canary");
+    expect(isEEGConformerEnabled()).toBe(true);
+  });
+
+  it("returns beta and enables when set to beta", () => {
+    process.env.AI_EEGCONFORMER_ENABLED = "beta";
+    expect(getEEGConformerRolloutStage()).toBe("beta");
+    expect(isEEGConformerEnabled()).toBe(true);
+  });
+
+  it("returns ga and enables when set to ga", () => {
+    process.env.AI_EEGCONFORMER_ENABLED = "ga";
+    expect(getEEGConformerRolloutStage()).toBe("ga");
+    expect(isEEGConformerEnabled()).toBe(true);
+  });
+
+  it("treats an invalid value as off", () => {
+    process.env.AI_EEGCONFORMER_ENABLED = "true";
+    expect(getEEGConformerRolloutStage()).toBe("off");
+    expect(isEEGConformerEnabled()).toBe(false);
   });
 });
