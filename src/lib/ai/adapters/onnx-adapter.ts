@@ -71,7 +71,7 @@ export interface ONNXAdapterOptions {
 }
 
 /** Lazily resolves onnxruntime-web; isolated so tests can stub it. */
-async function defaultRuntime(): Promise<OrtRuntime> {
+export async function defaultRuntime(): Promise<OrtRuntime> {
   const mod = (await import("onnxruntime-web")) as unknown as OrtRuntime & {
     env?: { wasm?: { wasmPaths?: string | Record<string, string> } };
   };

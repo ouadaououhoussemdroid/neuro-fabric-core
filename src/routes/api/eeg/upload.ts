@@ -182,7 +182,7 @@ export const Route = createFileRoute("/api/eeg/upload")({
           const embedMs = tEmb.end({ model: emb.model, dim: emb.dimensions });
 
           const tDec = startTimer("eeg.upload.decode", { filename });
-          const decoder = decodeCognitiveState(pre.signal);
+          const decoder = await decodeCognitiveState(pre.signal);
           const decodeMs = tDec.end();
           const totalMs = overall.end({ filename });
 

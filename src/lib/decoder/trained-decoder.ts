@@ -14,6 +14,7 @@ import type { EEGSignal } from "../eeg/types";
 import { bandStats } from "./features";
 import { bandPowerFeatures } from "../embeddings/features";
 import { segment } from "../eeg/preprocessing/segment";
+import { defaultRuntime, type OrtRuntime, type OrtSessionLike } from "../ai/adapters/onnx-adapter";
 
 /** Output of the trained cognitive decoder. */
 export interface TrainedCognitiveReport {
@@ -85,6 +86,61 @@ function squash(x: number): number {
 /** Compute a confidence interval from a probability + a fixed margin. */
 function confidenceInterval(prob: number, margin: number): [number, number] {
   return [Math.max(0, prob - margin), Math.min(1, prob + margin)];
+}
+
+/**
+ * Create an ONNX-backed decoder function that loads the trained cognitive
+ * decoder model and runs inference on 5-element band-power feature vectors.
+ *
+ * The session is cached for reuse across calls. If the model cannot be
+ * loaded (missing file, no WASM runtime, etc.), the returned function
+ * throws — the caller (decodeWithTrainedModel) catches this and falls
+ * back to the heuristic baseline.
+ *
+ * @param modelUrl  URL of the ONNX model (defaults to the shipped artefact).
+ */
+let cachedSession: OrtSessionLike | null = null;
+let cachedRuntime: OrtRuntime | null = null;
+
+export async function createONNXDecoder(
+  modelUrl = "/models/cognitive-decoder-v0.onnx",
+): Promise<(features: number[]) => Promise<[number, number, number]>> {
+  if (cachedSession) {
+    return runInference;
+  }
+
+  cachedRuntime = await defaultRuntime();
+  if (!cachedRuntime?.InferenceSession || !cachedRuntime?.Tensor) {
+    throw new Error("ONNX runtime unavailable for cognitive decoder");
+  }
+
+  cachedSession = await cachedRuntime.InferenceSession.create(modelUrl, {
+    executionProviders: ["wasm"],
+  });
+
+  return runInference;
+}
+
+/** Reset the cached ONNX session (test helper). */
+export function __resetCognitiveDecoderCache(): void {
+  cachedSession = null;
+  cachedRuntime = null;
+}
+
+async function runInference(features: number[]): Promise<[number, number, number]> {
+  if (!cachedSession || !cachedRuntime) {
+    throw new Error("Cognitive decoder session not loaded");
+  }
+
+  const inputName = cachedSession.inputNames[0];
+  const outputName = cachedSession.outputNames[0];
+  const tensor = new cachedRuntime.Tensor("float32", Float32Array.from(features), [1, 5]);
+  const out = await cachedSession.run({ [inputName]: tensor });
+  const output = out[outputName];
+  if (!output) throw new Error(`Cognitive decoder: output "${outputName}" missing`);
+
+  const values = Array.from(output.data as ArrayLike<number>, Number);
+  return [values[0] ?? 0, values[1] ?? 0, values[2] ?? 0];
 }
 
 /**
