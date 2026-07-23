@@ -1,11 +1,11 @@
 {
-  "generated": "2026-07-22T06:58:37.310Z",
+  "generated": "2026-07-23T01:17:33.530Z",
   "models": {
     "eegconformer": {
       "id": "eegconformer",
       "url": "/models/eegconformer.onnx",
-      "sha256": "83fcf5dd9fee09aadabbb421e03c6d4b8c8b909ce28306549b909e5e66130921",
-      "size": 3236663
+      "sha256": "31cd36518d201746f01e41d29b32e1d1063c0f359cf774803c86b55bbd99e8b5",
+      "size": 3186467
     }
   }
 }

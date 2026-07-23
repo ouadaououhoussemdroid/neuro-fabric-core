@@ -1,7 +1,7 @@
 import type { EEGSignal } from "../eeg/types";
 import { bandStats, type BandStats } from "./features";
 import { tfjsDecode, type TFJSDecoderResult } from "./tfjs-decoder";
-import { ACTIVE_DECODER } from "../model-registry";
+import { decodeWithTrainedModel, createONNXDecoder } from "./trained-decoder";
 
 export { bandStats, tfjsDecode };
 export type { BandStats, TFJSDecoderResult };
@@ -11,9 +11,14 @@ export interface CognitiveStateReport {
   workload: number;
   arousal: number;
   bandStats: BandStats;
-  decoder: "baseline-spectral-v1" | "tfjs-eeg-v1";
+  decoder: "baseline-spectral-v1" | "tfjs-eeg-v1" | "trained-logistic-v0";
   durationMs: number;
+  /** Mean confidence (0–1). Present when the trained decoder is used. */
   confidence?: number;
+  /** Whether the trained model was used (false = heuristic fallback). */
+  trained?: boolean;
+  /** Per-metric confidence intervals [lower, upper]. Present when trained. */
+  confidenceIntervals?: TrainedCognitiveReport["confidence"];
 }
 
 function squash(x: number): number {
@@ -35,14 +40,40 @@ function baselineDecode(signal: EEGSignal): CognitiveStateReport {
   };
 }
 
-export function decodeCognitiveState(signal: EEGSignal): CognitiveStateReport {
-  if (ACTIVE_DECODER === "tfjs-eeg-v1") {
-    try {
-      return tfjsDecode(signal);
-    } catch (e) {
-      console.warn("[decoder] tfjs-eeg-v1 failed, falling back to baseline:", e);
-      return baselineDecode(signal);
+export async function decodeCognitiveState(signal: EEGSignal): Promise<CognitiveStateReport> {
+  // Try the trained cognitive decoder (ONNX logistic regression) first.
+  // Falls back to the heuristic spectral baseline if the model is
+  // unavailable or inference fails.
+  try {
+    const onnxDecoder = await createONNXDecoder();
+    const report = await decodeWithTrainedModel(signal, onnxDecoder);
+    if (report.trained) {
+      return {
+        attention: report.attention,
+        workload: report.workload,
+        arousal: report.arousal,
+        bandStats: report.bandStats,
+        decoder: "trained-logistic-v0",
+        durationMs: report.durationMs,
+        confidence: (report.confidence.attention[0] + report.confidence.attention[1]) / 2,
+        trained: true,
+        confidenceIntervals: report.confidence,
+      };
     }
+    // decodeWithTrainedModel fell back to heuristic internally
+    return {
+      attention: report.attention,
+      workload: report.workload,
+      arousal: report.arousal,
+      bandStats: report.bandStats,
+      decoder: "baseline-spectral-v1",
+      durationMs: report.durationMs,
+      trained: false,
+      confidenceIntervals: report.confidence,
+    };
+  } catch (e) {
+    console.warn("[decoder] trained-logistic-v0 failed, falling back to baseline:", e);
+    const baseline = baselineDecode(signal);
+    return { ...baseline, trained: false };
   }
-  return baselineDecode(signal);
 }
