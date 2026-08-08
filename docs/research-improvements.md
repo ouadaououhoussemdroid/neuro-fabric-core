@@ -57,6 +57,7 @@ This document outlines potential research-oriented enhancements that are **not**
 ## How to Contribute
 
 Researchers interested in these topics are encouraged to:
+
 - Fork the repository and experiment with new models in the `src/lib/ai/models/` directory.
 - Add new evaluation scripts to `docs/benchmarks/` to track performance.
 - Submit proposals via GitHub Issues for discussion and potential integration.

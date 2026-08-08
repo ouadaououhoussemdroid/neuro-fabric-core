@@ -9,106 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SyntheticRouteImport } from './routes/synthetic'
-import { Route as StudioRouteImport } from './routes/studio'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as SigninRouteImport } from './routes/signin'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as ResearchRouteImport } from './routes/research'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as PlaygroundRouteImport } from './routes/playground'
-import { Route as EmbeddingsRouteImport } from './routes/embeddings'
-import { Route as Eeg2imageRouteImport } from './routes/eeg2image'
-import { Route as DevelopersRouteImport } from './routes/developers'
-import { Route as ArchitectureRouteImport } from './routes/architecture'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiHealthRouteImport } from './routes/api/health'
-import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
-import { Route as AuthenticatedTrainingRouteImport } from './routes/_authenticated/training'
-import { Route as AuthenticatedOnnxRouteImport } from './routes/_authenticated/onnx'
-import { Route as AuthenticatedModelsRouteImport } from './routes/_authenticated/models'
-import { Route as AuthenticatedMneRouteImport } from './routes/_authenticated/mne'
-import { Route as AuthenticatedExperimentsRouteImport } from './routes/_authenticated/experiments'
-import { Route as AuthenticatedDatasetsRouteImport } from './routes/_authenticated/datasets'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as ArchitectureRouteImport } from './routes/architecture'
+import { Route as DevelopersRouteImport } from './routes/developers'
+import { Route as Eeg2imageRouteImport } from './routes/eeg2image'
+import { Route as EmbeddingsRouteImport } from './routes/embeddings'
+import { Route as PlaygroundRouteImport } from './routes/playground'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as ResearchRouteImport } from './routes/research'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SigninRouteImport } from './routes/signin'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as StudioRouteImport } from './routes/studio'
+import { Route as SyntheticRouteImport } from './routes/synthetic'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as ApiAnnotationsIndexRouteImport } from './routes/api/annotations/index'
+import { Route as AuthenticatedDatasetsRouteImport } from './routes/_authenticated/datasets'
+import { Route as AuthenticatedExperimentsRouteImport } from './routes/_authenticated/experiments'
+import { Route as AuthenticatedMneRouteImport } from './routes/_authenticated/mne'
+import { Route as AuthenticatedModelsRouteImport } from './routes/_authenticated/models'
+import { Route as AuthenticatedOnnxRouteImport } from './routes/_authenticated/onnx'
+import { Route as AuthenticatedTrainingRouteImport } from './routes/_authenticated/training'
+import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
-import { Route as ApiPublicNotebooksRouteImport } from './routes/api/public/notebooks'
-import { Route as ApiPublicMetricsRouteImport } from './routes/api/public/metrics'
-import { Route as ApiEvaluateCrossSubjectRouteImport } from './routes/api/evaluate/cross-subject'
-import { Route as ApiEegUploadRouteImport } from './routes/api/eeg/upload'
-import { Route as AuthenticatedDashboardResearcherRouteImport } from './routes/_authenticated/dashboard.researcher'
-import { Route as AuthenticatedDashboardIndividualRouteImport } from './routes/_authenticated/dashboard.individual'
-import { Route as AuthenticatedDashboardEnterpriseRouteImport } from './routes/_authenticated/dashboard.enterprise'
 import { Route as AuthenticatedDashboardAnalysesRouteImport } from './routes/_authenticated/dashboard.analyses'
+import { Route as AuthenticatedDashboardEnterpriseRouteImport } from './routes/_authenticated/dashboard.enterprise'
+import { Route as AuthenticatedDashboardIndividualRouteImport } from './routes/_authenticated/dashboard.individual'
+import { Route as AuthenticatedDashboardResearcherRouteImport } from './routes/_authenticated/dashboard.researcher'
+import { Route as ApiAnnotationsIndexRouteImport } from './routes/api/annotations/index'
+import { Route as ApiEegUploadRouteImport } from './routes/api/eeg/upload'
+import { Route as ApiEvaluateCrossSubjectRouteImport } from './routes/api/evaluate/cross-subject'
+import { Route as ApiPublicMetricsRouteImport } from './routes/api/public/metrics'
+import { Route as ApiPublicNotebooksRouteImport } from './routes/api/public/notebooks'
 import { Route as ApiPublicCronRecallRouteImport } from './routes/api/public/cron/recall'
 
-const SyntheticRoute = SyntheticRouteImport.update({
-  id: '/synthetic',
-  path: '/synthetic',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StudioRoute = StudioRouteImport.update({
-  id: '/studio',
-  path: '/studio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SigninRoute = SigninRouteImport.update({
-  id: '/signin',
-  path: '/signin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResearchRoute = ResearchRouteImport.update({
-  id: '/research',
-  path: '/research',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlaygroundRoute = PlaygroundRouteImport.update({
-  id: '/playground',
-  path: '/playground',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EmbeddingsRoute = EmbeddingsRouteImport.update({
-  id: '/embeddings',
-  path: '/embeddings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Eeg2imageRoute = Eeg2imageRouteImport.update({
-  id: '/eeg2image',
-  path: '/eeg2image',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevelopersRoute = DevelopersRouteImport.update({
-  id: '/developers',
-  path: '/developers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ArchitectureRoute = ArchitectureRouteImport.update({
-  id: '/architecture',
-  path: '/architecture',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -116,43 +60,79 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const ArchitectureRoute = ArchitectureRouteImport.update({
+  id: '/architecture',
+  path: '/architecture',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const DevelopersRoute = DevelopersRouteImport.update({
+  id: '/developers',
+  path: '/developers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiHealthRoute = ApiHealthRouteImport.update({
-  id: '/api/health',
-  path: '/api/health',
+const Eeg2imageRoute = Eeg2imageRouteImport.update({
+  id: '/eeg2image',
+  path: '/eeg2image',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedUploadRoute = AuthenticatedUploadRouteImport.update({
-  id: '/upload',
-  path: '/upload',
+const EmbeddingsRoute = EmbeddingsRouteImport.update({
+  id: '/embeddings',
+  path: '/embeddings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlaygroundRoute = PlaygroundRouteImport.update({
+  id: '/playground',
+  path: '/playground',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchRoute = ResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SigninRoute = SigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SyntheticRoute = SyntheticRouteImport.update({
+  id: '/synthetic',
+  path: '/synthetic',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedTrainingRoute = AuthenticatedTrainingRouteImport.update({
-  id: '/training',
-  path: '/training',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedOnnxRoute = AuthenticatedOnnxRouteImport.update({
-  id: '/onnx',
-  path: '/onnx',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedModelsRoute = AuthenticatedModelsRouteImport.update({
-  id: '/models',
-  path: '/models',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedMneRoute = AuthenticatedMneRouteImport.update({
-  id: '/mne',
-  path: '/mne',
+const AuthenticatedDatasetsRoute = AuthenticatedDatasetsRouteImport.update({
+  id: '/datasets',
+  path: '/datasets',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedExperimentsRoute =
@@ -161,19 +141,34 @@ const AuthenticatedExperimentsRoute =
     path: '/experiments',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedDatasetsRoute = AuthenticatedDatasetsRouteImport.update({
-  id: '/datasets',
-  path: '/datasets',
+const AuthenticatedMneRoute = AuthenticatedMneRouteImport.update({
+  id: '/mne',
+  path: '/mne',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthenticatedModelsRoute = AuthenticatedModelsRouteImport.update({
+  id: '/models',
+  path: '/models',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ApiAnnotationsIndexRoute = ApiAnnotationsIndexRouteImport.update({
-  id: '/api/annotations/',
-  path: '/api/annotations/',
+const AuthenticatedOnnxRoute = AuthenticatedOnnxRouteImport.update({
+  id: '/onnx',
+  path: '/onnx',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTrainingRoute = AuthenticatedTrainingRouteImport.update({
+  id: '/training',
+  path: '/training',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedUploadRoute = AuthenticatedUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedDashboardIndexRoute =
@@ -182,36 +177,10 @@ const AuthenticatedDashboardIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
-const ApiPublicNotebooksRoute = ApiPublicNotebooksRouteImport.update({
-  id: '/api/public/notebooks',
-  path: '/api/public/notebooks',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicMetricsRoute = ApiPublicMetricsRouteImport.update({
-  id: '/api/public/metrics',
-  path: '/api/public/metrics',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiEvaluateCrossSubjectRoute = ApiEvaluateCrossSubjectRouteImport.update({
-  id: '/api/evaluate/cross-subject',
-  path: '/api/evaluate/cross-subject',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiEegUploadRoute = ApiEegUploadRouteImport.update({
-  id: '/api/eeg/upload',
-  path: '/api/eeg/upload',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedDashboardResearcherRoute =
-  AuthenticatedDashboardResearcherRouteImport.update({
-    id: '/researcher',
-    path: '/researcher',
-    getParentRoute: () => AuthenticatedDashboardRoute,
-  } as any)
-const AuthenticatedDashboardIndividualRoute =
-  AuthenticatedDashboardIndividualRouteImport.update({
-    id: '/individual',
-    path: '/individual',
+const AuthenticatedDashboardAnalysesRoute =
+  AuthenticatedDashboardAnalysesRouteImport.update({
+    id: '/analyses',
+    path: '/analyses',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
 const AuthenticatedDashboardEnterpriseRoute =
@@ -220,12 +189,43 @@ const AuthenticatedDashboardEnterpriseRoute =
     path: '/enterprise',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
-const AuthenticatedDashboardAnalysesRoute =
-  AuthenticatedDashboardAnalysesRouteImport.update({
-    id: '/analyses',
-    path: '/analyses',
+const AuthenticatedDashboardIndividualRoute =
+  AuthenticatedDashboardIndividualRouteImport.update({
+    id: '/individual',
+    path: '/individual',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardResearcherRoute =
+  AuthenticatedDashboardResearcherRouteImport.update({
+    id: '/researcher',
+    path: '/researcher',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const ApiAnnotationsIndexRoute = ApiAnnotationsIndexRouteImport.update({
+  id: '/api/annotations/',
+  path: '/api/annotations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEegUploadRoute = ApiEegUploadRouteImport.update({
+  id: '/api/eeg/upload',
+  path: '/api/eeg/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEvaluateCrossSubjectRoute = ApiEvaluateCrossSubjectRouteImport.update({
+  id: '/api/evaluate/cross-subject',
+  path: '/api/evaluate/cross-subject',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicMetricsRoute = ApiPublicMetricsRouteImport.update({
+  id: '/api/public/metrics',
+  path: '/api/public/metrics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicNotebooksRoute = ApiPublicNotebooksRouteImport.update({
+  id: '/api/public/notebooks',
+  path: '/api/public/notebooks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCronRecallRoute = ApiPublicCronRecallRouteImport.update({
   id: '/api/public/cron/recall',
   path: '/api/public/cron/recall',
@@ -486,102 +486,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/synthetic': {
-      id: '/synthetic'
-      path: '/synthetic'
-      fullPath: '/synthetic'
-      preLoaderRoute: typeof SyntheticRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/studio': {
-      id: '/studio'
-      path: '/studio'
-      fullPath: '/studio'
-      preLoaderRoute: typeof StudioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signin': {
-      id: '/signin'
-      path: '/signin'
-      fullPath: '/signin'
-      preLoaderRoute: typeof SigninRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/research': {
-      id: '/research'
-      path: '/research'
-      fullPath: '/research'
-      preLoaderRoute: typeof ResearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/playground': {
-      id: '/playground'
-      path: '/playground'
-      fullPath: '/playground'
-      preLoaderRoute: typeof PlaygroundRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/embeddings': {
-      id: '/embeddings'
-      path: '/embeddings'
-      fullPath: '/embeddings'
-      preLoaderRoute: typeof EmbeddingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/eeg2image': {
-      id: '/eeg2image'
-      path: '/eeg2image'
-      fullPath: '/eeg2image'
-      preLoaderRoute: typeof Eeg2imageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/developers': {
-      id: '/developers'
-      path: '/developers'
-      fullPath: '/developers'
-      preLoaderRoute: typeof DevelopersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/architecture': {
-      id: '/architecture'
-      path: '/architecture'
-      fullPath: '/architecture'
-      preLoaderRoute: typeof ArchitectureRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -591,60 +500,109 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/health': {
-      id: '/api/health'
-      path: '/api/health'
-      fullPath: '/api/health'
-      preLoaderRoute: typeof ApiHealthRouteImport
+    '/architecture': {
+      id: '/architecture'
+      path: '/architecture'
+      fullPath: '/architecture'
+      preLoaderRoute: typeof ArchitectureRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/upload': {
-      id: '/_authenticated/upload'
-      path: '/upload'
-      fullPath: '/upload'
-      preLoaderRoute: typeof AuthenticatedUploadRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/developers': {
+      id: '/developers'
+      path: '/developers'
+      fullPath: '/developers'
+      preLoaderRoute: typeof DevelopersRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/training': {
-      id: '/_authenticated/training'
-      path: '/training'
-      fullPath: '/training'
-      preLoaderRoute: typeof AuthenticatedTrainingRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/eeg2image': {
+      id: '/eeg2image'
+      path: '/eeg2image'
+      fullPath: '/eeg2image'
+      preLoaderRoute: typeof Eeg2imageRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/onnx': {
-      id: '/_authenticated/onnx'
-      path: '/onnx'
-      fullPath: '/onnx'
-      preLoaderRoute: typeof AuthenticatedOnnxRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/embeddings': {
+      id: '/embeddings'
+      path: '/embeddings'
+      fullPath: '/embeddings'
+      preLoaderRoute: typeof EmbeddingsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/models': {
-      id: '/_authenticated/models'
-      path: '/models'
-      fullPath: '/models'
-      preLoaderRoute: typeof AuthenticatedModelsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/playground': {
+      id: '/playground'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/mne': {
-      id: '/_authenticated/mne'
-      path: '/mne'
-      fullPath: '/mne'
-      preLoaderRoute: typeof AuthenticatedMneRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/experiments': {
-      id: '/_authenticated/experiments'
-      path: '/experiments'
-      fullPath: '/experiments'
-      preLoaderRoute: typeof AuthenticatedExperimentsRouteImport
+    '/research': {
+      id: '/research'
+      path: '/research'
+      fullPath: '/research'
+      preLoaderRoute: typeof ResearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signin': {
+      id: '/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/synthetic': {
+      id: '/synthetic'
+      path: '/synthetic'
+      fullPath: '/synthetic'
+      preLoaderRoute: typeof SyntheticRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/datasets': {
@@ -654,18 +612,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDatasetsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+    '/_authenticated/experiments': {
+      id: '/_authenticated/experiments'
+      path: '/experiments'
+      fullPath: '/experiments'
+      preLoaderRoute: typeof AuthenticatedExperimentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/annotations/': {
-      id: '/api/annotations/'
-      path: '/api/annotations'
-      fullPath: '/api/annotations/'
-      preLoaderRoute: typeof ApiAnnotationsIndexRouteImport
+    '/_authenticated/mne': {
+      id: '/_authenticated/mne'
+      path: '/mne'
+      fullPath: '/mne'
+      preLoaderRoute: typeof AuthenticatedMneRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/models': {
+      id: '/_authenticated/models'
+      path: '/models'
+      fullPath: '/models'
+      preLoaderRoute: typeof AuthenticatedModelsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onnx': {
+      id: '/_authenticated/onnx'
+      path: '/onnx'
+      fullPath: '/onnx'
+      preLoaderRoute: typeof AuthenticatedOnnxRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/training': {
+      id: '/_authenticated/training'
+      path: '/training'
+      fullPath: '/training'
+      preLoaderRoute: typeof AuthenticatedTrainingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/upload': {
+      id: '/_authenticated/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof AuthenticatedUploadRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/dashboard/': {
@@ -675,46 +668,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
-    '/api/public/notebooks': {
-      id: '/api/public/notebooks'
-      path: '/api/public/notebooks'
-      fullPath: '/api/public/notebooks'
-      preLoaderRoute: typeof ApiPublicNotebooksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/metrics': {
-      id: '/api/public/metrics'
-      path: '/api/public/metrics'
-      fullPath: '/api/public/metrics'
-      preLoaderRoute: typeof ApiPublicMetricsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/evaluate/cross-subject': {
-      id: '/api/evaluate/cross-subject'
-      path: '/api/evaluate/cross-subject'
-      fullPath: '/api/evaluate/cross-subject'
-      preLoaderRoute: typeof ApiEvaluateCrossSubjectRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/eeg/upload': {
-      id: '/api/eeg/upload'
-      path: '/api/eeg/upload'
-      fullPath: '/api/eeg/upload'
-      preLoaderRoute: typeof ApiEegUploadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/dashboard/researcher': {
-      id: '/_authenticated/dashboard/researcher'
-      path: '/researcher'
-      fullPath: '/dashboard/researcher'
-      preLoaderRoute: typeof AuthenticatedDashboardResearcherRouteImport
-      parentRoute: typeof AuthenticatedDashboardRoute
-    }
-    '/_authenticated/dashboard/individual': {
-      id: '/_authenticated/dashboard/individual'
-      path: '/individual'
-      fullPath: '/dashboard/individual'
-      preLoaderRoute: typeof AuthenticatedDashboardIndividualRouteImport
+    '/_authenticated/dashboard/analyses': {
+      id: '/_authenticated/dashboard/analyses'
+      path: '/analyses'
+      fullPath: '/dashboard/analyses'
+      preLoaderRoute: typeof AuthenticatedDashboardAnalysesRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/enterprise': {
@@ -724,12 +682,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardEnterpriseRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
-    '/_authenticated/dashboard/analyses': {
-      id: '/_authenticated/dashboard/analyses'
-      path: '/analyses'
-      fullPath: '/dashboard/analyses'
-      preLoaderRoute: typeof AuthenticatedDashboardAnalysesRouteImport
+    '/_authenticated/dashboard/individual': {
+      id: '/_authenticated/dashboard/individual'
+      path: '/individual'
+      fullPath: '/dashboard/individual'
+      preLoaderRoute: typeof AuthenticatedDashboardIndividualRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/researcher': {
+      id: '/_authenticated/dashboard/researcher'
+      path: '/researcher'
+      fullPath: '/dashboard/researcher'
+      preLoaderRoute: typeof AuthenticatedDashboardResearcherRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/api/annotations/': {
+      id: '/api/annotations/'
+      path: '/api/annotations'
+      fullPath: '/api/annotations/'
+      preLoaderRoute: typeof ApiAnnotationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/eeg/upload': {
+      id: '/api/eeg/upload'
+      path: '/api/eeg/upload'
+      fullPath: '/api/eeg/upload'
+      preLoaderRoute: typeof ApiEegUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/evaluate/cross-subject': {
+      id: '/api/evaluate/cross-subject'
+      path: '/api/evaluate/cross-subject'
+      fullPath: '/api/evaluate/cross-subject'
+      preLoaderRoute: typeof ApiEvaluateCrossSubjectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/metrics': {
+      id: '/api/public/metrics'
+      path: '/api/public/metrics'
+      fullPath: '/api/public/metrics'
+      preLoaderRoute: typeof ApiPublicMetricsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/notebooks': {
+      id: '/api/public/notebooks'
+      path: '/api/public/notebooks'
+      fullPath: '/api/public/notebooks'
+      preLoaderRoute: typeof ApiPublicNotebooksRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/cron/recall': {
       id: '/api/public/cron/recall'

@@ -9,10 +9,12 @@ P2 Technical Debt item TD-005 (Inefficient Feature Extraction) has been complete
 **Implementation Status:** Fully implemented and tested
 
 **Files Modified:**
+
 - `src/lib/embeddings/features.ts` - Complete rewrite to use FFT instead of DFT
 - `src/lib/embeddings/__tests__/fft.test.ts` - Comprehensive test suite for the FFT implementation
 
 **Requirements Verification:**
+
 - [x] **Replace O(M²) DFT with O(M log M) FFT** - Implemented iterative in-place radix-2 Cooley-Tukey FFT algorithm
 - [x] **Maintain API compatibility** - Public `bandPowerFeatures` function signature unchanged
 - [x] **Preserve band-power contract** - Same frequency bands (δ: 0.5-4Hz, θ: 4-8Hz, α: 8-13Hz, β: 13-30Hz, γ: 30-45Hz)
@@ -21,6 +23,7 @@ P2 Technical Debt item TD-005 (Inefficient Feature Extraction) has been complete
 
 **Implementation Details:**
 The new implementation in `features.ts` includes:
+
 1. **Hann window application** - Identical to previous DFT implementation for consistency
 2. **Zero-padding to next power of two** - Required for radix-2 FFT
 3. **Iterative in-place radix-2 Cooley-Tukey FFT** - O(N log N) complexity with bit-reversal permutation and butterfly stages
@@ -28,12 +31,14 @@ The new implementation in `features.ts` includes:
 5. **Band-power aggregation** - Same logic as before, summing FFT bins within each frequency band
 
 **Key Functions:**
+
 - `fftPowerSpectrum(x, fs)`: Computes one-sided power spectrum using FFT
 - `bandPowerFeatures(window)`: Main API function that extracts features per channel
 - `freqPowerSpectrum`: Exported for testing/reuse
 
 **Performance Validation:**
 The included test suite verifies:
+
 - Single tone detection at correct frequency
 - Near-zero power for silent signals
 - Proper handling of non-power-of-two lengths (zero-padding)
@@ -42,6 +47,7 @@ The included test suite verifies:
 - Correct band assignment for 10Hz (alpha) and 35Hz (gamma) tones
 
 **Test Evidence:**
+
 - All tests in `src/lib/embeddings/__tests__/fft.test.ts` pass
 - The implementation correctly routes test signals to appropriate frequency bands
 - Performance benchmarks confirm the O(N log N) complexity advantage

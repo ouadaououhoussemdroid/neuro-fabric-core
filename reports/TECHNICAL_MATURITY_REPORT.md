@@ -11,6 +11,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 ### 1. AI Layer (65/100) - Research Platform
 
 **Strengths:**
+
 - Live EEGConformer ONNX model deployed and verified in browser (`fellBack: false`)
 - Real adapter pattern enabling pluggable backends (ONNX, PCA, future PyTorch)
 - Defense-in-depth fallback strategy (ONNX → PCA) with structured logging
@@ -19,6 +20,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - Benchmark harness recording p50/p95 latency, heap usage, fallback rates
 
 **Weaknesses:**
+
 - Empirical validation of embedding quality inconclusive (needs BCI-IV-2a holdout evaluation)
 - Limited model zoo (only one production model; others are stubs)
 - No cognitive decoder (currently heuristic ratios)
@@ -26,6 +28,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - No empirical evidence of discriminative power on real EEG data beyond synthetic probes
 
 **Evidence:**
+
 - `src/lib/ai/adapters/` - Complete adapter implementation
 - `public/models/eegconformer.onnx` - Live ONNX artefact
 - `src/lib/ai/inference/embed-eeg.ts` - Embedding orchestration with fallback
@@ -36,6 +39,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 ### 2. Backend (75/100) - MVP-Ready
 
 **Strengths:**
+
 - Supabase integration with proper Row Level Security (RLS) policies
 - Authentication via Supabase Auth integrated with TanStack Start `_authenticated` gate
 - Server functions using `createServerFn` with `requireSupabaseAuth` middleware
@@ -44,6 +48,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - Database schema includes eeg_analyses, experiments, role tables with appropriate constraints
 
 **Weaknesses:**
+
 - Missing rate limiting on `/api/eeg/upload` endpoint (DoS risk)
 - No upload size validation (resource exhaustion risk)
 - No CI/CD pipeline to gate changes
@@ -51,6 +56,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - No input sanitization on filenames (potential path traversal if stored on disk)
 
 **Evidence:**
+
 - `src/routes/api/eeg/` - EEG upload and management endpoints
 - `supabase/migrations/` - SQL migrations showing RLS and role tables
 - `src/lib/auth-hooks.ts` - Authentication hooks
@@ -60,6 +66,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 ### 3. Frontend (80/100) - MVP-Ready
 
 **Strengths:**
+
 - Modern stack: TanStack Start v1 + Vite 7 + React 19 + Tailwind v4
 - Component library using Radix UI primitives for accessibility
 - Role-based views (researcher, clinician, administrator) with appropriate UI
@@ -68,6 +75,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - Responsive layout working on desktop and tablet form factors
 
 **Weaknesses:**
+
 - Limited advanced visualization (e.g., spectral plots, topographic maps)
 - Missing model explainability features (saliency maps, feature importance)
 - No bulk operations or advanced search in data tables
@@ -75,6 +83,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - Accessibility audit not formally conducted (though using accessible components)
 
 **Evidence:**
+
 - `src/components/` - Component library (dashboard, EEG visualization, etc.)
 - `src/routes/` - Route-based code splitting and layout
 - `src/styles.css` - Tailwind configuration and custom styles
@@ -84,6 +93,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 ### 4. Infrastructure (50/100) - Prototype
 
 **Strengths:**
+
 - Functional deployment on Cloudflare Workers via TanStack Start template
 - Supabase Postgres with pgvector extension configured
 - Environment-based configuration via `.env` file
@@ -91,6 +101,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - Basic error boundaries and loading states in UI
 
 **Weaknesses:**
+
 - **Critical:** WASM dependency on jsDelivr CDN (single point of failure, no SLA)
 - **Critical:** No CI/CD pipeline for automated testing and deployment
 - Model artefact bundled in `public/` increasing cold load size (no content-hashed URLs)
@@ -100,6 +111,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - No blue/green or canary deployment capabilities documented
 
 **Evidence:**
+
 - `vite.config.ts` - Vite configuration showing asset handling
 - `public/models/` - Bundled ONNX model
 - `.output/` - Vercel/Cloudflare build output
@@ -110,6 +122,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 ### 5. Security (70/100) - MVP-Ready (with Caveats)
 
 **Strengths:**
+
 - **Exemplary:** No secrets or API keys committed to repository
 - `.env.example` shows required variables; actual secrets in gitignored `.env`
 - Supabase service role key properly confined to `.server.ts` files (not exposed to client)
@@ -120,6 +133,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - Error handling avoids stack trace leakage in production responses
 
 **Weaknesses:**
+
 - Missing rate limiting on API endpoints (especially `/api/eeg/upload`)
 - No upload size validation (enables resource exhaustion attacks)
 - WASM loaded from jsDelivr CDN without Subresource Integrity (SRI) checks
@@ -129,6 +143,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - Potential path traversal if filenames not sanitized (if stored on filesystem)
 
 **Evidence:**
+
 - `.env.example` - Shows required configuration without exposing secrets
 - `src/lib/auth-hooks.ts` - Authentication implementation
 - `supabase/migrations/` - RLS policies in SQL
@@ -139,6 +154,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 ### 6. Testing (40/100) - Prototype
 
 **Strengths:**
+
 - Unit tests co-located with implementation (`__tests__` directories)
 - Vitest testing framework configured and functional
 - Tests for critical components: adapters, validation, vector bridge, EEG processing
@@ -146,6 +162,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - Passing test suite locally (as evidenced by audit reports)
 
 **Weaknesses:**
+
 - **Critical:** No CI pipeline to run tests on pull requests
 - Inconsistent test coverage across modules (some well-tested, others minimal)
 - Missing integration tests (especially for EEG upload → processing → storage flow)
@@ -155,6 +172,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - No property-based testing for edge cases in signal processing
 
 **Evidence:**
+
 - `src/lib/ai/adapters/__tests__/` - Adapter test suites
 - `src/lib/ai/validation/__tests__` - Validation test suites
 - `src/lib/vector-search/__tests__` - Vector search tests
@@ -165,6 +183,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 ### 7. Documentation (85/100) - MVP-Ready
 
 **Strengths:**
+
 - **Exceptional:** Comprehensive audit trail with dated reports showing progress
 - Architecture documents: `architecture.md`, `ai-layer-architecture.md`
 - Architectural Decision Records (ADRs): `adr/0001-braindecode-execution-strategy.md`, `adr/0002-eeg-embedding-storage-contract.md`
@@ -175,6 +194,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - Research documentation linking to relevant papers and methodologies
 
 **Weaknesses:**
+
 - Some documents marked as "Historical" risk causing confusion if not read carefully
 - Inconsistent JSDoc/Typedoc coverage in source files
 - Complex algorithms (e.g., ONNX tensor building) lack explanatory comments
@@ -183,6 +203,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - No API reference documentation (OpenAPI/Swagger) for backend endpoints
 
 **Evidence:**
+
 - `docs/` directory - Rich documentation hierarchy
 - `README.md` - Getting started and architecture overview
 - `training/docs/` - Comprehensive training pipeline documentation
@@ -192,6 +213,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 ### 8. Research (60/100) - Research Platform
 
 **Strengths:**
+
 - Reproducible training pipeline with Dockerfile and Makefile
 - Uses established datasets (BCI-IV-2a via MOABB) for training
 - Benchmark harness enables empirical evaluation
@@ -200,6 +222,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - Clear separation between research experimentation and production code
 
 **Weaknesses:**
+
 - **Critical:** No empirical validation of embedding quality on real EEG data
 - Missing integration with major EEG datasets (Sleep-EDF, CHB-MIT, TUH)
 - Cognitive decoder remains heuristic (no trained model for validation)
@@ -209,6 +232,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - Missing experiment tracking beyond basic MLflow integration in training
 
 **Evidence:**
+
 - `training/` - Complete training pipeline with scripts and notebooks
 - `scripts/export_braindecode_eegconformer.py` - ONNX export with parity checking
 - `docs/audits/2026-06-19_project_state_audit.md` - Embedding quality inconclusive
@@ -223,6 +247,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 **Maturity Classification: Research Platform**
 
 ### Interpretation:
+
 - **0-49:** Prototype - Early stage, proof-of-concept, missing core functionalities
 - **50-69:** Research Platform - Functional for research/internal use, missing operational hardening for public release
 - **70-84:** MVP-Ready - Ready for paid user MVP with minor improvements needed
@@ -230,6 +255,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 - **95-100:** Production Ready - Enterprise-grade with SLAs, comprehensive monitoring, and regulatory compliance
 
 ### Key Strengths Supporting Research Platform Classification:
+
 1. **Strong Technical Foundations:** Adapter pattern, validation pipeline, fallback strategies
 2. **Live AI Model:** Verified EEGConformer ONNX execution in browser
 3. **Comprehensive Documentation:** Extensive audit trail and architectural documents
@@ -237,6 +263,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 5. **Research-Oriented Design:** Clear separation of concerns, extensibility points
 
 ### Critical Gaps Preventing MVP-Ready Status:
+
 1. **Operational Fragility:** No CI/CD, CDN dependency risk, missing rate limits
 2. **Validation Gap:** Lack of empirical evidence for scientific claims
 3. **Persistence Limitation:** In-memory vector storage loses state
@@ -244,6 +271,7 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 5. **Observability Deficit:** No metrics, tracing, or alerting for production monitoring
 
 ### Recommended Immediate Actions (0-4 weeks):
+
 1. Implement CI pipeline to prevent regressions
 2. Add rate limiting and upload size validation for security
 3. Complete migration to self-hosted ORT WASM with integrity verification
@@ -251,7 +279,9 @@ The overall maturity score is **63/100**, classifying the platform as a **Resear
 5. Begin pgvector migration for persistent vector storage
 
 ### Path to MVP-Ready (70+ Score):
+
 Achieving a score of 70+ requires addressing the critical gaps in:
+
 - **Infrastructure:** CI/CD, WASM independence, persistent storage
 - **Security:** Rate limiting, upload limits, input validation
 - **AI Validation:** Empirical evaluation of embedding quality

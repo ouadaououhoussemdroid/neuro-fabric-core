@@ -1,25 +1,25 @@
 {
-  "generated": "2026-08-08T07:42:24.219Z",
+  "generated": "2026-08-08T10:17:20.860Z",
   "artifacts": [
     {
       "file": "ort-wasm-simd-threaded.wasm",
-      "sha384": "sha384-wr7M1C6iNW3VC/2ZcY8NgYHkS1JqhtT6XO1KrErv3Sr588B9M0NzTOhBco0UgAZj",
-      "size": 13022405
+      "sha384": "sha384-ZBv2MGQL3EUHCYbVm9I410F+QZX7GWFj9a556jISGqlE2TiRaeEWLu6jxd8ZYMGC",
+      "size": 13479978
     },
     {
       "file": "ort-wasm-simd-threaded.mjs",
-      "sha384": "sha384-mql1DeKkccJmqNO7cC22MvLHdhPJoGiFjUqWs6WlbQpS14iEFib3UwAuNBoRAjt0",
+      "sha384": "sha384-QwBuCPwkZ1hn48SSG/YP1rd25hKczDIg103x2AtlotnwUzVF919IZz1uRnLp9IOw",
       "size": 24180
     },
     {
       "file": "ort-wasm-simd-threaded.jsep.wasm",
-      "sha384": "sha384-sY2H39EQhqtIUp/BW/mCM0euCLxa5CAh+cYozlt34yB3MqMNU+trD6yMPgmOY3Rz",
-      "size": 26239907
+      "sha384": "sha384-NRkAqXy32zY6LuDA4go2FTF1Cy85jvEfSu6DPTevOmSu441+7WhVZocyqdhT1kNB",
+      "size": 26827543
     },
     {
       "file": "ort-wasm-simd-threaded.jsep.mjs",
-      "sha384": "sha384-23n05z35WSh7k+/k5AKko6aY7FDKGElW4GExsegdqY5patkPMUGqhD9bwuCRXr9g",
-      "size": 46489
+      "sha384": "sha384-UnMnZc4hekoMygc89hIyX3b7KuuNwqJTMOZJdeAQjuvGC/WVdTT+w+HmwWCANfli",
+      "size": 46614
     }
   ]
 }

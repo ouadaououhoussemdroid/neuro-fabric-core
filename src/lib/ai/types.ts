@@ -19,11 +19,7 @@ export type ModelKind =
   | "cbramod";
 
 export type ModelTask =
-  | "embedding"
-  | "classification"
-  | "regression"
-  | "reconstruction"
-  | "foundation";
+  "embedding" | "classification" | "regression" | "reconstruction" | "foundation";
 
 export type ModelRuntime =
   | "js" // pure JS / WebAssembly-free

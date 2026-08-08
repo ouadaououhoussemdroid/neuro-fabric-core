@@ -6,15 +6,15 @@ without breaking existing pipelines.
 
 ## Current state (trained EEGConformer deployed)
 
-| Adapter                                   | Status                  | Description                                                                                        |
-| ----------------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------- |
-| **PCA**                                   | Live (default fallback) | `PCAEmbeddingAdapter` wraps `embedSignal` from `src/lib/embeddings`                                |
-| **ONNX**                                  | Live                    | `ONNXAdapter` wraps `onnxruntime-web`'s `InferenceSession` with self-hosted WASM                   |
+| Adapter                                   | Status                  | Description                                                                                                                                     |
+| ----------------------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **PCA**                                   | Live (default fallback) | `PCAEmbeddingAdapter` wraps `embedSignal` from `src/lib/embeddings`                                                                             |
+| **ONNX**                                  | Live                    | `ONNXAdapter` wraps `onnxruntime-web`'s `InferenceSession` with self-hosted WASM                                                                |
 | **Braindecode (ONNX)**                    | Live (production)       | `braindecode-eegconformer-prod` — trained EEGConformer ONNX artefact via `braindecode-onnx-bridge.ts`. Holdout accuracy 0.578, recall@10 0.941. |
-| **Braindecode (Pyodide)**                 | Scaffold                | `BraindecodeAdapter` with pluggable bridge; default bridge returns `isAvailable() === false`       |
-| **EEGNetv4 / ShallowFBCSPNet / Deep4Net** | Registered (untrained)  | In the model zoo for ablation; no trained ONNX artefacts shipped                                   |
-| **EEGPT**                                 | Scheduled (stub)        | `implemented: false`, throws `NotImplementedError`. Blocked on license-clear weights (see T-016)   |
-| **PyTorch export**                        | Stub                    | `implemented: false`, throws `NotImplementedError`                                                 |
+| **Braindecode (Pyodide)**                 | Scaffold                | `BraindecodeAdapter` with pluggable bridge; default bridge returns `isAvailable() === false`                                                    |
+| **EEGNetv4 / ShallowFBCSPNet / Deep4Net** | Registered (untrained)  | In the model zoo for ablation; no trained ONNX artefacts shipped                                                                                |
+| **EEGPT**                                 | Scheduled (stub)        | `implemented: false`, throws `NotImplementedError`. Blocked on license-clear weights (see T-016)                                                |
+| **PyTorch export**                        | Stub                    | `implemented: false`, throws `NotImplementedError`                                                                                              |
 
 The production embedding path is: `braindecode-eegconformer-prod` (ONNX) →
 generic ONNX → `pca-legacy-v1` (terminal fallback). Fallbacks are never silent
@@ -81,34 +81,37 @@ sets `ort.env.wasm.wasmPaths = "/ort/"` — no jsdelivr CDN dependency.
 
 ### WebGPU EP (T-024)
 
-The WebGPU execution provider (EP) is an opt-in feature for accelerating ONNX model inference using the browser's WebGPU API. 
+The WebGPU execution provider (EP) is an opt-in feature for accelerating ONNX model inference using the browser's WebGPU API.
 It is controlled via the `webgpu-flag.ts` module and defaults to **disabled** (WASM-only) to ensure compatibility with browsers that do not yet support WebGPU.
 
 #### Enabling WebGPU EP
 
 WebGPU EP can be enabled in two ways:
+
 1. **Build-time**: Set the environment variable `VITE_ORT_WEBGPU=true` when building the application.
 2. **Runtime**: Call `setWebGPUEnabled(true)` from JavaScript (e.g., from a settings UI).
 
-The adapter will request the execution providers `["webgpu", "wasm"]` when WebGPU EP is enabled. 
+The adapter will request the execution providers `["webgpu", "wasm"]` when WebGPU EP is enabled.
 ONNX Runtime Web automatically falls back to WASM if WebGPU is unavailable or unsupported in the current browser.
 
 #### Capability Detection
 
 The `isWebGPUAvailable()` function checks for the presence of `navigator.gpu` to determine if the browser supports WebGPU.
 The `isWebGPUEnabled()` function returns `true` only if:
+
 - Either the build-time flag (`VITE_ORT_WEBGPU`) is set to `"true"` **or** the runtime toggle (`setWebGPUEnabled(true)`) has been called, **AND**
 - The browser supports WebGPU (`isWebGPUAvailable()` returns `true`).
 
 #### Execution Providers
 
-When WebGPU EP is enabled, the ONNX adapter uses the execution provider array `["webgpu", "wasm"]`. 
+When WebGPU EP is enabled, the ONNX adapter uses the execution provider array `["webgpu", "wasm"]`.
 This allows ONNX Runtime Web to attempt to use WebGPU for acceleration, falling back to WASM if WebGPU fails to initialize or is not supported.
 
 #### Cold-Start Benchmark (T-025)
 
-Measuring the cold-start time (the time to load the model and initialize the runtime) is important for understanding the performance impact of enabling WebGPU EP. 
+Measuring the cold-start time (the time to load the model and initialize the runtime) is important for understanding the performance impact of enabling WebGPU EP.
 The cold-start time includes:
+
 - Fetching the ONNX model artifact (if not cached)
 - Initializing the ONNX Runtime Web with the selected execution providers
 - Loading and validating the model
@@ -121,15 +124,19 @@ To benchmark cold-start with and without WebGPU EP:
 3. **Measure the time** to create an `ONNXAdapter` instance and load a model (e.g., the trained EEGConformer model) using the `performance.now()` API in the browser.
 4. **Compare the times**: The difference indicates the overhead or improvement introduced by WebGPU EP initialization.
 
-> **Note**: Actual cold-start times vary based on the model size, device capabilities, and network conditions. 
+> **Note**: Actual cold-start times vary based on the model size, device capabilities, and network conditions.
 > For accurate results, run the benchmark in a production-like environment with the target model and device.
 
 Example benchmark code (to be run in the browser console or a test script):
+
 ```ts
 import { ONNXAdapter } from "@/lib/ai/adapters";
 import { setWebGPUEnabled } from "@/lib/ai/adapters/webgpu-flag";
 
-async function benchmarkColdStart(modelPath: string, inputShape: { kind: "features"; dim: number }): Promise<{ wasmTime: number; webgpuTime: number }> {
+async function benchmarkColdStart(
+  modelPath: string,
+  inputShape: { kind: "features"; dim: number },
+): Promise<{ wasmTime: number; webgpuTime: number }> {
   // Measure WASM-only cold-start
   setWebGPUEnabled(false);
   const wasmStart = performance.now();

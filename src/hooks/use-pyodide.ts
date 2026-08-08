@@ -1,12 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 
 export type PyodideStatus =
-  | "idle"
-  | "loading-pyodide"
-  | "loading-packages"
-  | "ready"
-  | "running"
-  | "error";
+  "idle" | "loading-pyodide" | "loading-packages" | "ready" | "running" | "error";
 
 export interface PyodideState {
   status: PyodideStatus;
