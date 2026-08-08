@@ -2,20 +2,21 @@
 
 **Date:** 2026-08-07  
 **Tier:** 3 (Scientific Credibility)  
-**Status:** ✅ COMPLETE — GO  
+**Status:** ✅ COMPLETE — GO
 
 ---
 
 ## Executive Summary
 
 Tier 3 delivers the statistical and validation infrastructure required for
-scientific credibility of the Neuro-Fabric Core platform.  All four Tier 3
+scientific credibility of the Neuro-Fabric Core platform. All four Tier 3
 sub-tasks are complete, fully tested (504 tests passing, 0 failures), TypeScript
 clean, ESLint clean, and the production build succeeds.
 
 ### GO / NO-GO Recommendation: **GO**
 
-All acceptance criteria are met.  The platform now supports:
+All acceptance criteria are met. The platform now supports:
+
 - Cross-subject validation (LOSO) with statistical testing.
 - Ground-truth annotation collection and prediction correlation.
 - Benchmark comparison against baselines with significance testing.
@@ -28,27 +29,29 @@ All acceptance criteria are met.  The platform now supports:
 ### 3.1 — Statistical Reporting Module (T-028)
 
 **Files:**
+
 - `src/lib/stats/index.ts` (440 lines)
 - `src/lib/stats/__tests__/stats.test.ts` (31 tests)
 
 **Capabilities delivered:**
 
-| Function | Description |
-|---|---|
-| `logGamma` | Lanczos g=5 (Numerical Recipes coefficients), machine-precision (~1e-16) |
-| `incompleteBeta` | Regularized incomplete beta via continued fraction (NR §6.4) |
-| `inverseIncompleteBeta` | Bisection method — guaranteed convergence (replaced Newton-Raphson) |
-| `tTestPValue` | Two-tailed p-value from t-statistic via incomplete beta |
-| `tCriticalValue` | Inverse via `inverseIncompleteBeta` (t-distribution quantile) |
-| `describe` / `meanStd` | DescriptiveStats: n, mean, median, std, stdErr, min, max, sum, variance |
-| `confidenceInterval` | t-distribution CI with 95 % confidence |
-| `cohensD` | Pooled-std effect size with Cohen (1988) thresholds + zero-variance guard |
-| `tTestOneSample` | Welch-style one-sample t-test with zero-variance guard |
-| `tTestTwoSample` | Welch's two-sample t-test |
-| `formatPValue` | `<0.001`, `<0.01`, `<0.05`, or precise value |
-| `publicationTable` | Markdown table with Mean, Std, 95 % CI, p-value, Effect Size |
+| Function                | Description                                                               |
+| ----------------------- | ------------------------------------------------------------------------- |
+| `logGamma`              | Lanczos g=5 (Numerical Recipes coefficients), machine-precision (~1e-16)  |
+| `incompleteBeta`        | Regularized incomplete beta via continued fraction (NR §6.4)              |
+| `inverseIncompleteBeta` | Bisection method — guaranteed convergence (replaced Newton-Raphson)       |
+| `tTestPValue`           | Two-tailed p-value from t-statistic via incomplete beta                   |
+| `tCriticalValue`        | Inverse via `inverseIncompleteBeta` (t-distribution quantile)             |
+| `describe` / `meanStd`  | DescriptiveStats: n, mean, median, std, stdErr, min, max, sum, variance   |
+| `confidenceInterval`    | t-distribution CI with 95 % confidence                                    |
+| `cohensD`               | Pooled-std effect size with Cohen (1988) thresholds + zero-variance guard |
+| `tTestOneSample`        | Welch-style one-sample t-test with zero-variance guard                    |
+| `tTestTwoSample`        | Welch's two-sample t-test                                                 |
+| `formatPValue`          | `<0.001`, `<0.01`, `<0.05`, or precise value                              |
+| `publicationTable`      | Markdown table with Mean, Std, 95 % CI, p-value, Effect Size              |
 
 **Bug fixes during implementation:**
+
 - **Lanczos precision**: Switched from Wikipedia g=7 coefficients (1e-4 error) to Numerical Recipes g=5 coefficients (1e-16 error).
 - **inverseIncompleteBeta convergence**: The Newton-Raphson initial guess produced values outside [0, 1] (e.g., 3.66 for p=0.348, a=2, b=3), causing `log(0)` → NaN. Replaced with a bisection method that exploits the monotonicity of `I_x(a,b)` in `x`, guaranteeing convergence in ≤200 iterations to machine precision.
 - **`cohensD`**: Added guard for zero pooled std (returns 0 for identical means, ±∞ for different means with zero variance).
@@ -57,6 +60,7 @@ All acceptance criteria are met.  The platform now supports:
 ### 3.2 — Cross-Subject Validation (LOSO)
 
 **Files:**
+
 - `src/lib/evaluation/loso.ts` (core evaluation, ~280 lines)
 - `src/lib/evaluation/index.ts` (barrel exports)
 - `src/lib/evaluation/__tests__/loso.test.ts` (12 tests)
@@ -85,6 +89,7 @@ rigor from the Tier 3.1 stats module.
 ### 3.3 — Ground Truth Annotation Infrastructure
 
 **Files:**
+
 - `src/lib/evaluation/ground-truth.ts` (~230 lines)
 - `src/lib/evaluation/__tests__/ground-truth.test.ts` (13 tests)
 - `src/routes/api/annotations/index.ts` (API endpoint: POST + GET)
@@ -111,6 +116,7 @@ rigor from the Tier 3.1 stats module.
 ### 3.4 — Benchmark Comparison Utilities
 
 **Files:**
+
 - `src/lib/evaluation/benchmark.ts` (~290 lines)
 - `src/lib/evaluation/__tests__/benchmark.test.ts` (6 tests)
 
@@ -137,22 +143,22 @@ rigor from the Tier 3.1 stats module.
 
 ## Validation Results
 
-| Check | Command | Result |
-|---|---|---|
-| TypeScript | `bunx tsc --noEmit` | ✅ 0 errors |
-| ESLint (new/modified files) | `bunx eslint ...` | ✅ 0 errors, 0 warnings |
-| Full test suite | `bunx vitest run` | ✅ 504 passed, 2 skipped, 0 failed |
-| Production build | `bun run build` | ✅ Built in 1m 23s (3137 modules) |
+| Check                       | Command             | Result                             |
+| --------------------------- | ------------------- | ---------------------------------- |
+| TypeScript                  | `bunx tsc --noEmit` | ✅ 0 errors                        |
+| ESLint (new/modified files) | `bunx eslint ...`   | ✅ 0 errors, 0 warnings            |
+| Full test suite             | `bunx vitest run`   | ✅ 504 passed, 2 skipped, 0 failed |
+| Production build            | `bun run build`     | ✅ Built in 1m 23s (3137 modules)  |
 
 ### Test breakdown by module:
 
-| Module | Tests | Status |
-|---|---|---|
-| `src/lib/stats/__tests__/stats.test.ts` | 31 | ✅ All pass |
-| `src/lib/evaluation/__tests__/loso.test.ts` | 12 | ✅ All pass |
-| `src/lib/evaluation/__tests__/ground-truth.test.ts` | 13 | ✅ All pass |
-| `src/lib/evaluation/__tests__/benchmark.test.ts` | 6 | ✅ All pass |
-| **Total new tests** | **62** | **✅ All pass** |
+| Module                                              | Tests  | Status          |
+| --------------------------------------------------- | ------ | --------------- |
+| `src/lib/stats/__tests__/stats.test.ts`             | 31     | ✅ All pass     |
+| `src/lib/evaluation/__tests__/loso.test.ts`         | 12     | ✅ All pass     |
+| `src/lib/evaluation/__tests__/ground-truth.test.ts` | 13     | ✅ All pass     |
+| `src/lib/evaluation/__tests__/benchmark.test.ts`    | 6      | ✅ All pass     |
+| **Total new tests**                                 | **62** | **✅ All pass** |
 
 Existing tests (442 tests across 60 files) continue to pass with no regressions.
 
@@ -160,13 +166,13 @@ Existing tests (442 tests across 60 files) continue to pass with no regressions.
 
 ## Bugs Found and Fixed During Tier 3
 
-| Bug | Impact | Fix |
-|---|---|---|
-| `inverseIncompleteBeta` Newton-Raphson divergence | NaN in t-critical values, CIs, p-values | Replaced with bisection (guaranteed convergence) |
-| `fisherLinearDiscriminant` per-class variance | Incorrect FLD scores (used full array instead of class subset) | Fixed to use `class1.map`/`class2.map` |
-| `cohensD` zero-variance NaN | TypeError when groups are identical | Guard returns 0 for identical means |
-| `tTestOneSample` zero-variance NaN | NaN p-values for degenerate cases | Guard returns pValue=1 (mean==mu0) or 0 (mean≠mu0) |
-| Lanczos coefficient precision loss | Lint error on `no-loss-of-precision` | Truncated to exact double representation |
+| Bug                                               | Impact                                                         | Fix                                                |
+| ------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------- |
+| `inverseIncompleteBeta` Newton-Raphson divergence | NaN in t-critical values, CIs, p-values                        | Replaced with bisection (guaranteed convergence)   |
+| `fisherLinearDiscriminant` per-class variance     | Incorrect FLD scores (used full array instead of class subset) | Fixed to use `class1.map`/`class2.map`             |
+| `cohensD` zero-variance NaN                       | TypeError when groups are identical                            | Guard returns 0 for identical means                |
+| `tTestOneSample` zero-variance NaN                | NaN p-values for degenerate cases                              | Guard returns pValue=1 (mean==mu0) or 0 (mean≠mu0) |
+| Lanczos coefficient precision loss                | Lint error on `no-loss-of-precision`                           | Truncated to exact double representation           |
 
 ---
 
@@ -226,4 +232,4 @@ Tier 3 deliverables (new code):
 **✅ GO** — All Tier 3 deliverables are complete, tested, and integrated.
 The platform now has the statistical reporting, cross-subject validation,
 ground truth annotation, and benchmark comparison infrastructure required
-for scientific credibility.  No blocking issues remain.
+for scientific credibility. No blocking issues remain.

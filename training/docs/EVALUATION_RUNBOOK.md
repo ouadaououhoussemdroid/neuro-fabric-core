@@ -6,24 +6,24 @@ The EEGConformer has been trained and evaluated. Results are published below.
 
 ## Training results
 
-| Metric | Value | Threshold | Status |
-|---|---|---|---|
-| Best validation accuracy | 0.587 (epoch 49) | ≥ 0.55 | PASS |
-| Holdout accuracy (subject 9) | 0.578 | ≥ 0.55 | PASS |
-| Recall@10 | 0.941 | ≥ 0.55 | PASS |
-| PCA baseline recall@10 | 0.943 | — | — |
-| Beats PCA | false | true | NOTE |
-| Separation margin | 0.230 | > 0 | PASS |
-| PyTorch↔ONNX cosine | ≥ 0.999 | ≥ 0.999 | PASS |
+| Metric                       | Value            | Threshold | Status |
+| ---------------------------- | ---------------- | --------- | ------ |
+| Best validation accuracy     | 0.587 (epoch 49) | ≥ 0.55    | PASS   |
+| Holdout accuracy (subject 9) | 0.578            | ≥ 0.55    | PASS   |
+| Recall@10                    | 0.941            | ≥ 0.55    | PASS   |
+| PCA baseline recall@10       | 0.943            | —         | —      |
+| Beats PCA                    | false            | true      | NOTE   |
+| Separation margin            | 0.230            | > 0       | PASS   |
+| PyTorch↔ONNX cosine          | ≥ 0.999          | ≥ 0.999   | PASS   |
 
 **Per-class holdout accuracy:**
 
-| Class | Accuracy |
-|---|---|
-| 0 (left hand) | 32.6% |
-| 1 (right hand) | 53.5% |
-| 2 (feet) | 61.1% |
-| 3 (tongue) | 84.0% |
+| Class          | Accuracy |
+| -------------- | -------- |
+| 0 (left hand)  | 32.6%    |
+| 1 (right hand) | 53.5%    |
+| 2 (feet)       | 61.1%    |
+| 3 (tongue)     | 84.0%    |
 
 ## Artefact locations
 

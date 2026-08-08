@@ -30,14 +30,14 @@ registered via `registerBraindecodeEEGConformer`.
 
 Trained on Colab T4 GPU, 80 epochs (early stop patience 30, best at epoch 49).
 
-| Metric | Value | Threshold | Status |
-|---|---|---|---|
-| Best validation accuracy | 0.587 | ≥ 0.55 | PASS |
-| Holdout accuracy | 0.578 | ≥ 0.55 | PASS |
-| Recall@10 | 0.941 | ≥ 0.55 | PASS |
-| Separation margin | 0.230 | > 0 | PASS |
-| PyTorch↔ONNX cosine | ≥ 0.999 | ≥ 0.999 | PASS |
-| Beats PCA | false | true | NOTE |
+| Metric                   | Value   | Threshold | Status |
+| ------------------------ | ------- | --------- | ------ |
+| Best validation accuracy | 0.587   | ≥ 0.55    | PASS   |
+| Holdout accuracy         | 0.578   | ≥ 0.55    | PASS   |
+| Recall@10                | 0.941   | ≥ 0.55    | PASS   |
+| Separation margin        | 0.230   | > 0       | PASS   |
+| PyTorch↔ONNX cosine      | ≥ 0.999 | ≥ 0.999   | PASS   |
+| Beats PCA                | false   | true      | NOTE   |
 
 **Note on `beats_pca`:** The EEGConformer embeddings (recall@10 = 0.941) do
 not outperform the PCA baseline (recall@10 = 0.943) on the holdout set.

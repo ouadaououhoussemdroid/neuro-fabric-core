@@ -48,20 +48,20 @@ make train MODEL=eegconformer DATASET=bciiv2a
 
 ## Layout
 
-| Path                                   | Purpose                                                                       |
-| -------------------------------------- | ----------------------------------------------------------------------------- |
-| `configs/eegconformer-bciiv2a.yaml`    | Single source of truth for the contract (22ch · 250Hz · 1000 samples · 32-d). |
-| `scripts/acquire_dataset.py`           | Downloads BCI-IV-2a via MOABB into a local cache.                             |
-| `scripts/preprocess.py`                | Bandpass + resample + epoch + standardise → `.npz`.                           |
-| `scripts/train.py`                     | EEGConformer training with fixed seeds, cross-session split.                  |
-| `scripts/validate.py`                  | Cross-subject hold-out validation.                                            |
-| `scripts/evaluate.py`                  | Cosine recall@10, embedding norm/variance.                                    |
-| `scripts/export_onnx.py`               | Wraps `scripts/export_braindecode_eegconformer.py` (in repo root `scripts/`). |
-| `scripts/package.py`                   | Builds the artefact directory + `manifest.json`.                              |
-| `scripts/run_all.sh`                   | Convenience wrapper.                                                          |
-| `notebooks/EEGConformer_BCIIV2a_Colab.ipynb` | Colab-ready notebook (Python 3.12, T4 GPU). Calling the same scripts. |
-| `docs/TRAINING_GUIDE.md`               | Full operator guide.                                                          |
-| `docs/MODEL_CARD.md`                   | Shipped with the artefact.                                                    |
+| Path                                         | Purpose                                                                       |
+| -------------------------------------------- | ----------------------------------------------------------------------------- |
+| `configs/eegconformer-bciiv2a.yaml`          | Single source of truth for the contract (22ch · 250Hz · 1000 samples · 32-d). |
+| `scripts/acquire_dataset.py`                 | Downloads BCI-IV-2a via MOABB into a local cache.                             |
+| `scripts/preprocess.py`                      | Bandpass + resample + epoch + standardise → `.npz`.                           |
+| `scripts/train.py`                           | EEGConformer training with fixed seeds, cross-session split.                  |
+| `scripts/validate.py`                        | Cross-subject hold-out validation.                                            |
+| `scripts/evaluate.py`                        | Cosine recall@10, embedding norm/variance.                                    |
+| `scripts/export_onnx.py`                     | Wraps `scripts/export_braindecode_eegconformer.py` (in repo root `scripts/`). |
+| `scripts/package.py`                         | Builds the artefact directory + `manifest.json`.                              |
+| `scripts/run_all.sh`                         | Convenience wrapper.                                                          |
+| `notebooks/EEGConformer_BCIIV2a_Colab.ipynb` | Colab-ready notebook (Python 3.12, T4 GPU). Calling the same scripts.         |
+| `docs/TRAINING_GUIDE.md`                     | Full operator guide.                                                          |
+| `docs/MODEL_CARD.md`                         | Shipped with the artefact.                                                    |
 
 ## Contract (matches `docs/audits/2026-06-17_braindecode-model-selection.md`)
 

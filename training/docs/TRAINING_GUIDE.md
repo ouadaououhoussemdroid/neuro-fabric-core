@@ -78,9 +78,9 @@ untouched.
 
 ## 7. Troubleshooting
 
-| Symptom                      | Likely cause              | Fix                                                                |
-| ---------------------------- | ------------------------- | ------------------------------------------------------------------ |
-| MOABB download stalls        | Mirror unreachable        | Set `MNE_DATA` / `MOABB_DATA` to a pre-staged path                 |
-| `channel mismatch: 25 != 22` | Wrong dataset class       | Confirm `BNCI2014_001` (BCI-IV-2a) in `_common.acquire_dataset.py` |
-| Parity check < 0.999         | Wrapper in train mode     | Ensure `wrapper.eval()` is called after construction (see export script) |
-| CUDA OOM                     | Batch too large           | Drop `training.batch_size` to 32                                   |
+| Symptom                      | Likely cause          | Fix                                                                      |
+| ---------------------------- | --------------------- | ------------------------------------------------------------------------ |
+| MOABB download stalls        | Mirror unreachable    | Set `MNE_DATA` / `MOABB_DATA` to a pre-staged path                       |
+| `channel mismatch: 25 != 22` | Wrong dataset class   | Confirm `BNCI2014_001` (BCI-IV-2a) in `_common.acquire_dataset.py`       |
+| Parity check < 0.999         | Wrapper in train mode | Ensure `wrapper.eval()` is called after construction (see export script) |
+| CUDA OOM                     | Batch too large       | Drop `training.batch_size` to 32                                         |

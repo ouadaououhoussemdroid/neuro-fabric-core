@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-08  
 **Tier:** 4 (Foundation Model Integration)  
-**Status:** ✅ VALIDATED — IMPLEMENTATION COMPLETE WITH DOCUMENTED LIMITATIONS  
+**Status:** ✅ VALIDATED — IMPLEMENTATION COMPLETE WITH DOCUMENTED LIMITATIONS
 
 ---
 
@@ -43,13 +43,13 @@ real ONNX inference with the pretrained checkpoints.
 **Benchmark artifact lineage** — the benchmark executed against `/tmp/` copies
 for 4 of 5 models (the benchmark script copies artifacts to `TMP` at runtime):
 
-| Model | Benchmark path | SHA-256 matches deployed? | Notes |
-|---|---|---|---|
-| EEGConformer | `public/models/eegconformer.onnx` | ✅ Yes | Benchmark used the deployed artifact directly |
-| EEGPT | `/tmp/eegpt-encoder-int8.onnx` | ✅ Yes | `/tmp` copy is byte-identical to deployed |
-| FEMBA-tiny | `/tmp/femba-tiny-encoder.onnx` (FP32 original) | ✅ Matches `femba-tiny-encoder.onnx` | Registry uses `femba-tiny-encoder-adapter.onnx` (with Reshape). Parity verified independently: cos_sim=1.0, max_diff=0.0 |
-| LaBraM | `/tmp/labram-encoder.onnx` (original, no Reshape) | ❌ No | Deployed artifact contains an additional `input_reshape` node. Parity verified independently: cos_sim=1.0, max_diff=9.06e-06 |
-| CBraMod | `/tmp/cbramod-encoder.onnx` | ❌ No | Protobuf serialization differs from deployed, but all 240/240 initializers are equivalent with identical total weight bytes (19,695,460). CBraMod real inference on the deployed artifact was independently verified |
+| Model        | Benchmark path                                    | SHA-256 matches deployed?            | Notes                                                                                                                                                                                                                |
+| ------------ | ------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| EEGConformer | `public/models/eegconformer.onnx`                 | ✅ Yes                               | Benchmark used the deployed artifact directly                                                                                                                                                                        |
+| EEGPT        | `/tmp/eegpt-encoder-int8.onnx`                    | ✅ Yes                               | `/tmp` copy is byte-identical to deployed                                                                                                                                                                            |
+| FEMBA-tiny   | `/tmp/femba-tiny-encoder.onnx` (FP32 original)    | ✅ Matches `femba-tiny-encoder.onnx` | Registry uses `femba-tiny-encoder-adapter.onnx` (with Reshape). Parity verified independently: cos_sim=1.0, max_diff=0.0                                                                                             |
+| LaBraM       | `/tmp/labram-encoder.onnx` (original, no Reshape) | ❌ No                                | Deployed artifact contains an additional `input_reshape` node. Parity verified independently: cos_sim=1.0, max_diff=9.06e-06                                                                                         |
+| CBraMod      | `/tmp/cbramod-encoder.onnx`                       | ❌ No                                | Protobuf serialization differs from deployed, but all 240/240 initializers are equivalent with identical total weight bytes (19,695,460). CBraMod real inference on the deployed artifact was independently verified |
 
 The complete benchmark dataset (accuracy, F1, AUC, recall@k, latency,
 and statistical comparison against the EEGConformer baseline) is stored in
@@ -57,13 +57,13 @@ and statistical comparison against the EEGConformer baseline) is stored in
 
 ### A.1 Results Summary
 
-| Model | Checkpoint Source | Size (MB) | Quantization | WASM Compatible | Mean Accuracy | Mean F1 | Mean AUC | Latency (ms) |
-|---|---|---|---|---|---|---|---|---|
-| EEGConformer | braindecode/braindecode (MIT) | 6.3 (3.05 + 3.08 ext) | FP32 | ✅ Yes | 0.317 | 0.260 | 0.531 | 6.9 |
-| EEGPT | braindecode/eegpt-pretrained (Apache-2.0) | 24.9 | INT8 | ✅ Yes | 0.310 | 0.287 | 0.506 | 830.8 |
-| FEMBA-tiny | PulpBio/FEMBA (Apache-2.0) | 30.7 (FP32 original) | FP32 | ✅ Yes | 0.283 | 0.264 | 0.507 | 220.0 |
-| LaBraM | braindecode/labram-pretrained (MIT) | 22.2 | FP32 | ✅ Yes | 0.253 | 0.208 | 0.507 | 68.3 |
-| CBraMod | braindecode/cbramod-pretrained (MIT) | 2.23 | FP32 | ❌ No (DFT, ReduceL2) | 0.330 | 0.291 | 0.511 | 53.6 |
+| Model        | Checkpoint Source                         | Size (MB)             | Quantization | WASM Compatible       | Mean Accuracy | Mean F1 | Mean AUC | Latency (ms) |
+| ------------ | ----------------------------------------- | --------------------- | ------------ | --------------------- | ------------- | ------- | -------- | ------------ |
+| EEGConformer | braindecode/braindecode (MIT)             | 6.3 (3.05 + 3.08 ext) | FP32         | ✅ Yes                | 0.317         | 0.260   | 0.531    | 6.9          |
+| EEGPT        | braindecode/eegpt-pretrained (Apache-2.0) | 24.9                  | INT8         | ✅ Yes                | 0.310         | 0.287   | 0.506    | 830.8        |
+| FEMBA-tiny   | PulpBio/FEMBA (Apache-2.0)                | 30.7 (FP32 original)  | FP32         | ✅ Yes                | 0.283         | 0.264   | 0.507    | 220.0        |
+| LaBraM       | braindecode/labram-pretrained (MIT)       | 22.2                  | FP32         | ✅ Yes                | 0.253         | 0.208   | 0.507    | 68.3         |
+| CBraMod      | braindecode/cbramod-pretrained (MIT)      | 2.23                  | FP32         | ❌ No (DFT, ReduceL2) | 0.330         | 0.291   | 0.511    | 53.6         |
 
 ### A.2 Statistical Comparison vs. EEGConformer Baseline
 
@@ -72,12 +72,12 @@ difference from the EEGConformer baseline at α=0.05, consistent with the
 literature review expectation that all models perform similarly on the generic
 4-class motor imagery benchmark used here.
 
-| Model | Δ Accuracy | Δ F1 | Cohen's d | Effect Size | Significant? |
-|---|---|---|---|---|---|
-| EEGPT | -0.7% | +2.7% | -0.075 | Negligible | No |
-| FEMBA-tiny | -3.3% | +0.4% | -0.335 | Small | No |
-| LaBraM | -6.3% | -5.2% | -0.697 | Medium | No |
-| CBraMod | +1.3% | +3.1% | +0.107 | Negligible | No |
+| Model      | Δ Accuracy | Δ F1  | Cohen's d | Effect Size | Significant? |
+| ---------- | ---------- | ----- | --------- | ----------- | ------------ |
+| EEGPT      | -0.7%      | +2.7% | -0.075    | Negligible  | No           |
+| FEMBA-tiny | -3.3%      | +0.4% | -0.335    | Small       | No           |
+| LaBraM     | -6.3%      | -5.2% | -0.697    | Medium      | No           |
+| CBraMod    | +1.3%      | +3.1% | +0.107    | Negligible  | No           |
 
 ### A.3 Benchmark Protocol
 
@@ -146,14 +146,14 @@ run, with artifact lineage documented in Section A.
     optimized variant (not used in benchmark)
 - **Original vs adapter parity** (executed via Python ONNX Runtime, seed=42):
   - Output A (original): shape `(1, 80, 385)`
-  - Output B (adapter):  shape `(1, 80, 385)`
+  - Output B (adapter): shape `(1, 80, 385)`
   - cos_sim = 1.0000001192, max_abs_diff = 0.0e+00
   - Threshold: cos_sim > 0.99 AND max_diff < 1e-4 → **PASS**
 - **Quantization:** FP16 only — INT8 destabilised by the 80-step Mamba
   recurrent scan loop:
   - Per-tensor INT8: max_diff = 1.31
   - Per-channel INT8: max_diff = 3.23
-  FP16 achieves max_diff = 5e-3
+    FP16 achieves max_diff = 5e-3
 - **PyTorch↔ORT parity:** cos_sim > 0.99
 
 ### B.4 LaBraM
@@ -170,7 +170,7 @@ run, with artifact lineage documented in Section A.
   Reshape node.
 - **Original vs adapter parity** (executed via Python ONNX Runtime, seed=42):
   - Output A (original, 4D input): shape `(1, 200)`
-  - Output B (adapter, 3D input):   shape `(1, 200)`
+  - Output B (adapter, 3D input): shape `(1, 200)`
   - cos_sim = 1.0000000000, max_abs_diff = 9.06e-06
   - Threshold: cos_sim > 0.99 AND max_diff < 1e-4 → **PASS**
 - **Quantization:** None (FP32) — ViT with modest param count
@@ -211,13 +211,13 @@ embeddings through this path.
 Each model was tested with real EEG-shaped input (sine-wave window with correct
 channel count × sample count per model):
 
-| Model | Registry ID | Channels | Sample Rate | Window Samples | Inference Time (Node/WASM-EP) |
-|---|---|---|---|---|---|
-| EEGConformer | `braindecode-eegconformer-prod` | 22ch | 250 Hz | 1000 | 903 ms |
-| EEGPT | `onnx-eegpt` | 62ch | 250 Hz | 1000 | 3184 ms |
-| FEMBA-tiny | `onnx-femba-tiny` | 22ch | 200 Hz | 1280 | 13670 ms |
-| LaBraM | `onnx-labram` | 16ch | 250 Hz | 1600 | 484 ms |
-| CBraMod | `onnx-cbramod` | 19ch | 250 Hz | 1000 | 819 ms |
+| Model        | Registry ID                     | Channels | Sample Rate | Window Samples | Inference Time (Node/WASM-EP) |
+| ------------ | ------------------------------- | -------- | ----------- | -------------- | ----------------------------- |
+| EEGConformer | `braindecode-eegconformer-prod` | 22ch     | 250 Hz      | 1000           | 903 ms                        |
+| EEGPT        | `onnx-eegpt`                    | 62ch     | 250 Hz      | 1000           | 3184 ms                       |
+| FEMBA-tiny   | `onnx-femba-tiny`               | 22ch     | 200 Hz      | 1280           | 13670 ms                      |
+| LaBraM       | `onnx-labram`                   | 16ch     | 250 Hz      | 1600           | 484 ms                        |
+| CBraMod      | `onnx-cbramod`                  | 19ch     | 250 Hz      | 1000           | 819 ms                        |
 
 **Note:** All inference times above are measured with `onnxruntime-web` using
 the WASM execution provider in a Node.js environment. These reflect WASM-EP
@@ -255,25 +255,26 @@ Scenarios 3–5 prove fallback on **real adapter failures**, not just unknown ID
 
 All 5 models are registered in `src/lib/ai/models/registry.ts`:
 
-| Registry ID | Model | Artifact Path | WASM |
-|---|---|---|---|
-| `braindecode-eegconformer-prod` | EEGConformer | `/models/eegconformer.onnx` (+ `.data`) | ✅ |
-| `onnx-eegpt` | EEGPT | `/models/eegpt-encoder-int8.onnx` | ✅ |
-| `onnx-femba-tiny` | FEMBA-tiny | `/models/femba-tiny-encoder-adapter.onnx` | ✅ |
-| `onnx-labram` | LaBraM | `/models/labram-encoder.onnx` | ✅ |
-| `onnx-cbramod` | CBraMod | `/models/cbramod-encoder.onnx` | ❌ |
+| Registry ID                     | Model        | Artifact Path                             | WASM |
+| ------------------------------- | ------------ | ----------------------------------------- | ---- |
+| `braindecode-eegconformer-prod` | EEGConformer | `/models/eegconformer.onnx` (+ `.data`)   | ✅   |
+| `onnx-eegpt`                    | EEGPT        | `/models/eegpt-encoder-int8.onnx`         | ✅   |
+| `onnx-femba-tiny`               | FEMBA-tiny   | `/models/femba-tiny-encoder-adapter.onnx` | ✅   |
+| `onnx-labram`                   | LaBraM       | `/models/labram-encoder.onnx`             | ✅   |
+| `onnx-cbramod`                  | CBraMod      | `/models/cbramod-encoder.onnx`            | ❌   |
 
 ### C.5 Manifest Integrity
 
 `public/models/manifest.json` contains all 7 ONNX artifacts (5 Tier 4 models
-+ EEGConformer + EEGNetv4 cognitive decoder) plus the EEGConformer external
-data file (`.onnx.data`), with:
 
-- SHA-256 hashes for every artifact
-- External data file hashes where applicable (EEGConformer)
-- WASM compatibility flags per model
-- Registry ID mappings per model
-- File sizes
+- EEGConformer + EEGNetv4 cognitive decoder) plus the EEGConformer external
+  data file (`.onnx.data`), with:
+
+* SHA-256 hashes for every artifact
+* External data file hashes where applicable (EEGConformer)
+* WASM compatibility flags per model
+* Registry ID mappings per model
+* File sizes
 
 ### C.6 Artifact Deployment Verification
 
@@ -303,13 +304,13 @@ tested. Browser-compatible classifications are therefore based on ONNX operator
 compatibility and successful WASM-EP execution in Node, not on an end-to-end
 browser test.
 
-| Model | WASM Compatible | WASM Blockers | Browser Deployment |
-|---|---|---|---|
-| EEGConformer | ✅ Yes | None | `/models/eegconformer.onnx` (6.3 MB total with ext data) |
-| EEGPT | ✅ Yes | None | `/models/eegpt-encoder-int8.onnx` (24.9 MB INT8) |
-| FEMBA-tiny | ✅ Yes | None | Production: `/models/femba-tiny-encoder-adapter.onnx` (30.7 MB FP32)<br>Browser opt: `/models/femba-tiny-encoder-fp16.onnx` (16.3 MB FP16) |
-| LaBraM | ✅ Yes | None | `/models/labram-encoder.onnx` (22.2 MB FP32) |
-| CBraMod | ❌ No | `DFT`, `ReduceL2` | Server-side only |
+| Model        | WASM Compatible | WASM Blockers     | Browser Deployment                                                                                                                         |
+| ------------ | --------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| EEGConformer | ✅ Yes          | None              | `/models/eegconformer.onnx` (6.3 MB total with ext data)                                                                                   |
+| EEGPT        | ✅ Yes          | None              | `/models/eegpt-encoder-int8.onnx` (24.9 MB INT8)                                                                                           |
+| FEMBA-tiny   | ✅ Yes          | None              | Production: `/models/femba-tiny-encoder-adapter.onnx` (30.7 MB FP32)<br>Browser opt: `/models/femba-tiny-encoder-fp16.onnx` (16.3 MB FP16) |
+| LaBraM       | ✅ Yes          | None              | `/models/labram-encoder.onnx` (22.2 MB FP32)                                                                                               |
+| CBraMod      | ❌ No           | `DFT`, `ReduceL2` | Server-side only                                                                                                                           |
 
 ### D.2 CBraMod Browser Block
 
@@ -324,6 +325,7 @@ CBraMod's ONNX graph contains two ops unsupported by ORT-WASM's `web_ops`:
 
 This is documented in the manifest (`wasmCompatible: false`,
 `wasmBlockers: ["DFT", "ReduceL2"]`) and enforced by:
+
 - `ModelCapabilities.wasmCompatible = false` (Gate 7 test)
 - Manifest metadata (Gate 7 test)
 - The adapter descriptor prevents browser routing — the model is registered as
@@ -335,13 +337,13 @@ in Node**, not browser execution.
 
 ### D.3 Quantization Rationale
 
-| Model | Quantization | Rationale |
-|---|---|---|
-| EEGConformer | None (FP32) | 789K params; only 6.3 MB total — no quantisation needed |
-| EEGPT | INT8 (dynamic) | ViT transformer — INT8 stable (no recurrent scan). Reduces 97.2 MB → 24.9 MB |
-| FEMBA-tiny | FP16 only | Mamba recurrent scan loop compounds INT8 error: per-tensor max_diff=1.31, per-channel max_diff=3.23. FP16 achieves max_diff=5e-3 |
-| LaBraM | None (FP32) | 9.2M params; 22.2 MB — acceptable without quantisation |
-| CBraMod | None (FP32) | 4.9M params; 2.23 MB — no quantisation needed |
+| Model        | Quantization   | Rationale                                                                                                                        |
+| ------------ | -------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| EEGConformer | None (FP32)    | 789K params; only 6.3 MB total — no quantisation needed                                                                          |
+| EEGPT        | INT8 (dynamic) | ViT transformer — INT8 stable (no recurrent scan). Reduces 97.2 MB → 24.9 MB                                                     |
+| FEMBA-tiny   | FP16 only      | Mamba recurrent scan loop compounds INT8 error: per-tensor max_diff=1.31, per-channel max_diff=3.23. FP16 achieves max_diff=5e-3 |
+| LaBraM       | None (FP32)    | 9.2M params; 22.2 MB — acceptable without quantisation                                                                           |
+| CBraMod      | None (FP32)    | 4.9M params; 2.23 MB — no quantisation needed                                                                                    |
 
 ---
 
@@ -359,6 +361,7 @@ enforced by the embedding facade — `createAdapter()` checks these before
 attempting browser inference.
 
 **Options to resolve:**
+
 1. **Custom DFT kernel in WASM** — implement the Fourier feature computation
    as a pre-processing step outside the ONNX graph (JS/TS). This would
    de-block CBraMod for browser deployment but adds latency.
@@ -380,6 +383,7 @@ sequentially and is inherently slow in WASM.
 
 **Mitigation:** The FP16 variant reduces memory by ~50% but does not improve
 latency. Future work could explore:
+
 - Model-level caching of intermediate states
 - Distilled variant with fewer Mamba layers
 - WebGPU acceleration (once the `VITE_ORT_WEBGPU` flag is enabled and stable)
@@ -401,36 +405,36 @@ and (for EEGConformer) the external data file where still applicable.
 
 ### Test Files
 
-| Test File | Tests | Status |
-|---|---|---|
-| `src/lib/ai/adapters/__tests__/tier4-production-path.test.ts` | 47 | ✅ All passing |
-| `src/lib/ai/inference/__tests__/tier4-final-gate.test.ts` | 9 | ✅ All passing |
-| `src/lib/ai/models/__tests__/tier4-registration.test.ts` | 27 | ✅ All passing |
-| `src/lib/ai/adapters/__tests__/eegpt-honest-stub.test.ts` | 16 | ✅ All passing |
+| Test File                                                     | Tests | Status         |
+| ------------------------------------------------------------- | ----- | -------------- |
+| `src/lib/ai/adapters/__tests__/tier4-production-path.test.ts` | 47    | ✅ All passing |
+| `src/lib/ai/inference/__tests__/tier4-final-gate.test.ts`     | 9     | ✅ All passing |
+| `src/lib/ai/models/__tests__/tier4-registration.test.ts`      | 27    | ✅ All passing |
+| `src/lib/ai/adapters/__tests__/eegpt-honest-stub.test.ts`     | 16    | ✅ All passing |
 
 ### Gate Coverage (tier4-production-path.test.ts)
 
-| Gate | Description | Tests | Status |
-|---|---|---|---|
-| Gate 1 | SHA-256 integrity for all deployed ONNX artifacts | 7 | ✅ Pass |
-| Gate 2 | No duplicate model registrations | 3 | ✅ Pass |
-| Gate 3 | Manifest ↔ Registry mapping with SHA-256 match | 6 | ✅ Pass |
-| Gate 4 | All Tier 4 models real (implemented=true, no stubs) | 10 | ✅ Pass |
-| Gate 5 | Real ONNX inference via production facade (all 5 models) | 6 | ✅ Pass |
-| Gate 6 | embed() facade with PCA fallback (4 scenarios) | 4 | ✅ Pass |
-| Gate 7 | CBraMod browser-blocked (WASM flags + blockers) | 3 | ✅ Pass |
-| Gate 8 | WASM compatibility for all Tier 4 models | 5 | ✅ Pass |
-| Gate 9 | Per-model capability sanity (channels, sr, samples) | 5 | ✅ Pass |
-| **Total** | | **47** | **✅ All pass** |
+| Gate      | Description                                              | Tests  | Status          |
+| --------- | -------------------------------------------------------- | ------ | --------------- |
+| Gate 1    | SHA-256 integrity for all deployed ONNX artifacts        | 7      | ✅ Pass         |
+| Gate 2    | No duplicate model registrations                         | 3      | ✅ Pass         |
+| Gate 3    | Manifest ↔ Registry mapping with SHA-256 match           | 6      | ✅ Pass         |
+| Gate 4    | All Tier 4 models real (implemented=true, no stubs)      | 10     | ✅ Pass         |
+| Gate 5    | Real ONNX inference via production facade (all 5 models) | 6      | ✅ Pass         |
+| Gate 6    | embed() facade with PCA fallback (4 scenarios)           | 4      | ✅ Pass         |
+| Gate 7    | CBraMod browser-blocked (WASM flags + blockers)          | 3      | ✅ Pass         |
+| Gate 8    | WASM compatibility for all Tier 4 models                 | 5      | ✅ Pass         |
+| Gate 9    | Per-model capability sanity (channels, sr, samples)      | 5      | ✅ Pass         |
+| **Total** |                                                          | **47** | **✅ All pass** |
 
 ### Final Gate Tests (tier4-final-gate.test.ts)
 
-| Test | Description | Status |
-|---|---|---|
-| 5 tests | `embedEEG()` for all 5 Tier-4 models via full production path | ✅ All pass |
-| 1 test | `embedEEG()` default EEGConformer path | ✅ Pass |
-| 3 tests | ONNX adapter failure → PCA fallback (load fail, embed fail, runtime fail) | ✅ All pass |
-| **Total** | | **9/9** |
+| Test      | Description                                                               | Status      |
+| --------- | ------------------------------------------------------------------------- | ----------- |
+| 5 tests   | `embedEEG()` for all 5 Tier-4 models via full production path             | ✅ All pass |
+| 1 test    | `embedEEG()` default EEGConformer path                                    | ✅ Pass     |
+| 3 tests   | ONNX adapter failure → PCA fallback (load fail, embed fail, runtime fail) | ✅ All pass |
+| **Total** |                                                                           | **9/9**     |
 
 **Total across all Tier-4 test suites: 83/83 passing.**
 
@@ -457,13 +461,13 @@ embedEEG(input, { preferredModelId }) → embed(input, { modelId })
 
 Results (executed, not code-inspected):
 
-| Model | Registry ID | Fell Back | Vector Length | Non-zero? |
-|---|---|---|---|---|
-| EEGConformer | `braindecode-eegconformer-prod` | false | 32 | ✅ Yes |
-| EEGPT | `onnx-eegpt` | false | 63,488 | ✅ Yes |
-| FEMBA-tiny | `onnx-femba-tiny` | false | 30,800 | ✅ Yes |
-| LaBraM | `onnx-labram` | false | 200 | ✅ Yes |
-| CBraMod | `onnx-cbramod` | false | 9,500 | ✅ Yes |
+| Model        | Registry ID                     | Fell Back | Vector Length | Non-zero? |
+| ------------ | ------------------------------- | --------- | ------------- | --------- |
+| EEGConformer | `braindecode-eegconformer-prod` | false     | 32            | ✅ Yes    |
+| EEGPT        | `onnx-eegpt`                    | false     | 63,488        | ✅ Yes    |
+| FEMBA-tiny   | `onnx-femba-tiny`               | false     | 30,800        | ✅ Yes    |
+| LaBraM       | `onnx-labram`                   | false     | 200           | ✅ Yes    |
+| CBraMod      | `onnx-cbramod`                  | false     | 9,500         | ✅ Yes    |
 
 All tests confirmed `fellBack === false`, valid non-zero embeddings, and no
 NaN/Inf values.
@@ -473,11 +477,11 @@ NaN/Inf values.
 Three failure scenarios were tested where the model IS registered and selected by
 `embedEEG()`, but the adapter fails during execution:
 
-| Scenario | Failure Point | fellBack | modelId | Reason contains |
-|---|---|---|---|---|
-| Missing artifact file | `adapter.load()` | true | pca-legacy-v1 | "nonexistent" |
-| Wrong input shape (99ch vs 22ch) | `adapter.embed()` | true | pca-legacy-v1 | "expected 99 channels" |
-| Runtime throws | `adapter.load()` | true | pca-legacy-v1 | "ONNX runtime unavailable" |
+| Scenario                         | Failure Point     | fellBack | modelId       | Reason contains            |
+| -------------------------------- | ----------------- | -------- | ------------- | -------------------------- |
+| Missing artifact file            | `adapter.load()`  | true     | pca-legacy-v1 | "nonexistent"              |
+| Wrong input shape (99ch vs 22ch) | `adapter.embed()` | true     | pca-legacy-v1 | "expected 99 channels"     |
+| Runtime throws                   | `adapter.load()`  | true     | pca-legacy-v1 | "ONNX runtime unavailable" |
 
 In all cases: `result.fellBack === true`, `result.modelId === "pca-legacy-v1"`,
 output vector non-zero with norm ≈ 1.0 when normalization enabled. This proves
@@ -486,18 +490,19 @@ the fallback chain handles real adapter failures (not just unknown IDs).
 ### 3. FEMBA-tiny original-vs-wrapper parity
 
 **Method:** Same deterministic EEG tensor (seed=42) fed through:
+
 - `femba-tiny-encoder.onnx` (original, expects `[1, 1, 22, 1280]`)
 - `femba-tiny-encoder-adapter.onnx` (graph-surgery, expects `[1, 22, 1280]`,
   internal Reshape adapts to `[1, 1, 22, 1280]`)
 
-| Metric | Value |
-|---|---|
-| Output A shape (original) | `(1, 80, 385)` |
-| Output B shape (adapter) | `(1, 80, 385)` |
-| Cosine similarity | **1.0000000000** |
-| Max absolute difference | **0.0e+00** |
-| Threshold | cos_sim > 0.99, max_diff < 1e-4 |
-| **PASS/FAIL** | **✅ PASS** |
+| Metric                    | Value                           |
+| ------------------------- | ------------------------------- |
+| Output A shape (original) | `(1, 80, 385)`                  |
+| Output B shape (adapter)  | `(1, 80, 385)`                  |
+| Cosine similarity         | **1.0000000000**                |
+| Max absolute difference   | **0.0e+00**                     |
+| Threshold                 | cos_sim > 0.99, max_diff < 1e-4 |
+| **PASS/FAIL**             | **✅ PASS**                     |
 
 The adapter's single extra Reshape node is mathematically identical to
 manually reshaping the input — zero difference.
@@ -511,14 +516,14 @@ ONNX was created by removing that Reshape node (saved to `/tmp/
 labram-original.onnx`), then both models were fed the same EEG tensor
 (seed=42):
 
-| Metric | Value |
-|---|---|
-| Output A shape (3D input → adapter ONNX) | `(1, 200)` |
-| Output B shape (4D input → original ONNX) | `(1, 200)` |
-| Cosine similarity | **1.0000000000** |
-| Max absolute difference | **9.06e-06** |
-| Threshold | cos_sim > 0.99, max_diff < 1e-4 |
-| **PASS/FAIL** | **✅ PASS** |
+| Metric                                    | Value                           |
+| ----------------------------------------- | ------------------------------- |
+| Output A shape (3D input → adapter ONNX)  | `(1, 200)`                      |
+| Output B shape (4D input → original ONNX) | `(1, 200)`                      |
+| Cosine similarity                         | **1.0000000000**                |
+| Max absolute difference                   | **9.06e-06**                    |
+| Threshold                                 | cos_sim > 0.99, max_diff < 1e-4 |
+| **PASS/FAIL**                             | **✅ PASS**                     |
 
 The graph-surgery Reshape in the adapter is numerically identical to manually
 reshaping the input before the model.
@@ -577,17 +582,17 @@ npx tsc --noEmit 2>&1
 #   unrelated to Tier-4). Tier-4 source files compile cleanly.
 ```
 
-| Verification Item | Status |
-|---|---|
-| Real `embedEEG()` path (all 5 models, executed test) | ✅ PASS |
-| ONNX adapter failure → PCA fallback (3 failure modes, executed test) | ✅ PASS |
-| FEMBA original-vs-wrapper parity (cos_sim=1.0, max_diff=0.0, executed) | ✅ PASS |
+| Verification Item                                                            | Status  |
+| ---------------------------------------------------------------------------- | ------- |
+| Real `embedEEG()` path (all 5 models, executed test)                         | ✅ PASS |
+| ONNX adapter failure → PCA fallback (3 failure modes, executed test)         | ✅ PASS |
+| FEMBA original-vs-wrapper parity (cos_sim=1.0, max_diff=0.0, executed)       | ✅ PASS |
 | LaBraM original-vs-wrapper parity (cos_sim=1.0, max_diff=9.06e-06, executed) | ✅ PASS |
-| Artifact integrity (SHA-256 all 7 deployed artifacts + 1 external data) | ✅ PASS |
-| Registry → Manifest → Artifact mapping (5 Tier 4 models) | ✅ PASS |
-| CBraMod WASM blocking (wasmCompatible=false, DFT+ReduceL2) | ✅ PASS |
-| TypeScript (Tier-4 files only) | ✅ PASS |
-| Tier-4 tests | 83/83 |
+| Artifact integrity (SHA-256 all 7 deployed artifacts + 1 external data)      | ✅ PASS |
+| Registry → Manifest → Artifact mapping (5 Tier 4 models)                     | ✅ PASS |
+| CBraMod WASM blocking (wasmCompatible=false, DFT+ReduceL2)                   | ✅ PASS |
+| TypeScript (Tier-4 files only)                                               | ✅ PASS |
+| Tier-4 tests                                                                 | 83/83   |
 
 ### Implementation Status: ✅ VALIDATED — IMPLEMENTATION COMPLETE WITH DOCUMENTED LIMITATIONS
 
@@ -598,6 +603,7 @@ real checkpoint verification. The benchmark uses real pretrained checkpoints
 and real PhysioNet EEG data.
 
 **Documented limitations:**
+
 - Browser (Chrome/Firefox) WASM execution was NOT independently tested — tests
   use WASM-EP in Node.js
 - 4/5 benchmark runs used `/tmp/` copies; 2/5 differ from deployed artifacts

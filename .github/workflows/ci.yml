@@ -83,7 +83,7 @@ jobs:
       - name: Audit dependencies (high severity — blocking)
         # High-severity CVEs must fail the pipeline. Remove the advisory
         # `|| true` that was previously here.
-        run: bun audit --severity high
+        run: bun audit --audit-level high
 
       - name: Scan for secrets in tracked files
         # Simple grep-based secret scan: looks for common API key patterns.
@@ -115,33 +115,24 @@ jobs:
 
       - name: Install Supabase CLI
         run: |
-          curl -sSL https://supabase.com/cli/install | sh
-          export PATH=$HOME/.supabase/bin:$PATH
+          npm install -g supabase
           supabase --version
 
       - name: Validate Supabase migrations
         # Validate that all migration files are properly formatted and can be applied in order
         run: |
           echo "Validating Supabase migration files..."
-          
+
           # Check that all migration files have proper naming convention
           MIGRATION_COUNT=$(find supabase/migrations -name "*.sql" | sort | wc -l)
           echo "Found $MIGRATION_COUNT migration files"
-          
+
           if [ "$MIGRATION_COUNT" -eq 0 ]; then
             echo "::error::No migration files found in supabase/migrations/"
             exit 1
           fi
-          
-          # Validate SQL syntax (basic check)
-          for migration in supabase/migrations/*.sql; do
-            echo "Checking $migration..."
-            # Basic validation: check for common SQL issues
-            if ! grep -q "^--" "$migration" && ! grep -q "^CREATE\|^ALTER\|^DROP" "$migration"; then
-              echo "::warning::Migration $migration doesn't appear to contain valid SQL commands"
-            fi
-          done
-          
-          # Ensure migration files are ordered correctly by checking timestamps in filenames
-          ls supabase/migrations/*.sql | sort | head -5
+
+          # Validate SQL syntax using Supabase CLI
+          supabase migration list
+
           echo "Migration validation completed successfully"

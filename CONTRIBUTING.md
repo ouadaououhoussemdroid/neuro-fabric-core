@@ -28,6 +28,7 @@ bun run dev
 ```
 
 The dev server exposes:
+
 - Main app: `http://localhost:5173`
 - API routes: `http://localhost:5173/api/*`
 - Metrics: `http://localhost:5173/api/public/metrics` (requires `CRON_SECRET`)
@@ -84,6 +85,7 @@ src/
 ## Coding Conventions
 
 ### TypeScript
+
 - Target `ES2022`, module `Node16` — use native `import`/`export`.
 - Type-only imports use `import type` to avoid bundling overhead.
 - Prefer `const` over `let`; avoid `any` (use `unknown` + narrowing).
@@ -91,18 +93,21 @@ src/
   and return types.
 
 ### Testing
+
 - Tests live alongside source in `__tests__/` sub-directories.
 - Use `vitest` — `describe`, `it`, `expect` from `vitest`.
 - Mock external I/O (network, filesystem, DB) with `vi.fn()` / `vi.mock()`.
 - Aim for **80%+ line coverage** on `src/lib/` modules.
 
 ### Metrics
+
 - All new endpoints or significant operations should emit metrics via
   `src/lib/metrics/index.ts`.
 - Use existing Counter/Gauge/Histogram primitives — don't create ad-hoc ones.
 - Prometheus text format is exposed at `/api/public/metrics`.
 
 ### Documentation
+
 - Update the relevant section in this guide if you change the contribution
   workflow itself.
 - For significant architectural changes, add an ADR in `docs/adr/`.
@@ -116,6 +121,7 @@ supabase db push
 ```
 
 When adding a new table:
+
 1. Enable RLS (`ALTER TABLE ... ENABLE ROW LEVEL SECURITY`)
 2. Add policies for `authenticated` and `service_role`
 3. Add relevant indexes (e.g. `ivfflat` for vector columns)
