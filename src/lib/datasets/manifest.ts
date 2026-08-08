@@ -102,12 +102,19 @@ export async function listDatasets(client: DatasetClient): Promise<DatasetManife
   return (data as Record<string, unknown>[]).map(mapDatasetRow);
 }
 
+/** Fields accepted when inserting a dataset. Only `name` and `license` are required. */
+export type DatasetInsert = Partial<
+  Omit<DatasetManifestEntry, "id" | "createdAt" | "updatedAt" | "userId">
+> & {
+  name: string;
+  license: string;
+  userId?: string;
+};
+
 /** Insert a dataset into the manifest. Returns the created entry or null. */
 export async function insertDataset(
   client: DatasetClient,
-  entry: Omit<DatasetManifestEntry, "id" | "createdAt" | "updatedAt" | "userId"> & {
-    userId?: string;
-  },
+  entry: DatasetInsert,
 ): Promise<DatasetManifestEntry | null> {
   const { data, error } = await client
     .from("datasets")

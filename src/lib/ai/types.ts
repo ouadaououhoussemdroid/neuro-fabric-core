@@ -7,7 +7,16 @@
  */
 import type { EEGSignal, EEGWindow } from "../eeg/types";
 
-export type ModelKind = "pca" | "linear-ae" | "onnx" | "pytorch-export" | "braindecode" | "eegpt";
+export type ModelKind =
+  | "pca"
+  | "linear-ae"
+  | "onnx"
+  | "pytorch-export"
+  | "braindecode"
+  | "eegpt"
+  | "femba"
+  | "labram"
+  | "cbramod";
 
 export type ModelTask =
   | "embedding"
@@ -33,11 +42,22 @@ export interface ModelCapabilities {
   windowSamples: number | null;
   /** Output embedding dim (for embedding tasks) */
   embeddingDim?: number;
+  /**
+   * Optional token-axis pooling applied to multi-token ONNX outputs before
+   * returning the embedding. "mean-tokens" mean-pools across the token axis
+   * (e.g. EEGPT `[1, 31, 2048]` → `[1, 2048]`); "none"/undefined returns the
+   * flattened output verbatim. Only meaningful for embedding tasks.
+   */
+  outputPooling?: "none" | "mean-tokens";
   /** Number of output classes (for classification tasks) */
   numClasses?: number;
   runtime: ModelRuntime;
   /** True when the adapter has a real implementation backing it. */
   implemented: boolean;
+  /** Whether the ONNX model can execute in ORT-WASM (browser). false = server-only. */
+  wasmCompatible?: boolean;
+  /** ONNX ops that block browser/WASM execution (only populated when wasmCompatible is false). */
+  wasmBlockers?: string[];
 }
 
 export interface ModelDescriptor {

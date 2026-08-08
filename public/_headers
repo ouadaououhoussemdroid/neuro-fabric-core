@@ -1,0 +1,10 @@
+/assets/*
+  cache-control: public, max-age=31536000, immutable
+
+/ort/*
+  cache-control: public, max-age=31536000, immutable
+  content-type: application/wasm
+  Cross-Origin-Resource-Policy: cross-origin
+
+/models/*
+  cache-control: public, max-age=31536000, immutable

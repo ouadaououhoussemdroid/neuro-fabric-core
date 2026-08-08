@@ -44,7 +44,9 @@ describe("Phase 2A: ONNX artefact integration", () => {
     try {
       const ort = await import("onnxruntime-web");
       const buf = readFileSync(ARTEFACT_PATH);
-      const s = await ort.InferenceSession.create(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
+      const s = await ort.InferenceSession.create(
+        buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength),
+      );
       session = {
         inputNames: s.inputNames,
         outputNames: s.outputNames,

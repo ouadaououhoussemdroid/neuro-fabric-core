@@ -43,7 +43,7 @@ export async function embedEEG(
 
   const isEEGConformer = preferred === DEFAULT_PREFERRED;
   const enabled = isEEGConformer ? isEEGConformerEnabledForUser(opts.userId) : true;
-  const startId = (enabled && hasModel(preferred)) ? preferred : chain[0];
+  const startId = enabled && hasModel(preferred) ? preferred : chain[0];
   log("info", "ai.embedEEG.start", { startId, chain });
 
   return embed(input, {

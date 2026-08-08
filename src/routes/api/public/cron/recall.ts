@@ -24,6 +24,8 @@ import {
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Json } from "@/integrations/supabase/types";
 import { log } from "@/lib/logging";
+import { handleCors, getCorsHeadersForResponse } from "@/middleware/cors";
+import { applySecurityHeaders } from "@/middleware/security";
 
 /** Maximum number of samples to pull from the embeddings table per run. */
 const MAX_SAMPLES = 500;
@@ -35,6 +37,10 @@ export const Route = createFileRoute("/api/public/cron/recall")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        // CORS pre-flight / origin check.
+        const corsResponse = handleCors(request);
+        if (corsResponse) return corsResponse;
+
         // Authenticate with CRON_SECRET.
         const cronSecret = process.env.CRON_SECRET;
         if (!cronSecret) {
@@ -46,6 +52,7 @@ export const Route = createFileRoute("/api/public/cron/recall")({
           return json({ error: "Unauthorized" }, 401);
         }
 
+        const origin = request.headers.get("origin");
         try {
           // Sample labelled embeddings from the database.
           const samples = await sampleEmbeddings();
@@ -66,45 +73,36 @@ export const Route = createFileRoute("/api/public/cron/recall")({
                   "to populate the embeddings table, then re-run this SLO check.",
               },
               200,
+              origin,
             );
           }
 
-          // Compute brute-force recall@10 (ground truth) and compare.
-          // The ANN recall is the same as brute-force here because we're
-          // computing exact cosine in JS. When pgvector's match_embeddings
-          // RPC is used for ANN, a separate ANN recall can be measured.
-          const report = runRecallSLO(samples, 0, DEFAULT_SLO_CONFIG);
+          // Measure real ANN recall via pgvector: for each sample, run the
+          // match_embeddings RPC and compare top-k neighbour labels against
+          // the ground-truth (same-label) set.  Falls back to 0 when no DB.
+          let annRecall = 0;
+          if (supabaseAdmin) {
+            annRecall = await measureANNGatherRecalls(samples, DEFAULT_SLO_CONFIG.k);
+            log("info", "slo.recall.ann_measured", { n: samples.length, recall: annRecall });
+          }
 
-          // The annRecall parameter is 0 because we don't have a separate
-          // ANN result yet. For a proper ANN-vs-brute-force comparison,
-          // we'd need to run match_embeddings for each query and compare
-          // against the brute-force top-k. For now, the SLO measures
-          // brute-force recall@10 as the baseline.
-          //
-          // To enable ANN comparison, set annRecall to the recall measured
-          // by running match_embeddings RPC for each sample.
-          const bruteForceRecall = report.bruteForceRecall;
-          const annRecall = bruteForceRecall; // Same until ANN path is wired
-
-          const fullReport = {
-            ...report,
-            pgvectorRecall: annRecall,
-            annRecallRatio: annRecall / Math.max(bruteForceRecall, 1e-9),
-          };
+          // Build the final SLO report (computes both ANN and brute-force recall).
+          const report = runRecallSLO(samples, annRecall, DEFAULT_SLO_CONFIG);
 
           if (!report.passed) {
             log("warn", "slo.recall.alert", { alert: formatSLOAlert(report) });
           } else {
             log("info", "slo.recall.ok", {
               n: report.n,
-              recall: bruteForceRecall,
+              annRecall: report.pgvectorRecall,
+              bruteForceRecall: report.bruteForceRecall,
             });
           }
 
-          return json(fullReport, 200);
+          return json(report, 200, origin);
         } catch (err) {
           log("error", "slo.recall.failed", { error: (err as Error).message });
-          return json({ error: "SLO run failed", detail: (err as Error).message }, 500);
+          return json({ error: "SLO run failed", detail: (err as Error).message }, 500, origin);
         }
       },
     },
@@ -157,9 +155,104 @@ function extractLabel(metadata: Json): number {
   return -1;
 }
 
-function json(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "content-type": "application/json" },
-  });
+/**
+ * Measure pgvector ANN recall@K against the ground-truth same-label set.
+ *
+ * For each sample, we run the `match_embeddings` RPC (which uses the ivfflat
+ * index) and collect the top-K neighbour IDs. We then compare which of those
+ * neighbours share the sample's label — both against a per-sample ground-truth
+ * set (the K nearest same-label neighbours in the full sample set, computed
+ * with exact cosine in JS) and across all samples aggregate.
+ *
+ * Returns the aggregate recall@K (fraction of ground-truth same-label
+ * neighbours that the ANN top-K retrieved).
+ */
+async function measureANNGatherRecalls(samples: SLOSample[], k: number): Promise<number> {
+  if (samples.length === 0) return 0;
+
+  // Pre-compute the ground-truth: for each sample, the set of the K nearest
+  // *same-label* neighbours (by exact cosine distance, excluding self).
+  const labels = samples.map((s) => s.label);
+  const embeddings = samples.map((s) => s.embedding);
+  const kClamped = Math.min(k, samples.length - 1);
+
+  let hits = 0;
+  let total = 0;
+
+  for (let i = 0; i < samples.length; i++) {
+    const query = samples[i];
+    const queryLabel = labels[i];
+
+    // Ground-truth: the k nearest same-label neighbours (excluding self).
+    const gtSameLabel: { idx: number; dist: number }[] = [];
+    for (let j = 0; j < samples.length; j++) {
+      if (i === j || labels[j] !== queryLabel) continue;
+      const d = cosineDistance(query.embedding, embeddings[j]);
+      gtSameLabel.push({ idx: j, dist: d });
+    }
+    gtSameLabel.sort((a, b) => a.dist - b.dist);
+    const gtTopK = gtSameLabel.slice(0, kClamped).map((g) => g.idx);
+
+    // ANN result: run match_embeddings RPC via Supabase.
+    const { data, error } = await supabaseAdmin.rpc("match_embeddings", {
+      query_embedding: query.embedding,
+      match_count: kClamped,
+      filter_model_id: query.modelId,
+      filter_user_id: null,
+    });
+
+    if (error || !data || !Array.isArray(data)) {
+      log("warn", "slo.recall.ann_rpc_error", {
+        sampleId: query.id,
+        error: (error as Error)?.message ?? "no data",
+      });
+      continue;
+    }
+
+    // The ANN result returns IDs in ranked order. We don't have labels on the
+    // RPC response, so we check whether each returned ID corresponds to a
+    // same-label sample by cross-referencing against our samples array.
+    const returnedIds = new Set<string>();
+    for (const row of data as Array<{ id: string }>) {
+      returnedIds.add(row.id);
+    }
+
+    // Count how many ground-truth same-label neighbours appear in the ANN top-K.
+    for (const gtIdx of gtTopK) {
+      total++;
+      if (returnedIds.has(samples[gtIdx].id)) {
+        hits++;
+      }
+    }
+  }
+
+  return total > 0 ? hits / total : 0;
+}
+
+/** Simple cosine distance (1 - cosine similarity) for ground-truth computation. */
+function cosineDistance(a: number[], b: number[]): number {
+  let dot = 0;
+  let na = 0;
+  let nb = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    na += a[i] * a[i];
+    nb += b[i] * b[i];
+  }
+  const denom = Math.sqrt(na) * Math.sqrt(nb);
+  if (denom === 0) return 1;
+  return 1 - dot / denom;
+}
+
+function json(body: unknown, status = 200, origin: string | null = null): Response {
+  const corsHeaders = getCorsHeadersForResponse(origin);
+  return applySecurityHeaders(
+    new Response(JSON.stringify(body), {
+      status,
+      headers: {
+        "content-type": "application/json",
+        ...corsHeaders,
+      },
+    }),
+  );
 }

@@ -71,6 +71,53 @@ export type Database = {
         };
         Relationships: [];
       };
+      ground_truth_labels: {
+        Row: {
+          id: string;
+          analysis_id: string;
+          subject_id: string;
+          type: "attention" | "workload" | "arousal" | "class";
+          value: number;
+          start_sample: number | null;
+          end_sample: number | null;
+          annotator_user_id: string;
+          confidence: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          analysis_id: string;
+          subject_id: string;
+          type: "attention" | "workload" | "arousal" | "class";
+          value: number;
+          start_sample?: number | null;
+          end_sample?: number | null;
+          annotator_user_id: string;
+          confidence?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          analysis_id?: string;
+          subject_id?: string;
+          type?: "attention" | "workload" | "arousal" | "class";
+          value?: number;
+          start_sample?: number | null;
+          end_sample?: number | null;
+          annotator_user_id?: string;
+          confidence?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "ground_truth_labels_analysis_id_fkey";
+            columns: ["analysis_id"];
+            isOneToOne: false;
+            referencedRelation: "eeg_analyses";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       enterprise_profiles: {
         Row: {
           company_name: string;

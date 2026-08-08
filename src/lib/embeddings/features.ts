@@ -1,6 +1,17 @@
 import type { EEGWindow } from "../eeg/types";
 
 /**
+ * Whether to use the FFT-accelerated spectrum (T-007) or the original naive
+ * DFT path. Controlled by the `FFT_ENABLED` environment variable at build time;
+ * defaults to `true` in production, `false` in test environments so the
+ * parity harness can compare both implementations.
+ */
+const FFT_ENABLED =
+  typeof import.meta !== "undefined"
+    ? (import.meta as { env?: Record<string, string | undefined> }).env?.FFT_ENABLED !== "false"
+    : true;
+
+/**
  * Compute per-band power per channel using an FFT-based spectrum.
  *
  * T-007: replaces the original O(N²) naive DFT with an O(N log N) radix-2
@@ -124,8 +135,9 @@ function fftInPlace(re: Float64Array, im: Float64Array): void {
 
 export function bandPowerFeatures(window: EEGWindow): number[] {
   const out: number[] = [];
+  const spectrum = FFT_ENABLED ? fftPowerSpectrum : dftPowerSpectrum;
   for (const ch of window.data) {
-    const spec = fftPowerSpectrum(ch, window.sampleRate);
+    const spec = spectrum(ch, window.sampleRate);
     for (const [lo, hi] of BANDS) {
       let p = 0;
       for (const s of spec) if (s.freq >= lo && s.freq < hi) p += s.power;
@@ -135,5 +147,37 @@ export function bandPowerFeatures(window: EEGWindow): number[] {
   return out;
 }
 
+/**
+ * Naive O(N²) DFT power spectrum — kept for parity comparison and as the
+ * historical baseline. Use `fftPowerSpectrum` in production unless
+ * `FFT_ENABLED=false` is set.
+ */
+function dftPowerSpectrum(x: number[], fs: number): FreqBin[] {
+  const N = x.length;
+  if (N < 2) return [];
+
+  // Hann window — identical to the FFT path.
+  const windowed = new Array<number>(N);
+  for (let i = 0; i < N; i++) {
+    const w = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (N - 1));
+    windowed[i] = x[i] * w;
+  }
+
+  const out: FreqBin[] = [];
+  const half = Math.floor(N / 2);
+  for (let k = 1; k < half; k++) {
+    let re = 0;
+    let im = 0;
+    const angle = (-2 * Math.PI * k) / N;
+    for (let n = 0; n < N; n++) {
+      const w = angle * n;
+      re += windowed[n] * Math.cos(w);
+      im += windowed[n] * Math.sin(w);
+    }
+    out.push({ freq: (k * fs) / N, power: (re * re + im * im) / (N * N) });
+  }
+  return out;
+}
+
 /** Exported for testing / reuse (e.g. the MNE parity harness). */
-export { fftPowerSpectrum };
+export { fftPowerSpectrum, dftPowerSpectrum, FFT_ENABLED };

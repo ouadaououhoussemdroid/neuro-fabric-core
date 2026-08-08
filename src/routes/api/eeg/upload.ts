@@ -1,18 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { parseEDF, parseCSV, parseNPY } from "@/lib/eeg/parsers";
 import { preprocess } from "@/lib/eeg/preprocessing";
-import { embedSignal } from "@/lib/embeddings";
+import { embedEEG } from "@/lib/ai/inference/embed-eeg";
 import { decodeCognitiveState } from "@/lib/decoder";
 import { log, startTimer } from "@/lib/logging";
 import { authenticateRequest, AuthError } from "@/integrations/supabase/request-auth";
 import { checkRateLimit } from "@/integrations/supabase/rate-limit";
 import type { EEGSignal } from "@/lib/eeg/types";
+import { metrics } from "@/lib/metrics";
+import { handleCors, getCorsHeadersForResponse } from "@/middleware/cors";
+import { applySecurityHeaders } from "@/middleware/security";
+import { NeuralVectorIndex, type NeuralVectorIndexOptions } from "@/lib/vector-search/neural-index";
 
 const MAX_FILE_BYTES = 50 * 1024 * 1024; // T-028: 50 MB cap
 const ALLOWED_TYPES = [".edf", ".bdf", ".csv", ".tsv", ".npy"];
 
 const RATE_LIMIT_MAX = 20;
 const RATE_LIMIT_WINDOW_SECONDS = 60;
+
+// T-PR-002 — Maximum processing time for a single upload. Prevents a single
+// slow upload from consuming server resources indefinitely.
+const PROCESSING_TIMEOUT_MS = 60_000;
 
 /**
  * T-028 — Magic-number (content sniff) checks for each allowed format.
@@ -41,8 +49,50 @@ export const Route = createFileRoute("/api/eeg/upload")({
   server: {
     handlers: {
       POST: async ({ request, context }) => {
+        // CORS pre-flight / origin check.
+        const corsResponse = handleCors(request);
+        if (corsResponse) return corsResponse;
+
+        // Capture origin for CORS response headers on actual requests.
+        const requestOrigin = request.headers.get("origin");
+        const res = makeJson(requestOrigin);
+
         const overall = startTimer("eeg.upload.total");
+        void overall;
+        metrics.uploadRequestsTotal.inc();
+        metrics.inFlightUploads.inc();
+
+        // T-PR-002 — race processing against a hard 60s timeout. Prevents a
+        // single slow upload from consuming server resources indefinitely.
+        let timeoutId: ReturnType<typeof setTimeout>;
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          timeoutId = setTimeout(() => {
+            reject(new Error(`Upload processing timeout exceeded (${PROCESSING_TIMEOUT_MS}ms)`));
+          }, PROCESSING_TIMEOUT_MS);
+        });
+
         try {
+          return await Promise.race([processUpload(), timeoutPromise]);
+        } catch (err) {
+          const msg = (err as Error).message;
+          if (msg.includes("timeout exceeded")) {
+            log("error", "eeg.upload.timeout_exceeded", { timeoutMs: PROCESSING_TIMEOUT_MS });
+            return res(
+              { error: "Processing timeout. Please try a smaller file or reduce channel count." },
+              408,
+            );
+          }
+          // T-PR-003 — sanitize error messages: never leak internals.
+          log("error", "eeg.upload.failed", { error: msg });
+          metrics.uploadErrorsTotal.inc();
+          return res({ error: "An error occurred during processing." }, 500);
+        } finally {
+          clearTimeout(timeoutId!);
+          // T-PR-008: always decrement in-flight gauge.
+          metrics.inFlightUploads.dec();
+        }
+
+        async function processUpload(): Promise<Response> {
           let userId: string;
           let supabase: Awaited<ReturnType<typeof authenticateRequest>>["supabase"];
           try {
@@ -50,25 +100,34 @@ export const Route = createFileRoute("/api/eeg/upload")({
             userId = auth.userId;
             supabase = auth.supabase;
           } catch (authErr) {
-            const status = authErr instanceof AuthError ? authErr.status : 401;
-            return json({ error: (authErr as Error).message ?? "Unauthorized" }, status);
+            // T-PR-003 — sanitize: only trust AuthError messages; for
+            // unexpected errors, return a generic message and log the real
+            // error server-side.
+            if (authErr instanceof AuthError) {
+              return res({ error: authErr.message }, authErr.status);
+            }
+            log("error", "eeg.upload.auth_unexpected", {
+              error: (authErr as Error).message,
+            });
+            return res({ error: "Authentication failed." }, 401);
           }
 
           let rl: { allowed: boolean; retryAfterMs: number };
           try {
             rl = await checkRateLimit(supabase, userId, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_SECONDS);
           } catch (rlErr) {
-            // Fail open: an unavailable rate-limit check shouldn't take down
-            // the upload path, but it must be loud so a persistent outage is
-            // noticed rather than silently disabling rate limiting.
-            log("warn", "eeg.upload.rate_limit_check_failed", {
+            // Fail closed: if the rate-limit RPC is unavailable we cannot
+            // verify that the user is within limits, so we block the request
+            // to protect the service from potential abuse during outages.
+            log("error", "eeg.upload.rate_limit_check_failed", {
               error: (rlErr as Error).message,
               userId,
             });
-            rl = { allowed: true, retryAfterMs: 0 };
+            return res({ error: "Rate limit service unavailable. Please try again shortly." }, 503);
           }
           if (!rl.allowed) {
-            return json(
+            metrics.rateLimitedTotal.inc();
+            return res(
               { error: "Rate limit exceeded. Try again shortly.", retry_after_ms: rl.retryAfterMs },
               429,
             );
@@ -76,17 +135,20 @@ export const Route = createFileRoute("/api/eeg/upload")({
 
           const ct = request.headers.get("content-type") ?? "";
           if (!ct.includes("multipart/form-data")) {
-            return json({ error: "expected multipart/form-data" }, 400);
+            return res({ error: "expected multipart/form-data" }, 400);
           }
 
           const form = await request.formData();
           const file = form.get("file");
           if (!(file instanceof File)) {
-            return json({ error: "missing 'file' field" }, 400);
+            return res({ error: "missing 'file' field" }, 400);
           }
 
+          // T-008: record upload size in metrics.
+          metrics.uploadBytesTotal.inc({}, file.size);
+
           if (file.size > MAX_FILE_BYTES) {
-            return json(
+            return res(
               {
                 error: `File too large. Maximum is ${MAX_FILE_BYTES / 1024 / 1024} MB.`,
                 file_size_bytes: file.size,
@@ -96,14 +158,17 @@ export const Route = createFileRoute("/api/eeg/upload")({
           }
 
           if (file.size === 0) {
-            return json({ error: "Uploaded file is empty." }, 400);
+            return res({ error: "Uploaded file is empty." }, 400);
           }
 
-          const filename = file.name || "upload";
+          // T-028: sanitize filename to prevent path traversal (defence-in-depth, even
+          // though Supabase Storage doesn't honour directory separators in names).
+          const rawFilename = file.name || "upload";
+          const filename = sanitizeFilename(rawFilename);
           const lower = filename.toLowerCase();
           const ext = ALLOWED_TYPES.find((e) => lower.endsWith(e));
           if (!ext) {
-            return json(
+            return res(
               { error: `Unsupported file type: ${filename}. Allowed: ${ALLOWED_TYPES.join(", ")}` },
               415,
             );
@@ -119,14 +184,16 @@ export const Route = createFileRoute("/api/eeg/upload")({
               ext,
               headBytes: Array.from(head.slice(0, 8)).join(","),
             });
-            return json(
+            return res(
               { error: `File content does not match ${ext} format (magic number check failed).` },
               422,
             );
           }
 
           const sampleRateRaw = form.get("sampleRate");
-          const latentDim = Math.min(512, Math.max(8, Number(form.get("latentDim") ?? 64)));
+          // latentDim form field accepted for backward-compat but the canonical
+          // embedding dimension is now 32 (vector(32) contract). The AI facade
+          // (embedEEG) owns the dimension; do not pass latentDim to producers.
           const sizeBytes = file.size;
 
           const tUpload = startTimer("eeg.upload.parse", { filename, sizeBytes });
@@ -137,27 +204,43 @@ export const Route = createFileRoute("/api/eeg/upload")({
             } else if (ext === ".csv" || ext === ".tsv") {
               const fs = Number(sampleRateRaw);
               if (!Number.isFinite(fs) || fs <= 0)
-                return json({ error: "sampleRate required for CSV" }, 400);
+                return res({ error: "sampleRate required for CSV" }, 400);
               signal = parseCSV(new TextDecoder().decode(fileBuffer), fs);
             } else if (ext === ".npy") {
               const fs = Number(sampleRateRaw);
               if (!Number.isFinite(fs) || fs <= 0)
-                return json({ error: "sampleRate required for NPY" }, 400);
+                return res({ error: "sampleRate required for NPY" }, 400);
               signal = parseNPY(fileBuffer, fs);
             } else {
-              return json({ error: `Unsupported file type: ${filename}` }, 415);
+              return res({ error: `Unsupported file type: ${filename}` }, 415);
             }
           } catch (parseErr) {
-            return json({ error: `Failed to parse file: ${(parseErr as Error).message}` }, 422);
+            // T-PR-003 — sanitize parse error message to avoid leaking
+            // file internals. Log the full error server-side.
+            log("warn", "eeg.upload.parse_error", {
+              error: (parseErr as Error).message,
+              filename,
+              userId,
+            });
+            return res(
+              {
+                error:
+                  "Failed to parse file. The file may be corrupted or in an unsupported format.",
+              },
+              422,
+            );
           }
 
           const uploadMs = tUpload.end({
             channels: signal.channels.length,
             samples: signal.data[0]?.length ?? 0,
           });
+          void uploadMs;
+          // T-008: record parse duration.
+          metrics.uploadParseMs.observe({}, uploadMs);
 
           if (signal.channels.length === 0 || !signal.data[0] || signal.data[0].length === 0) {
-            return json({ error: "Parsed signal has no data." }, 422);
+            return res({ error: "Parsed signal has no data." }, 422);
           }
 
           const bp = parseJsonField(form.get("bandpass"));
@@ -172,19 +255,36 @@ export const Route = createFileRoute("/api/eeg/upload")({
             steps: pre.report.steps.length,
             windows: pre.windows.length,
           });
+          // T-008: record preprocess duration.
+          metrics.uploadPreprocessMs.observe({}, preprocessMs);
 
           if (pre.windows.length === 0) {
-            return json({ error: "Signal too short for window segmentation." }, 422);
+            return res({ error: "Signal too short for window segmentation." }, 422);
           }
 
           const tEmb = startTimer("eeg.upload.embed", { filename });
-          const emb = embedSignal(pre.windows, latentDim);
-          const embedMs = tEmb.end({ model: emb.model, dim: emb.dimensions });
+          // Route through the AI facade: embedEEG applies the EEGConformer rollout
+          // gate (OFF→PCA, CANARY→cohort, GA→EEGConformer) and PCA fallback.
+          // All paths produce 32-dim vectors matching vector(32).
+          const emb = await embedEEG(
+            { kind: "windows", windows: pre.windows },
+            { userId, normalize: true },
+          );
+          const embedMs = tEmb.end({ model: emb.modelId, dim: emb.dim });
+          // T-008: record embed duration + fallback counter.
+          metrics.uploadEmbedMs.observe({ model: emb.modelId }, embedMs);
+          if (emb.fellBack) {
+            metrics.embedFallbackTotal.inc({ model: emb.modelId });
+          }
+          metrics.embedLatencyMs.observe({ model: emb.modelId }, embedMs);
 
           const tDec = startTimer("eeg.upload.decode", { filename });
           const decoder = await decodeCognitiveState(pre.signal);
           const decodeMs = tDec.end();
           const totalMs = overall.end({ filename });
+          // T-008: record decode duration + total duration.
+          metrics.uploadDecodeMs.observe({}, decodeMs);
+          metrics.uploadTotalMs.observe({}, totalMs);
 
           let analysisId: string | null = null;
           let persisted = false;
@@ -199,8 +299,8 @@ export const Route = createFileRoute("/api/eeg/upload")({
                 num_channels: signal.channels.length,
                 num_samples: signal.data[0]?.length ?? 0,
                 embedding: emb.vector,
-                embedding_dimensions: emb.dimensions,
-                embedding_model: emb.model,
+                embedding_dimensions: emb.dim,
+                embedding_model: emb.modelId,
                 attention: decoder.attention,
                 workload: decoder.workload,
                 arousal: decoder.arousal,
@@ -225,12 +325,53 @@ export const Route = createFileRoute("/api/eeg/upload")({
             });
           }
 
-          return json({
+          // T-011: dual-write embedding to the pgvector-backed `embeddings`
+          // table so downstream ANN search (NeuralVectorIndex) is available.
+          // The vector write is best-effort — if it fails, the analysis is
+          // still persisted in `eeg_analyses` and the upload succeeds, but
+          // `vector_indexed` is reported honestly so callers know ANN search
+          // is unavailable for this embedding.
+          let vectorIndexed = false;
+          let vectorError: string | undefined;
+          try {
+            const vectorIndex = new NeuralVectorIndex({
+              supabase: supabase as unknown as NeuralVectorIndexOptions["supabase"],
+              modelId: emb.modelId,
+              userId: userId,
+              dimensions: emb.dim,
+            });
+            await vectorIndex.add({
+              id: analysisId ?? `upload:${filename}:${Date.now()}`,
+              vector: emb.vector,
+              meta: {
+                file_name: filename,
+                model: emb.modelId,
+                dimensions: emb.dim,
+                samples: signal.data[0]?.length ?? 0,
+                channels: signal.channels.length,
+              },
+            });
+            vectorIndexed = true;
+          } catch (e) {
+            const errMsg = (e as Error).message;
+            vectorError = errMsg;
+            log("warn", "eeg.upload.vector_store_failed", {
+              error: errMsg,
+              userId,
+              filename,
+            });
+            metrics.vectorStoreErrorsTotal.inc({ operation: "upload_add", error: "failed" });
+          }
+
+          return res({
             analysis_id: analysisId,
             persisted,
+            vector_indexed: vectorIndexed,
+            vector_error: vectorError,
             embedding: emb.vector,
-            dimensions: emb.dimensions,
-            model: emb.model,
+            dimensions: emb.dim,
+            model: emb.modelId,
+            embed_fell_back: emb.fellBack,
             preprocessing_report: pre.report,
             decoder,
             timings: {
@@ -246,20 +387,45 @@ export const Route = createFileRoute("/api/eeg/upload")({
               samples: signal.data[0]?.length ?? 0,
             },
           });
-        } catch (err) {
-          log("error", "eeg.upload.failed", { error: (err as Error).message });
-          return json({ error: "Internal server error." }, 500);
         }
       },
     },
   },
 });
 
-function json(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "content-type": "application/json" },
-  });
+/**
+ * T-028 — Sanitize a filename to prevent path traversal and unsafe characters.
+ * Removes directory components, replaces dangerous characters, and truncates.
+ * This is defence-in-depth: Supabase Storage ignores path separators in names,
+ * but we never want to pass unsafe names downstream to any filesystem APIs.
+ */
+export function sanitizeFilename(raw: string): string {
+  // Strip any directory components (both POSIX and Windows style).
+  const basename = raw.split(/[/\\]/).pop() ?? "upload";
+  // Replace any character outside [a-zA-Z0-9._-] with underscore.
+  const cleaned = basename.replace(/[^a-zA-Z0-9._-]/g, "_");
+  // Collapse sequences of dots (prevents ".." traversal and weird names).
+  const safe = cleaned.replace(/\.{2,}/g, ".");
+  // Truncate to a reasonable length.
+  return safe.substring(0, 255) || "upload";
+}
+
+function json(body: unknown, status = 200, origin: string | null = null): Response {
+  const corsHeaders = getCorsHeadersForResponse(origin);
+  return applySecurityHeaders(
+    new Response(JSON.stringify(body), {
+      status,
+      headers: {
+        "content-type": "application/json",
+        ...corsHeaders,
+      },
+    }),
+  );
+}
+
+/** Create a json() closure bound to a request origin for CORS headers. */
+function makeJson(origin: string | null) {
+  return (body: unknown, status = 200): Response => json(body, status, origin);
 }
 
 function parseJsonField(v: FormDataEntryValue | null): Record<string, unknown> | null {

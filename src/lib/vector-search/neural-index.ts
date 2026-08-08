@@ -11,6 +11,34 @@
  * so callers that depend on the interface keep working without a database.
  */
 import { VectorIndex, type IndexedVector, type SearchHit } from "./index";
+import { log } from "../logging";
+import { metrics } from "../metrics";
+
+/** Search strategy: ANN (ivfflat) or exact (brute-force linear scan). */
+export type SearchMode = "ann" | "exact";
+
+/** Raised when a vector's dimension does not match the index contract. */
+export class DimensionMismatchError extends Error {
+  constructor(
+    public readonly expected: number,
+    public readonly actual: number,
+    public readonly vectorId: string,
+  ) {
+    super(`DimensionMismatch: vector "${vectorId}" has dim ${actual}, expected ${expected}`);
+    this.name = "DimensionMismatchError";
+  }
+}
+
+/** Raised when a vector-store operation fails at the persistence layer. */
+export class VectorIndexError extends Error {
+  constructor(
+    public readonly operation: string,
+    message: string,
+  ) {
+    super(`VectorIndex[${operation}]: ${message}`);
+    this.name = "VectorIndexError";
+  }
+}
 
 export interface NeuralVectorIndexOptions {
   /** Supabase client with service-role or authenticated access to the embeddings table. */
@@ -23,6 +51,13 @@ export interface NeuralVectorIndexOptions {
   userId?: string;
   /** Vector dimension (must match the migration's vector(N)). */
   dimensions?: number;
+  /**
+   * Search mode: "ann" (default) uses the pgvector ivfflat index for fast
+   * approximate search; "exact" uses `match_embeddings_exact` RPC for a
+   * precise linear scan. When no Supabase client is configured, the
+   * in-memory {@link VectorIndex} is always used regardless of this option.
+   */
+  searchMode?: SearchMode;
 }
 
 interface EmbeddingRow {
@@ -62,12 +97,14 @@ export class NeuralVectorIndex<M = unknown> {
   private readonly modelId: string;
   private readonly userId?: string;
   private readonly dimensions: number;
+  private readonly searchMode: SearchMode;
 
   constructor(opts: NeuralVectorIndexOptions = {}) {
     this.supabase = opts.supabase;
     this.modelId = opts.modelId ?? "unknown";
     this.userId = opts.userId;
     this.dimensions = opts.dimensions ?? 32;
+    this.searchMode = opts.searchMode ?? "ann";
   }
 
   /** Whether the index is backed by pgvector (true) or in-memory (false). */
@@ -80,6 +117,13 @@ export class NeuralVectorIndex<M = unknown> {
       this.fallback.add(item);
       return;
     }
+    // Validate the dimension contract before hitting the DB. This prevents
+    // silent corruption (wrong-dim vectors stored in a vector(N) column) and
+    // surfaces the bug at the call site rather than via a swallowed error.
+    if (item.vector.length !== this.dimensions) {
+      metrics.vectorStoreErrorsTotal.inc({ operation: "add", error: "dimension_mismatch" });
+      throw new DimensionMismatchError(this.dimensions, item.vector.length, item.id);
+    }
     const row = {
       id: item.id,
       user_id: this.userId,
@@ -91,8 +135,14 @@ export class NeuralVectorIndex<M = unknown> {
     const qb = (this.supabase as { from: (t: string) => SupabaseQueryBuilder }).from("embeddings");
     const { error } = await qb.insert(row).select();
     if (error) {
-      // Fall back to in-memory on DB error so the pipeline doesn't crash.
-      this.fallback.add(item);
+      // Propagate DB errors — do NOT silently fall back to in-memory.
+      // A failed ANN write must be visible so callers can report
+      // vector_indexed=false rather than masking the failure.
+      metrics.vectorStoreErrorsTotal.inc({ operation: "add", error: "db_insert_failed" });
+      log("error", "eeg.upload.vector_store_failed", {
+        error: (error as { message?: string })?.message ?? String(error),
+      });
+      throw new VectorIndexError("add", (error as { message: string })?.message ?? String(error));
     }
   }
 
@@ -104,12 +154,13 @@ export class NeuralVectorIndex<M = unknown> {
     if (!this.supabase) {
       return this.fallback.search(query, k);
     }
-    // Use the match_embeddings RPC for ANN search via pgvector.
     const rpcClient = this.supabase as unknown as SupabaseRpcClient;
     if (typeof rpcClient.rpc !== "function") {
       return this.fallback.search(query, k);
     }
-    const { data, error } = await rpcClient.rpc("match_embeddings", {
+    // Select the exact RPC based on search mode.
+    const rpcName = this.searchMode === "exact" ? "match_embeddings_exact" : "match_embeddings";
+    const { data, error } = await rpcClient.rpc(rpcName, {
       query_embedding: query,
       match_count: k,
       filter_model_id: this.modelId,

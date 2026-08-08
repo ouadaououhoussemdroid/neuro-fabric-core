@@ -12,8 +12,8 @@
  * Run with: npx ts-node benchmark_runner.ts
  */
 
-import { benchmarkAll } from './src/lib/ai/benchmark';
-import './src/lib/ai/models/registry'; // side-effect: populates the model registry
+import { benchmarkAll } from "./src/lib/ai/benchmark";
+import "./src/lib/ai/models/registry"; // side-effect: populates the model registry
 
 /** Build a ModelInput with the required shape. */
 function makeInput(channels: number, samples: number, sr: number) {
@@ -25,16 +25,16 @@ function makeInput(channels: number, samples: number, sr: number) {
     }
     data.push(ch);
   }
-  return { kind: 'windows', windows: [{ data, sampleRate: sr, start: 0, end: samples }] };
+  return { kind: "windows", windows: [{ data, sampleRate: sr, start: 0, end: samples }] };
 }
 
 // Execute
 (async () => {
   const input = makeInput(22, 1000, 250);
   // Run 5 iterations per model (as used by the library)
-  const results = await benchmarkAll(['pca-legacy-v1', 'braindecode-eegconformer-prod'], input, 5);
+  const results = await benchmarkAll(["pca-legacy-v1", "braindecode-eegconformer-prod"], input, 5);
   console.log(JSON.stringify(results, null, 2));
-})().catch(err => {
-  console.error('Benchmark failed:', err);
+})().catch((err) => {
+  console.error("Benchmark failed:", err);
   process.exit(1);
-}
+});

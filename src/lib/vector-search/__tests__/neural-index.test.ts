@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { NeuralVectorIndex } from "../neural-index";
+import { NeuralVectorIndex, DimensionMismatchError, VectorIndexError } from "../neural-index";
 import type { IndexedVector } from "../index";
 
 function vec<M = unknown>(id: string, values: number[], meta?: M): IndexedVector<M> {
@@ -103,5 +103,141 @@ describe("NeuralVectorIndex (pgvector-backed with mock client)", () => {
     // empty results here (the RPC error path returns empty in-memory search).
     const hits = await idx.search([1, 0, 0], 5);
     expect(hits).toHaveLength(0);
+  });
+
+  it("searchMode=ann calls match_embeddings RPC", async () => {
+    let rpcName = "";
+    const mockClient = {
+      from: () => ({
+        insert: () => ({ select: async () => ({ data: [], error: null }) }),
+        select: () => ({ eq: () => ({ limit: () => ({}) }) }),
+      }),
+      rpc: async (fn: string, _args: Record<string, unknown>) => {
+        rpcName = fn;
+        return {
+          data: [{ id: "ann-hit", similarity: 0.9, metadata: null }],
+          error: null,
+        };
+      },
+    };
+    const idx = new NeuralVectorIndex<unknown>({
+      supabase: mockClient,
+      modelId: "test",
+      searchMode: "ann",
+    });
+    await idx.search([1, 0, 0], 5);
+    expect(rpcName).toBe("match_embeddings");
+  });
+
+  it("searchMode=exact calls match_embeddings_exact RPC", async () => {
+    let rpcName = "";
+    const mockClient = {
+      from: () => ({
+        insert: () => ({ select: async () => ({ data: [], error: null }) }),
+        select: () => ({ eq: () => ({ limit: () => ({}) }) }),
+      }),
+      rpc: async (fn: string, _args: Record<string, unknown>) => {
+        rpcName = fn;
+        return {
+          data: [{ id: "exact-hit", similarity: 0.99, metadata: { source: "exact" } }],
+          error: null,
+        };
+      },
+    };
+    const idx = new NeuralVectorIndex<unknown>({
+      supabase: mockClient,
+      modelId: "test",
+      searchMode: "exact",
+    });
+    const hits = await idx.search([1, 0, 0], 3);
+    expect(rpcName).toBe("match_embeddings_exact");
+    expect(hits[0].id).toBe("exact-hit");
+    expect(hits[0].score).toBe(0.99);
+  });
+
+  it("defaults to ann searchMode when not specified", async () => {
+    let rpcName = "";
+    const mockClient = {
+      from: () => ({
+        insert: () => ({ select: async () => ({ data: [], error: null }) }),
+        select: () => ({ eq: () => ({ limit: () => ({}) }) }),
+      }),
+      rpc: async (fn: string, _args: Record<string, unknown>) => {
+        rpcName = fn;
+        return { data: [], error: null };
+      },
+    };
+    const idx = new NeuralVectorIndex<unknown>({ supabase: mockClient });
+    await idx.search([1, 0, 0], 5);
+    expect(rpcName).toBe("match_embeddings");
+  });
+});
+
+describe("NeuralVectorIndex (pgvector-backed dimension validation)", () => {
+  it("add() with a 32-dim vector calls supabase insert and resolves", async () => {
+    let insertedRow: unknown = null;
+    const mockClient = {
+      from: () => ({
+        insert: (row: unknown) => ({
+          select: async () => {
+            insertedRow = row;
+            return { data: [{ id: "emb-1" }], error: null };
+          },
+        }),
+      }),
+    };
+    const idx = new NeuralVectorIndex({
+      supabase: mockClient,
+      modelId: "test-model",
+      dimensions: 32,
+    });
+    const v32 = Array.from({ length: 32 }, (_, i) => i / 32);
+    await expect(idx.add({ id: "emb-1", vector: v32 })).resolves.toBeUndefined();
+    expect(insertedRow).not.toBeNull();
+  });
+
+  it("add() with a 64-dim vector rejects with DimensionMismatchError (no silent fallback)", async () => {
+    const mockClient = {
+      from: () => ({
+        insert: () => ({
+          select: async () => {
+            throw new Error("should not reach DB — dim mismatch must be caught before insert");
+          },
+        }),
+      }),
+    };
+    const idx = new NeuralVectorIndex({
+      supabase: mockClient,
+      modelId: "test-model",
+      dimensions: 32,
+    });
+    const v64 = Array.from({ length: 64 }, (_, i) => i / 64);
+    await expect(idx.add({ id: "emb-1", vector: v64 })).rejects.toThrow(DimensionMismatchError);
+  });
+
+  it("add() with a non-dimension DB error throws VectorIndexError (not silent in-memory fallack)", async () => {
+    const mockClient = {
+      from: () => ({
+        insert: () => ({
+          select: async () => ({ data: null, error: { message: "connection refused" } }),
+        }),
+      }),
+    };
+    const idx = new NeuralVectorIndex({
+      supabase: mockClient,
+      modelId: "test-model",
+      dimensions: 32,
+    });
+    const v32 = Array.from({ length: 32 }, () => 0.5);
+    await expect(idx.add({ id: "emb-1", vector: v32 })).rejects.toThrow(VectorIndexError);
+  });
+
+  it("add() to in-memory fallback (no supabase) does NOT validate dimensions", async () => {
+    // Without a supabase client, the in-memory fallback stores any dimension.
+    // This legitimately supports variable-dim dev/test usage.
+    const idx = new NeuralVectorIndex({});
+    await idx.add(vec("a", [1, 0, 0, 0])); // 4-dim
+    await idx.add(vec("b", Array(64).fill(1))); // 64-dim
+    expect(idx.size()).toBe(2);
   });
 });

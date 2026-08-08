@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { requireServerEnv, getEEGConformerRolloutStage, isEEGConformerEnabled } from "../env.server";
+import {
+  requireServerEnv,
+  getEEGConformerRolloutStage,
+  isEEGConformerEnabled,
+} from "../env.server";
 
 const ORIGINAL_ENV = { ...process.env };
 

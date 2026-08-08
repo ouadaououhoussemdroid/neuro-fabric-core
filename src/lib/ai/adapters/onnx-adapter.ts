@@ -62,8 +62,18 @@ export interface ONNXAdapterOptions {
   sampleRate?: number;
   windowSamples?: number;
   embeddingDim?: number;
+  /**
+   * Token-axis pooling for embeddings. "mean-tokens" collapses a multi-token
+   * output (e.g. EEGPT [1,31,2048]) down to embeddingDim values by averaging
+   * across tokens. No-op for already-flat outputs (e.g. EEGConformer [1,32]).
+   */
+  outputPooling?: "none" | "mean-tokens";
   numClasses?: number;
   isExperimental?: boolean;
+  /** Whether the ONNX model's ops are supported by ORT-WASM. Default: true. */
+  wasmCompatible?: boolean;
+  /** ONNX op names that block WASM execution (set only when wasmCompatible=false). */
+  wasmBlockers?: string[];
   /** Pluggable runtime — defaults to dynamic import of onnxruntime-web. */
   runtime?: () => Promise<OrtRuntime>;
   /** Execution providers passed to InferenceSession.create. */
@@ -143,9 +153,12 @@ export class ONNXAdapter implements EEGModelAdapter {
         sampleRate: opts.sampleRate ?? null,
         windowSamples: opts.windowSamples ?? null,
         embeddingDim: opts.embeddingDim,
+        outputPooling: opts.outputPooling ?? "none",
         numClasses: opts.numClasses,
         runtime: "wasm",
         implemented: true,
+        wasmCompatible: opts.wasmCompatible ?? true,
+        wasmBlockers: opts.wasmBlockers,
       },
       createdAt: new Date().toISOString().slice(0, 10),
     };
@@ -217,7 +230,8 @@ export class ONNXAdapter implements EEGModelAdapter {
     const out = await this.session.run(feeds);
     const tensor = out[outputName];
     if (!tensor) throw new Error(`ONNXAdapter: output "${outputName}" missing`);
-    const vector = Array.from(tensor.data as ArrayLike<number>, Number);
+    let vector = Array.from(tensor.data as ArrayLike<number>, Number);
+    vector = applyOutputPooling(vector, this.opts.embeddingDim, this.opts.outputPooling);
     return { vector, durationMs: +(performance.now() - t0).toFixed(2) };
   }
 
@@ -247,6 +261,41 @@ function firstWindowFromInput(input: ModelInput): number[][] {
     return w[0].data;
   }
   throw new Error("ONNXAdapter: feature input cannot be used as raw window");
+}
+
+/**
+ * Collapse a multi-token embedding output to `embeddingDim` values by
+ * mean-pooling across the token axis — only when the output is genuinely a
+ * token grid. For EEGPT the raw output is `[1, 31, 2048]` (63,488 values):
+ * 31 patch tokens × 2048 dims. Pooling yields the intended 2048-dim contract.
+ *
+ * No-op when:
+ *  - outputPooling is not "mean-tokens",
+ *  - embeddingDim is unknown,
+ *  - the output is not an exact integer multiple of embeddingDim (not a token
+ *    grid), or
+ *  - the output length already equals embeddingDim (a single token, e.g.
+ *    EEGConformer `[1, 32]`).
+ *
+ * This intentionally never triggers for already-flat embeddings (EEGConformer,
+ * CBraMod, FEMBA, LaBraM) — only EEGPT opts in via the descriptor.
+ */
+function applyOutputPooling(
+  vector: number[],
+  embeddingDim: number | undefined,
+  outputPooling: "none" | "mean-tokens" | undefined,
+): number[] {
+  if (outputPooling !== "mean-tokens" || !embeddingDim) return vector;
+  if (vector.length <= embeddingDim) return vector;
+  if (vector.length % embeddingDim !== 0) return vector;
+  const tokens = vector.length / embeddingDim;
+  const pooled = new Array<number>(embeddingDim).fill(0);
+  for (let t = 0; t < tokens; t++) {
+    const base = t * embeddingDim;
+    for (let d = 0; d < embeddingDim; d++) pooled[d] += vector[base + d];
+  }
+  for (let d = 0; d < embeddingDim; d++) pooled[d] /= tokens;
+  return pooled;
 }
 
 function featureVectorFromInput(input: ModelInput): number[] {

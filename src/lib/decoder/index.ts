@@ -1,7 +1,11 @@
 import type { EEGSignal } from "../eeg/types";
 import { bandStats, type BandStats } from "./features";
 import { tfjsDecode, type TFJSDecoderResult } from "./tfjs-decoder";
-import { decodeWithTrainedModel, createONNXDecoder } from "./trained-decoder";
+import {
+  decodeWithTrainedModel,
+  createONNXDecoder,
+  type TrainedCognitiveReport,
+} from "./trained-decoder";
 
 export { bandStats, tfjsDecode };
 export type { BandStats, TFJSDecoderResult };

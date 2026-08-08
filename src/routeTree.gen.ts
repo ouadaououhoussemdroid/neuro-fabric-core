@@ -25,6 +25,7 @@ import { Route as ArchitectureRouteImport } from './routes/architecture'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
 import { Route as AuthenticatedTrainingRouteImport } from './routes/_authenticated/training'
 import { Route as AuthenticatedOnnxRouteImport } from './routes/_authenticated/onnx'
@@ -33,8 +34,11 @@ import { Route as AuthenticatedMneRouteImport } from './routes/_authenticated/mn
 import { Route as AuthenticatedExperimentsRouteImport } from './routes/_authenticated/experiments'
 import { Route as AuthenticatedDatasetsRouteImport } from './routes/_authenticated/datasets'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as ApiAnnotationsIndexRouteImport } from './routes/api/annotations/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as ApiPublicNotebooksRouteImport } from './routes/api/public/notebooks'
+import { Route as ApiPublicMetricsRouteImport } from './routes/api/public/metrics'
+import { Route as ApiEvaluateCrossSubjectRouteImport } from './routes/api/evaluate/cross-subject'
 import { Route as ApiEegUploadRouteImport } from './routes/api/eeg/upload'
 import { Route as AuthenticatedDashboardResearcherRouteImport } from './routes/_authenticated/dashboard.researcher'
 import { Route as AuthenticatedDashboardIndividualRouteImport } from './routes/_authenticated/dashboard.individual'
@@ -121,6 +125,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedUploadRoute = AuthenticatedUploadRouteImport.update({
   id: '/upload',
   path: '/upload',
@@ -162,6 +171,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiAnnotationsIndexRoute = ApiAnnotationsIndexRouteImport.update({
+  id: '/api/annotations/',
+  path: '/api/annotations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/',
@@ -171,6 +185,16 @@ const AuthenticatedDashboardIndexRoute =
 const ApiPublicNotebooksRoute = ApiPublicNotebooksRouteImport.update({
   id: '/api/public/notebooks',
   path: '/api/public/notebooks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicMetricsRoute = ApiPublicMetricsRouteImport.update({
+  id: '/api/public/metrics',
+  path: '/api/public/metrics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEvaluateCrossSubjectRoute = ApiEvaluateCrossSubjectRouteImport.update({
+  id: '/api/evaluate/cross-subject',
+  path: '/api/evaluate/cross-subject',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiEegUploadRoute = ApiEegUploadRouteImport.update({
@@ -232,13 +256,17 @@ export interface FileRoutesByFullPath {
   '/onnx': typeof AuthenticatedOnnxRoute
   '/training': typeof AuthenticatedTrainingRoute
   '/upload': typeof AuthenticatedUploadRoute
+  '/api/health': typeof ApiHealthRoute
   '/dashboard/analyses': typeof AuthenticatedDashboardAnalysesRoute
   '/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
   '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
+  '/api/evaluate/cross-subject': typeof ApiEvaluateCrossSubjectRoute
+  '/api/public/metrics': typeof ApiPublicMetricsRoute
   '/api/public/notebooks': typeof ApiPublicNotebooksRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/api/annotations/': typeof ApiAnnotationsIndexRoute
   '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
 }
 export interface FileRoutesByTo {
@@ -264,13 +292,17 @@ export interface FileRoutesByTo {
   '/onnx': typeof AuthenticatedOnnxRoute
   '/training': typeof AuthenticatedTrainingRoute
   '/upload': typeof AuthenticatedUploadRoute
+  '/api/health': typeof ApiHealthRoute
   '/dashboard/analyses': typeof AuthenticatedDashboardAnalysesRoute
   '/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
   '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
+  '/api/evaluate/cross-subject': typeof ApiEvaluateCrossSubjectRoute
+  '/api/public/metrics': typeof ApiPublicMetricsRoute
   '/api/public/notebooks': typeof ApiPublicNotebooksRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/api/annotations': typeof ApiAnnotationsIndexRoute
   '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
 }
 export interface FileRoutesById {
@@ -299,13 +331,17 @@ export interface FileRoutesById {
   '/_authenticated/onnx': typeof AuthenticatedOnnxRoute
   '/_authenticated/training': typeof AuthenticatedTrainingRoute
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
+  '/api/health': typeof ApiHealthRoute
   '/_authenticated/dashboard/analyses': typeof AuthenticatedDashboardAnalysesRoute
   '/_authenticated/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
   '/_authenticated/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/_authenticated/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
+  '/api/evaluate/cross-subject': typeof ApiEvaluateCrossSubjectRoute
+  '/api/public/metrics': typeof ApiPublicMetricsRoute
   '/api/public/notebooks': typeof ApiPublicNotebooksRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/api/annotations/': typeof ApiAnnotationsIndexRoute
   '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
 }
 export interface FileRouteTypes {
@@ -334,13 +370,17 @@ export interface FileRouteTypes {
     | '/onnx'
     | '/training'
     | '/upload'
+    | '/api/health'
     | '/dashboard/analyses'
     | '/dashboard/enterprise'
     | '/dashboard/individual'
     | '/dashboard/researcher'
     | '/api/eeg/upload'
+    | '/api/evaluate/cross-subject'
+    | '/api/public/metrics'
     | '/api/public/notebooks'
     | '/dashboard/'
+    | '/api/annotations/'
     | '/api/public/cron/recall'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -366,13 +406,17 @@ export interface FileRouteTypes {
     | '/onnx'
     | '/training'
     | '/upload'
+    | '/api/health'
     | '/dashboard/analyses'
     | '/dashboard/enterprise'
     | '/dashboard/individual'
     | '/dashboard/researcher'
     | '/api/eeg/upload'
+    | '/api/evaluate/cross-subject'
+    | '/api/public/metrics'
     | '/api/public/notebooks'
     | '/dashboard'
+    | '/api/annotations'
     | '/api/public/cron/recall'
   id:
     | '__root__'
@@ -400,13 +444,17 @@ export interface FileRouteTypes {
     | '/_authenticated/onnx'
     | '/_authenticated/training'
     | '/_authenticated/upload'
+    | '/api/health'
     | '/_authenticated/dashboard/analyses'
     | '/_authenticated/dashboard/enterprise'
     | '/_authenticated/dashboard/individual'
     | '/_authenticated/dashboard/researcher'
     | '/api/eeg/upload'
+    | '/api/evaluate/cross-subject'
+    | '/api/public/metrics'
     | '/api/public/notebooks'
     | '/_authenticated/dashboard/'
+    | '/api/annotations/'
     | '/api/public/cron/recall'
   fileRoutesById: FileRoutesById
 }
@@ -427,8 +475,12 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StudioRoute: typeof StudioRoute
   SyntheticRoute: typeof SyntheticRoute
+  ApiHealthRoute: typeof ApiHealthRoute
   ApiEegUploadRoute: typeof ApiEegUploadRoute
+  ApiEvaluateCrossSubjectRoute: typeof ApiEvaluateCrossSubjectRoute
+  ApiPublicMetricsRoute: typeof ApiPublicMetricsRoute
   ApiPublicNotebooksRoute: typeof ApiPublicNotebooksRoute
+  ApiAnnotationsIndexRoute: typeof ApiAnnotationsIndexRoute
   ApiPublicCronRecallRoute: typeof ApiPublicCronRecallRoute
 }
 
@@ -546,6 +598,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/upload': {
       id: '/_authenticated/upload'
       path: '/upload'
@@ -602,6 +661,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/annotations/': {
+      id: '/api/annotations/'
+      path: '/api/annotations'
+      fullPath: '/api/annotations/'
+      preLoaderRoute: typeof ApiAnnotationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/'
@@ -614,6 +680,20 @@ declare module '@tanstack/react-router' {
       path: '/api/public/notebooks'
       fullPath: '/api/public/notebooks'
       preLoaderRoute: typeof ApiPublicNotebooksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/metrics': {
+      id: '/api/public/metrics'
+      path: '/api/public/metrics'
+      fullPath: '/api/public/metrics'
+      preLoaderRoute: typeof ApiPublicMetricsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/evaluate/cross-subject': {
+      id: '/api/evaluate/cross-subject'
+      path: '/api/evaluate/cross-subject'
+      fullPath: '/api/evaluate/cross-subject'
+      preLoaderRoute: typeof ApiEvaluateCrossSubjectRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/eeg/upload': {
@@ -728,8 +808,12 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StudioRoute: StudioRoute,
   SyntheticRoute: SyntheticRoute,
+  ApiHealthRoute: ApiHealthRoute,
   ApiEegUploadRoute: ApiEegUploadRoute,
+  ApiEvaluateCrossSubjectRoute: ApiEvaluateCrossSubjectRoute,
+  ApiPublicMetricsRoute: ApiPublicMetricsRoute,
   ApiPublicNotebooksRoute: ApiPublicNotebooksRoute,
+  ApiAnnotationsIndexRoute: ApiAnnotationsIndexRoute,
   ApiPublicCronRecallRoute: ApiPublicCronRecallRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,11 +1,75 @@
 {
-  "generated": "2026-07-23T01:17:33.530Z",
+  "generated": "2026-08-08T07:42:25.111Z",
   "models": {
+    "cbramod-encoder": {
+      "id": "cbramod-encoder",
+      "registryId": "onnx-cbramod",
+      "url": "/models/cbramod-encoder.onnx",
+      "sha256": "c128ccfdee0690da090c7dfcb39af8a2b25f3e492288f9305c85b293eeda6f47",
+      "size": 22018587,
+      "wasmCompatible": false,
+      "wasmBlockers": [
+        "DFT",
+        "ReduceL2"
+      ]
+    },
+    "cognitive-decoder-v0": {
+      "id": "cognitive-decoder-v0",
+      "url": "/models/cognitive-decoder-v0.onnx",
+      "sha256": "ea4f216c2034ac43378cbd87b8229b6aed495e0d45e75eaa317b935bd266583e",
+      "size": 1333,
+      "wasmCompatible": true
+    },
     "eegconformer": {
       "id": "eegconformer",
+      "registryId": "braindecode-eegconformer-prod",
       "url": "/models/eegconformer.onnx",
       "sha256": "31cd36518d201746f01e41d29b32e1d1063c0f359cf774803c86b55bbd99e8b5",
-      "size": 3186467
+      "size": 3186467,
+      "wasmCompatible": true,
+      "externalData": "/models/eegconformer.onnx.data",
+      "sha256ExternalData": "892b5a77851d62fedd5506b3b54595f6b7ddee3204b72c06c7aa8da6a1e1d7e3",
+      "sizeExternalData": 3153920
+    },
+    "eegpt-encoder-int8": {
+      "id": "eegpt-encoder-int8",
+      "registryId": "onnx-eegpt",
+      "url": "/models/eegpt-encoder-int8.onnx",
+      "sha256": "a92daf44ab8cb10e4c258c853b2d4668232acc6e09606fa2e18d052c4b914f36",
+      "size": 26154695,
+      "wasmCompatible": true
+    },
+    "femba-tiny-encoder-adapter": {
+      "id": "femba-tiny-encoder-adapter",
+      "registryId": "onnx-femba-tiny",
+      "url": "/models/femba-tiny-encoder-adapter.onnx",
+      "sha256": "e024227969acba394466b0fc33bb26b0612775109cd26222e6157731052e95ab",
+      "size": 32216040,
+      "wasmCompatible": true
+    },
+    "femba-tiny-encoder-fp16": {
+      "id": "femba-tiny-encoder-fp16",
+      "registryId": "onnx-femba-tiny-fp16",
+      "url": "/models/femba-tiny-encoder-fp16.onnx",
+      "sha256": "fc6b3bcdfc087a4aa1d69f7328e64fdc77ca0dc9307c07a3501f3524885f73e4",
+      "size": 17048645,
+      "wasmCompatible": true
+    },
+    "femba-tiny-encoder": {
+      "id": "femba-tiny-encoder",
+      "registryId": "onnx-femba-tiny-raw",
+      "url": "/models/femba-tiny-encoder.onnx",
+      "sha256": "c50ccc9eecbb8396038fa9913dffca516198cf78ea078858eaf270ce96e79195",
+      "size": 32215964,
+      "wasmCompatible": true
+    },
+    "labram-encoder": {
+      "id": "labram-encoder",
+      "registryId": "onnx-labram",
+      "url": "/models/labram-encoder.onnx",
+      "sha256": "61f28d1295ab85759b62e808d020d6baae83e037683482dac427c6968033558e",
+      "size": 23314232,
+      "wasmCompatible": true
     }
   }
 }

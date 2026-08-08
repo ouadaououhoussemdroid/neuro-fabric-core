@@ -1,9 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { applyEEGConformerRollout } from "../rollout.server";
-import {
-  hasModel,
-  registerBraindecodeEEGConformer,
-} from "../models/registry";
+import { hasModel, registerBraindecodeEEGConformer } from "../models/registry";
 
 const ORIGINAL_ENV = { ...process.env };
 const EEGCONFORMER_ID = "braindecode-eegconformer-prod";

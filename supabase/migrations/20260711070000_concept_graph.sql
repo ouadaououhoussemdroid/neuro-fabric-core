@@ -160,6 +160,10 @@ AS $$
 $$;
 
 -- --- Grants ---
+REVOKE ALL ON FUNCTION public.get_embedding_provenance FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.get_embedding_provenance TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_embedding_provenance TO service_role;
+
 GRANT SELECT, INSERT, UPDATE, DELETE ON
   public.graph_subjects, public.graph_sessions, public.graph_windows,
   public.graph_labels, public.graph_window_labels
