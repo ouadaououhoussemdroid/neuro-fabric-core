@@ -25,7 +25,7 @@ describe("benchmarkAdapter", () => {
   });
 
   it("captures error when fallback is disabled and model id is unknown", async () => {
-    const r = await benchmarkAdapter("nope", makeInput(), 2);
+    const r = await benchmarkAdapter("nope", makeInput(), 2, { fallbackToPCA: false });
     expect(r.error).toMatch(/Unknown model id/);
   });
 });

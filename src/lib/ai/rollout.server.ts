@@ -8,11 +8,7 @@
  */
 import { getEEGConformerRolloutStage } from "../env.server";
 import { setRolloutStage } from "./rollout";
-import {
-  registerBraindecodeEEGConformer,
-  unregisterModel,
-  hasModel,
-} from "./models/registry";
+import { registerBraindecodeEEGConformer, unregisterModel, hasModel } from "./models/registry";
 
 const EEGCONFORMER_ID = "braindecode-eegconformer-prod";
 

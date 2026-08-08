@@ -33,11 +33,19 @@ function readHeap(): number | undefined {
   return perf?.memory?.usedJSHeapSize;
 }
 
+export interface BenchmarkOptions {
+  /** When true (default), the benchmark allows graceful PCA fallback so models
+   * that can't load in the current environment still produce a result. */
+  fallbackToPCA?: boolean;
+}
+
 export async function benchmarkAdapter(
   modelId: string,
   input: ModelInput,
   iterations = 5,
+  opts: BenchmarkOptions = {},
 ): Promise<BenchmarkResult> {
+  const fallbackToPCA = opts.fallbackToPCA ?? true;
   const samples: number[] = [];
   let dim = 0;
   let fellBack = false;
@@ -46,7 +54,7 @@ export async function benchmarkAdapter(
   try {
     for (let i = 0; i < iterations; i++) {
       const t0 = performance.now();
-      const out = await embed(input, { modelId, fallbackToPCA: false });
+      const out = await embed(input, { modelId, fallbackToPCA });
       samples.push(performance.now() - t0);
       dim = out.dim;
       fellBack = out.fellBack;

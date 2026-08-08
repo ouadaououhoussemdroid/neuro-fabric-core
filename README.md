@@ -73,15 +73,13 @@ See `training/README.md` and `training/docs/TRAINING_GUIDE.md` for details.
 
 ## Documentation
 
-- **Current state:** `docs/audits/2026-06-19_project_state_audit.md`
-- **Execution plan:** `docs/roadmaps/2026-06-19_open_source_execution_blueprint.md`
-- **Architecture:** `docs/architecture.md`, `docs/ai-layer-architecture.md`
+- **Technical audit & debt:** `reports/AUDIT_2026.md`, `reports/TECHNICAL_DEBT.md`
+- **Roadmap:** `reports/ROADMAP_NEXT_PHASE.md`
+- **Model inventory:** `reports/MODEL_INVENTORY.md`
 - **ADRs:** `docs/adr/0001-braindecode-execution-strategy.md`, `docs/adr/0002-eeg-embedding-storage-contract.md`
 - **Training guide:** `training/docs/TRAINING_GUIDE.md`
-
-Documents marked `⚠️ Historical document` are retained as baselines for
-traceability but may contain outdated claims. Always cross-reference with
-the current project-state audit linked above.
+- **Contributing:** [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+- **Historical docs:** `docs/archived/` (superseded Phase 1 documents retained for traceability)
 
 ## License
 

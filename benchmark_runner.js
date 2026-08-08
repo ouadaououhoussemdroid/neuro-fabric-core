@@ -1,5 +1,5 @@
-import { benchmarkAll } from './src/lib/ai/benchmark';
-import './src/lib/ai/models/registry.js';
+import { benchmarkAll } from "./src/lib/ai/benchmark";
+import "./src/lib/ai/models/registry.js";
 
 function makeInput(channels, samples, sr) {
   const data = [];
@@ -10,14 +10,14 @@ function makeInput(channels, samples, sr) {
     }
     data.push(ch);
   }
-  return { kind: 'windows', windows: [{ data, sampleRate: sr, start: 0, end: samples }] };
+  return { kind: "windows", windows: [{ data, sampleRate: sr, start: 0, end: samples }] };
 }
 
 (async () => {
   const input = makeInput(22, 1000, 250);
-  const results = await benchmarkAll(['pca-legacy-v1', 'braindecode-eegconformer-prod'], input, 5);
+  const results = await benchmarkAll(["pca-legacy-v1", "braindecode-eegconformer-prod"], input, 5);
   console.log(JSON.stringify(results, null, 2));
-})().catch(err => {
-  console.error('Benchmark failed:', err);
+})().catch((err) => {
+  console.error("Benchmark failed:", err);
   process.exit(1);
-}
+});

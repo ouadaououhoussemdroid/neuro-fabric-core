@@ -97,24 +97,31 @@ function confidenceInterval(prob: number, margin: number): [number, number] {
  * throws — the caller (decodeWithTrainedModel) catches this and falls
  * back to the heuristic baseline.
  *
- * @param modelUrl  URL of the ONNX model (defaults to the shipped artefact).
+ * @param modelSource  URL, ArrayBuffer, or Uint8Array of the ONNX model
+ *                     (defaults to the shipped artefact at
+ *                     `/models/cognitive-decoder-v0.onnx`).
+ * @param runtimeProvider  Optional factory returning an OrtRuntime. Defaults
+ *                     to `defaultRuntime` which lazy-imports onnxruntime-web.
+ *                     Tests that load the artefact from disk pass a provider
+ *                     that skips the production wasmPaths override.
  */
 let cachedSession: OrtSessionLike | null = null;
 let cachedRuntime: OrtRuntime | null = null;
 
 export async function createONNXDecoder(
-  modelUrl = "/models/cognitive-decoder-v0.onnx",
+  modelSource: string | ArrayBuffer | Uint8Array = "/models/cognitive-decoder-v0.onnx",
+  runtimeProvider: () => Promise<OrtRuntime> = defaultRuntime,
 ): Promise<(features: number[]) => Promise<[number, number, number]>> {
   if (cachedSession) {
     return runInference;
   }
 
-  cachedRuntime = await defaultRuntime();
+  cachedRuntime = await runtimeProvider();
   if (!cachedRuntime?.InferenceSession || !cachedRuntime?.Tensor) {
     throw new Error("ONNX runtime unavailable for cognitive decoder");
   }
 
-  cachedSession = await cachedRuntime.InferenceSession.create(modelUrl, {
+  cachedSession = await cachedRuntime.InferenceSession.create(modelSource, {
     executionProviders: ["wasm"],
   });
 

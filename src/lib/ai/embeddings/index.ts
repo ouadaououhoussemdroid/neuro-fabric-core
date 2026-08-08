@@ -148,23 +148,6 @@ async function runFallbackChain(
   throw new Error(`embed: all adapters failed (${reasons.join(" → ")})`);
 }
 
-async function runFallback(
-  input: ModelInput,
-  reason: string,
-  normalize: boolean,
-  expectedDim: number | undefined,
-): Promise<EmbedResult> {
-  log("warn", "ai.embed.fallback", { reason });
-  const adapter = createAdapter(DEFAULT_EMBEDDER_ID);
-  await adapter.load();
-  try {
-    const out = await adapter.embed!(input);
-    return finalize(out, true, reason, normalize, expectedDim);
-  } finally {
-    await adapter.unload();
-  }
-}
-
 function finalize(
   out: EmbeddingOutput,
   fellBack: boolean,

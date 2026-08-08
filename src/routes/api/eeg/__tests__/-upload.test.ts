@@ -101,7 +101,20 @@ describe("POST /api/eeg/upload", () => {
     expect(body.retry_after_ms).toBe(12345);
   });
 
-  it("fails open (200s through) when the rate-limit check itself throws", async () => {
+  it("succeeds when rate limit allows the request", async () => {
+    mockAuthenticateRequest.mockResolvedValue({
+      userId: "user-1",
+      supabase: fakeSupabase({ data: { id: "a1" }, error: null }),
+    });
+    mockCheckRateLimit.mockResolvedValue({ allowed: true, retryAfterMs: 0 });
+    const form = new FormData();
+    form.set("file", csvFile());
+    form.set("sampleRate", "128");
+    const res = await callUpload(uploadRequest({ form }));
+    expect(res.status).toBe(200);
+  });
+
+  it("fails closed (503) when the rate-limit check itself throws", async () => {
     mockAuthenticateRequest.mockResolvedValue({
       userId: "user-1",
       supabase: fakeSupabase({ data: { id: "a1" }, error: null }),
@@ -111,7 +124,24 @@ describe("POST /api/eeg/upload", () => {
     form.set("file", csvFile());
     form.set("sampleRate", "128");
     const res = await callUpload(uploadRequest({ form }));
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(503);
+    const body = await res.json();
+    expect(body.error).toMatch(/rate limit service unavailable/i);
+  });
+
+  it("fails closed (503) when the rate-limit check itself throws", async () => {
+    mockAuthenticateRequest.mockResolvedValue({
+      userId: "user-1",
+      supabase: fakeSupabase({ data: { id: "a1" }, error: null }),
+    });
+    mockCheckRateLimit.mockRejectedValue(new Error("db unreachable"));
+    const form = new FormData();
+    form.set("file", csvFile());
+    form.set("sampleRate", "128");
+    const res = await callUpload(uploadRequest({ form }));
+    expect(res.status).toBe(503);
+    const body = await res.json();
+    expect(body.error).toMatch(/rate limit service unavailable/i);
   });
 
   it("returns 400 when the file field is missing", async () => {
@@ -197,7 +227,11 @@ describe("POST /api/eeg/upload", () => {
     expect(body.analysis_id).toBe("analysis-123");
     expect(body.persisted).toBe(true);
     expect(Array.isArray(body.embedding)).toBe(true);
-    expect(body.dimensions).toBeGreaterThan(0);
+    // Canonical 32-D contract after Fix 2: producer dim == DB vector(32) dim.
+    expect(body.dimensions).toBe(32);
+    // ANN write must succeed on a normal upload (no silent swallow).
+    expect(body.vector_indexed).toBe(true);
+    expect(body.vector_error).toBeUndefined();
     expect(body.decoder.attention).toBeGreaterThanOrEqual(0);
     expect(body.signal.channels).toHaveLength(3);
     expect(body.timings.total_ms).toBeGreaterThanOrEqual(0);

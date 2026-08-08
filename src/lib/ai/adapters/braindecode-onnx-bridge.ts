@@ -39,6 +39,10 @@ export interface ONNXBraindecodeBridgeOptions {
   executionProviders?: ONNXAdapterOptions["executionProviders"];
   /** Injected runtime (for tests). */
   runtime?: ONNXAdapterOptions["runtime"];
+  /** Whether WASM-compatible. Default: true. */
+  wasmCompatible?: boolean;
+  /** WASM blocker op names (when wasmCompatible is false). */
+  wasmBlockers?: string[];
 }
 
 export function createONNXBraindecodeBridge(opts: ONNXBraindecodeBridgeOptions): BraindecodeBridge {

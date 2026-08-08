@@ -88,10 +88,10 @@ describe("getEmbeddingProvenance", () => {
   it("returns the provenance chain from the RPC", async () => {
     const client = mockClient({}, [
       {
-        subjectCode: "B01",
+        subject_code: "B01",
         dataset: "bci-iv-2a",
-        sessionCode: "T1",
-        windowIndex: 5,
+        session_code: "T1",
+        window_index: 5,
         labels: ["left_hand"],
       },
     ]);

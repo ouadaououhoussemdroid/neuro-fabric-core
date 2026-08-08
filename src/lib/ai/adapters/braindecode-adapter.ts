@@ -135,6 +135,10 @@ export interface BraindecodeAdapterOptions {
   bridge?: () => BraindecodeBridge;
   numClasses?: number;
   isExperimental?: boolean;
+  /** Whether the underlying ONNX ops are WASM-compatible. Default: true. */
+  wasmCompatible?: boolean;
+  /** WASM blocker op names (set only when wasmCompatible is false). */
+  wasmBlockers?: string[];
 }
 
 export class BraindecodeAdapter implements EEGModelAdapter {
@@ -164,8 +168,10 @@ export class BraindecodeAdapter implements EEGModelAdapter {
         windowSamples,
         embeddingDim: this.spec.embeddingDim,
         numClasses: opts.numClasses,
-        runtime: "pyodide",
+        runtime: opts.bridge ? "wasm" : "pyodide",
         implemented: true,
+        wasmCompatible: opts.wasmCompatible ?? true,
+        wasmBlockers: opts.wasmBlockers,
       },
       createdAt: "2026-06-17",
     };

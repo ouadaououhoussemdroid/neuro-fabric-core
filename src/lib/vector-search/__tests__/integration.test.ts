@@ -180,6 +180,7 @@ describe("Phase 2A: NeuralVectorIndex + concept graph integration", () => {
       supabase: mockClient as unknown as NeuralVectorIndexOptions["supabase"],
       modelId: "eegconformer-prod",
       userId: "user-1",
+      dimensions: 4, // test uses 4-dim vectors
     });
 
     // Insert 3 embeddings with different labels
