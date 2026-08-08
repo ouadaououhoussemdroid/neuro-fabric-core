@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -36,10 +38,12 @@ jobs:
   # T-027 — Recall@10 SLO gate (runs nightly + on PRs touching embeddings).
   recall-slo:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'pull_request'
+    if: github.event_name == 'schedule' || github.event_name == 'pull_request' || github.event_name == 'push'
     needs: ci
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -66,6 +70,8 @@ jobs:
     if: github.event_name != 'schedule'
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -97,6 +103,8 @@ jobs:
     needs: ci
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - uses: oven-sh/setup-bun@v2
         with:
