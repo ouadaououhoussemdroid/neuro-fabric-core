@@ -135,7 +135,10 @@ describe("evaluateLOSO", () => {
       for (let i = 0; i < 6; i++) {
         const label = i % 2;
         const bias = label === 0 ? 0.3 : -0.3;
-        const emb = [bias + (Math.random() - 0.5) * 0.8, (Math.random() - 0.5) * 0.8];
+        // Deterministic pseudo-random based on subject and iteration index
+        const rx = (subj.charCodeAt(0) * 31 + i * 17) / 256 - 0.5;
+        const ry = (subj.charCodeAt(0) * 43 + i * 29) / 256 - 0.5;
+        const emb = [bias + rx * 0.8, ry * 0.8];
         samples.push({ subjectId: subj, embedding: emb, label });
       }
     }
@@ -154,7 +157,10 @@ describe("evaluateLOSO", () => {
       for (let i = 0; i < 5; i++) {
         const label = i % 2;
         const bias = label === 0 ? 0.3 : -0.3;
-        const emb = [bias + (Math.random() - 0.5) * 0.8, (Math.random() - 0.5) * 0.8];
+        // Deterministic pseudo-random based on subject and iteration index
+        const rx = (subj.charCodeAt(0) * 31 + i * 17) / 256 - 0.5;
+        const ry = (subj.charCodeAt(0) * 43 + i * 29) / 256 - 0.5;
+        const emb = [bias + rx * 0.8, ry * 0.8];
         samples.push({ subjectId: subj, embedding: emb, label });
       }
     }
