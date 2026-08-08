@@ -128,18 +128,25 @@ describe("evaluateLOSO", () => {
   });
 
   it("computes 95% CI that brackets the mean", () => {
-    // Use partially-overlapping 2D embeddings so folds produce varied
-    // accuracies (perfectly separated classes → std=0 → CI margin=0).
+    // Construct data where each subject has a distinct pattern of overlap,
+    // ensuring varied fold accuracies (some subjects are easier to classify
+    // than others). Perfectly separated classes → std=0 → CI margin=0.
     const samples: LOFOSSample[] = [];
-    for (const subj of ["A", "B", "C", "D", "E"]) {
+    const subjects = ["A", "B", "C", "D", "E"];
+    for (const [subjIdx, subj] of subjects.entries()) {
       for (let i = 0; i < 6; i++) {
         const label = i % 2;
-        const bias = label === 0 ? 0.3 : -0.3;
-        // Deterministic pseudo-random based on subject and iteration index
-        const rx = (subj.charCodeAt(0) * 31 + i * 17) / 256 - 0.5;
-        const ry = (subj.charCodeAt(0) * 43 + i * 29) / 256 - 0.5;
-        const emb = [bias + rx * 0.8, ry * 0.8];
-        samples.push({ subjectId: subj, embedding: emb, label });
+        // Subject-specific class centers that create varying degrees of overlap
+        const baseCenter = label === 0 ? 0.15 : -0.15;
+        // Subject-specific shift that creates different difficulty levels
+        const subjShift = (subjIdx - 2) * 0.1;
+        // Sample-specific noise that creates class overlap
+        const noise = (((i + 1) * 37) % 100) / 100 - 0.5;
+        // Mix some samples that cross the decision boundary
+        const crossLabel = i === 4 || i === 5 ? 1 - label : label;
+        const center = baseCenter + subjShift;
+        const emb = [center + noise * 0.4, noise * 0.2];
+        samples.push({ subjectId: subj, embedding: emb, label: crossLabel });
       }
     }
     const result = evaluateLOSO(samples);
@@ -153,15 +160,17 @@ describe("evaluateLOSO", () => {
   it("performs t-test and effect size computation", () => {
     // Partially overlapping 2D embeddings to ensure varied fold accuracies.
     const samples: LOFOSSample[] = [];
-    for (const subj of ["A", "B", "C", "D", "E", "F"]) {
+    const subjects = ["A", "B", "C", "D", "E", "F"];
+    for (const [subjIdx, subj] of subjects.entries()) {
       for (let i = 0; i < 5; i++) {
         const label = i % 2;
-        const bias = label === 0 ? 0.3 : -0.3;
-        // Deterministic pseudo-random based on subject and iteration index
-        const rx = (subj.charCodeAt(0) * 31 + i * 17) / 256 - 0.5;
-        const ry = (subj.charCodeAt(0) * 43 + i * 29) / 256 - 0.5;
-        const emb = [bias + rx * 0.8, ry * 0.8];
-        samples.push({ subjectId: subj, embedding: emb, label });
+        const baseCenter = label === 0 ? 0.15 : -0.15;
+        const subjShift = (subjIdx - 2.5) * 0.08;
+        const noise = (((i + 1) * 37) % 100) / 100 - 0.5;
+        const crossLabel = i === 3 || i === 4 ? 1 - label : label;
+        const center = baseCenter + subjShift;
+        const emb = [center + noise * 0.4, noise * 0.2];
+        samples.push({ subjectId: subj, embedding: emb, label: crossLabel });
       }
     }
     const result = evaluateLOSO(samples);
