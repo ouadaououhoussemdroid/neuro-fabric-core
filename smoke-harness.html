@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Neuro-Fabric WASM Smoke Harness</title>
+  </head>
+  <body>
+    <!--
+      Browser WASM End-to-End Smoke Test Harness.
+
+      This is NOT a demo page. It is a minimal HTML entry point that imports the
+      REAL production code from src/lib/ai/inference/embed-eeg.ts (the exact
+      embedEEG() function that upload.ts calls in production) and exposes it on
+      window.__neuroTest for Playwright-driven browser tests.
+
+      The harness does not implement any inference logic itself — it only bridges
+      production code to the test runner. All model loading, SHA-256 verification,
+      ONNX Runtime Web WASM initialization, and PCA fallback happen through the real
+      production code path:
+
+        embedEEG() → embed() → createAdapter() → BraindecodeAdapter/ONNXAdapter
+        → defaultRuntime() (onnxruntime-web, wasmPaths="/ort/")
+        → verifyRemoteArtifact() (crypto.subtle.digest + fetch + manifest)
+        → InferenceSession.create() → session.run() → applyOutputPooling()
+        → validateEmbedding() + l2Normalize()
+
+      Served by: Vite dev server (http://localhost:5173/smoke-harness.html)
+    -->
+    <script type="module" src="/src/testing/harness.ts"></script>
+  </body>
+</html>
