@@ -92,6 +92,7 @@ export class EEGPTAdapter implements EEGModelAdapter {
       windowSamples: 1000,
       embeddingDim: 2048,
       outputPooling: this.descriptor.capabilities.outputPooling,
+      enableVerification: true,
       executionProviders: this.factoryOpts.executionProviders ?? getExecutionProviders(),
       runtime: this.factoryOpts.runtime,
     });

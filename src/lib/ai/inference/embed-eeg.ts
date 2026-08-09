@@ -16,6 +16,7 @@ import { hasModel } from "../models/registry";
 import type { ModelInput } from "../types";
 import { log } from "../../logging";
 import { isEEGConformerEnabledForUser } from "../rollout";
+import { metrics } from "../../metrics";
 
 export interface EmbedEEGOptions {
   /** Preferred EEG foundation model id. Defaults to Braindecode ONNX export. */
@@ -43,14 +44,31 @@ export async function embedEEG(
 
   const isEEGConformer = preferred === DEFAULT_PREFERRED;
   const enabled = isEEGConformer ? isEEGConformerEnabledForUser(opts.userId) : true;
+
+  // T-016 — Canary observability: record cohort eligibility.
+  if (isEEGConformer) {
+    if (enabled) {
+      metrics.cohortChecksTotal.inc({ result: "hit" });
+    } else {
+      metrics.cohortChecksTotal.inc({ result: "miss" });
+    }
+  }
+
   const startId = enabled && hasModel(preferred) ? preferred : chain[0];
   log("info", "ai.embedEEG.start", { startId, chain });
 
-  return embed(input, {
+  const result = await embed(input, {
     modelId: startId,
     fallbackChain: chain,
     fallbackToPCA: true,
     normalize: opts.normalize !== false,
     expectedDim: opts.expectedDim,
   });
+
+  // T-016 — Canary observability: record which model actually produced the
+  // embedding, including whether it fell back from the requested model.
+  const selectedModel = result.modelId;
+  metrics.modelSelectedTotal.inc({ model: selectedModel, fell_back: String(result.fellBack) });
+
+  return result;
 }
