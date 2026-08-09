@@ -94,7 +94,10 @@ export async function resolveVerification(url: string): Promise<VerificationInfo
  * Available in all modern browsers and Node.js 18+.
  */
 async function sha256Hex(data: Uint8Array): Promise<string> {
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  // Uint8Array is a valid BufferSource at runtime, but TypeScript 5.9's
+  // generic Uint8Array<TArrayBuffer> type isn't directly assignable to
+  // BufferSource in the DOM lib. Cast to satisfy the type checker.
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data as BufferSource);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
