@@ -197,6 +197,10 @@ function recordPass(url: string, t0: number): void {
 function recordFail(reason: string, url: string, t0: number): void {
   const elapsed = performance.now() - t0;
   metrics.artifactVerifyMs.observe({}, elapsed);
+  // Increment the result="fail" counter (matching recordPass's pattern so
+  // tests can query { result: "fail" } without knowing the specific reason).
+  metrics.artifactVerificationTotal.inc({ result: "fail" });
+  // Also increment with the reason label for detailed observability.
   metrics.artifactVerificationTotal.inc({ result: "fail", reason });
   log("error", "artefact.verify.fail", {
     url,
