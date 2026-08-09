@@ -68,7 +68,10 @@ registerModel(
 );
 
 // Production EEGConformer — ONNX artefact served from /models/
-registerBraindecodeEEGConformer({ artifact: "/models/eegconformer.onnx" });
+registerBraindecodeEEGConformer({
+  artifact: "/models/eegconformer.onnx",
+  enableVerification: true,
+});
 
 // T-015 — Braindecode model zoo: register ShallowFBCSPNet, Deep4Net
 // alongside EEGConformer for comparative ablations. EEGNetv4 was already
@@ -117,13 +120,14 @@ registerModel(
       name: "FEMBA-tiny (Mamba, FP32)",
       version: "1.0.0",
       description:
-        "FEMBA-tiny P1 — Mamba-based EEG foundation model " +
+        "FEMBA-tiny — Mamba-based EEG foundation model " +
         "(PulpBio/FEMBA, Apache-2.0). Input: [1, 22, 1280] @ 200Hz. " +
         "Graph-surgery adapter ONNX reshapes to [1, 1, 22, 1280]. " +
         "INT8 quantization destabilised by 80-step recurrent scan loop " +
         "(per-channel max_diff=3.23); FP16 used instead. " +
         "Parity: cos_sim>0.99, all ops WASM-compatible.",
       artifact: "/models/femba-tiny-encoder-adapter.onnx",
+      enableVerification: true,
       task: "embedding",
       inputShape: { kind: "raw", channels: 22, samples: 1280 },
       channels: 22,
@@ -149,6 +153,7 @@ registerModel(
         "Graph-surgery Reshape node adapts to [1, 16, 8, 200]. " +
         "Parity: cos_sim>0.99, all ops WASM-compatible.",
       artifact: "/models/labram-encoder.onnx",
+      enableVerification: true,
       task: "embedding",
       inputShape: { kind: "raw", channels: 16, samples: 1600 },
       channels: 16,
@@ -176,6 +181,7 @@ registerModel(
         "NOT WASM-compatible: contains DFT (Discrete Fourier Transform) " +
         "and ReduceL2 ops unsupported by ORT-WASM web_ops. Server-only.",
       artifact: "/models/cbramod-encoder.onnx",
+      enableVerification: true,
       task: "embedding",
       inputShape: { kind: "raw", channels: 19, samples: 1000 },
       channels: 19,
@@ -236,6 +242,8 @@ export function registerBraindecodeEEGConformer(opts: {
   sampleRate?: number;
   windowSamples?: number;
   embeddingDim?: number;
+  /** T-016 — verify artifact SHA-256 against the manifest at load(). */
+  enableVerification?: boolean;
   embeddingOutputName?: string;
   logitsOutputName?: string;
   executionProviders?: ONNXBraindecodeBridgeOptions["executionProviders"];
@@ -249,6 +257,7 @@ export function registerBraindecodeEEGConformer(opts: {
     sampleRate: opts.sampleRate ?? 250,
     windowSamples: opts.windowSamples ?? 1000,
     embeddingDim: opts.embeddingDim ?? 32,
+    enableVerification: opts.enableVerification,
     embeddingOutputName: opts.embeddingOutputName ?? "embedding",
     logitsOutputName: opts.logitsOutputName,
     executionProviders: opts.executionProviders,

@@ -32,6 +32,8 @@ export interface ONNXBraindecodeBridgeOptions {
   sampleRate: number;
   windowSamples: number;
   embeddingDim: number;
+  /** T-016 — verify artifact SHA-256 against the build-time manifest at load(). */
+  enableVerification?: boolean;
   /** Optional output tensor name override (logits head). */
   logitsOutputName?: string;
   /** Optional output tensor name for the embedding head. */
@@ -67,6 +69,7 @@ export function createONNXBraindecodeBridge(opts: ONNXBraindecodeBridgeOptions):
       sampleRate: opts.sampleRate,
       windowSamples: opts.windowSamples,
       embeddingDim: opts.embeddingDim,
+      enableVerification: opts.enableVerification,
       executionProviders: opts.executionProviders,
       runtime: opts.runtime,
     });

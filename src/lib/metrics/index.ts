@@ -261,6 +261,26 @@ export const metrics = {
   ),
   embedLatencyMs: new Histogram("neuro_fabric_embed_latency_ms", "Embedding generation latency"),
 
+  // T-016 — EEGConformer rollout observability (canary metrics)
+  cohortChecksTotal: new Counter(
+    "neuro_fabric_eegconformer_cohort_checks_total",
+    "EEGConformer cohort eligibility checks",
+  ),
+  modelSelectedTotal: new Counter(
+    "neuro_fabric_model_selected_total",
+    "Total model selection events by model id",
+  ),
+
+  // T-016 — Runtime artifact SHA-256 verification
+  artifactVerificationTotal: new Counter(
+    "neuro_fabric_artifact_verification_total",
+    "Runtime artifact SHA-256 verification outcomes",
+  ),
+  artifactVerifyMs: new Histogram(
+    "neuro_fabric_artifact_verify_ms",
+    "Time spent on artifact SHA-256 verification (fetch + hash)",
+  ),
+
   // Vector search
   vectorSearchTotal: new Counter(
     "neuro_fabric_vector_search_total",
@@ -297,10 +317,14 @@ export const metrics = {
 };
 
 // T-008: export a function to reset all metrics (for testing).
+//
+// Clears the *value* stores (per-label counters, gauge readings, histogram
+// observations) but preserves the schema registrations (types, help text, and
+// the store Map objects themselves). This keeps existing Counter / Gauge /
+// Histogram singleton instances — including the `metrics` object — fully
+// functional after reset, since they look up their store by name at call time.
 export function resetMetrics(): void {
-  registry.counters.clear();
-  registry.gauges.clear();
-  registry.histograms.clear();
-  registry.help.clear();
-  registry.types.clear();
+  for (const store of registry.counters.values()) store.clear();
+  for (const store of registry.gauges.values()) store.clear();
+  for (const store of registry.histograms.values()) store.clear();
 }

@@ -15,6 +15,7 @@ import type { EmbeddingOutput, ModelDescriptor, ModelInput, PredictionOutput } f
 import { bandPowerFeatures } from "../../embeddings/features";
 import { segment } from "../../eeg/preprocessing/segment";
 import { getExecutionProviders } from "./webgpu-flag";
+import { log } from "../../logging";
 
 // Minimal structural typing of the ort surface we depend on. Keeps tests
 // trivial to mock without pulling the full type graph.
@@ -78,6 +79,17 @@ export interface ONNXAdapterOptions {
   runtime?: () => Promise<OrtRuntime>;
   /** Execution providers passed to InferenceSession.create. */
   executionProviders?: Array<"wasm" | "webgpu" | "webgl" | "cpu">;
+  /**
+   * T-016 — When true and `artifact` is a same-origin URL string, the adapter
+   * fetches the artifact, verifies its byte-length and SHA-256 against the
+   * build-time manifest (`public/models/manifest.json`) before instantiating
+   * the ONNX session. On verification failure, load() throws and the
+   * embed() facade degrades to the PCA fallback.
+   *
+   * When false or omitted, the artifact URL is passed directly to
+   * InferenceSession.create (backward compatible).
+   */
+  enableVerification?: boolean;
 }
 
 /** Lazily resolves onnxruntime-web; isolated so tests can stub it. */
@@ -171,6 +183,39 @@ export class ONNXAdapter implements EEGModelAdapter {
     if (!this.runtime?.InferenceSession || !this.runtime?.Tensor) {
       throw new Error(`ONNXAdapter "${this.descriptor.id}": runtime unavailable`);
     }
+
+    // T-016 — Runtime SHA-256 verification for URL-based artifacts.
+    // When enableVerification is set and the artifact is a same-origin URL,
+    // fetch and verify the bytes against the manifest before handing them
+    // to ONNX Runtime. If verification fails (hash mismatch, size mismatch,
+    // fetch error), load() throws — the embed() facade catches this and
+    // falls back to PCA. When no manifest entry exists, verification is
+    // silently skipped (backward compatible for non-manifested URLs).
+    if (typeof this.opts.artifact === "string" && this.opts.enableVerification) {
+      try {
+        // Lazy-load the verification module so the browser bundle does not
+        // pull in Node.js built-ins (runtime-verifier uses Web Crypto API
+        // and Fetch only — no node:crypto / node:fs). The dynamic import
+        // also ensures the verification code is only included in chunks
+        // that actually exercise the verification path.
+        const { verifyRemoteArtifact } = await import("../artefacts/runtime-verifier");
+        log("debug", "artefact.verify.start", {
+          id: this.descriptor.id,
+          url: this.opts.artifact,
+        });
+        await verifyRemoteArtifact(this.opts.artifact);
+      } catch (err) {
+        log("error", "artefact.verify.failed", {
+          id: this.descriptor.id,
+          url: this.opts.artifact,
+          error: (err as Error).message,
+        });
+        throw new Error(
+          `ONNXAdapter "${this.descriptor.id}": artifact verification failed — ${(err as Error).message}`,
+        );
+      }
+    }
+
     this.session = await this.runtime.InferenceSession.create(this.opts.artifact, {
       executionProviders: this.opts.executionProviders ?? getExecutionProviders(),
     });
