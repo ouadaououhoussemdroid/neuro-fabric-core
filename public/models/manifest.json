@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-09T13:26:16.603Z",
+  "generated": "2026-08-12T22:22:36.055Z",
   "models": {
     "cbramod-encoder": {
       "id": "cbramod-encoder",
@@ -30,6 +30,28 @@
       "externalData": "/models/eegconformer.onnx.data",
       "sha256ExternalData": "892b5a77851d62fedd5506b3b54595f6b7ddee3204b72c06c7aa8da6a1e1d7e3",
       "sizeExternalData": 3153920
+    },
+    "eegconformer_finetuned": {
+      "id": "eegconformer_finetuned",
+      "registryId": "braindecode-eegconformer-prod-v2",
+      "url": "/models/eegconformer_finetuned.onnx",
+      "sha256": "18644de187e984a667d78ca79b3f4c0d2c0ada252c7084f4107343f77168f931",
+      "size": 3359557,
+      "wasmCompatible": true
+    },
+    "eegconformer_finetuned_intermediate": {
+      "id": "eegconformer_finetuned_intermediate",
+      "url": "/models/eegconformer_finetuned_intermediate.onnx",
+      "sha256": "b3029ca225efe13b322d9cbabddb6eea036905a8804437d550669e6ff8146e4c",
+      "size": 3195364,
+      "wasmCompatible": true
+    },
+    "eegconformer_intermediate": {
+      "id": "eegconformer_intermediate",
+      "url": "/models/eegconformer_intermediate.onnx",
+      "sha256": "31cd36518d201746f01e41d29b32e1d1063c0f359cf774803c86b55bbd99e8b5",
+      "size": 3186467,
+      "wasmCompatible": true
     },
     "eegpt-encoder-int8": {
       "id": "eegpt-encoder-int8",

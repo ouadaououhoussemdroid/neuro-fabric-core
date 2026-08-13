@@ -1,0 +1,215 @@
+{
+  "PCA_Bandpower": {
+    "status": "IMPLEMENTED",
+    "model_type": "pca_bandpower_v1",
+    "channels": 22,
+    "bandpass": "5 bands (delta/theta/alpha/beta/gamma) \u00d7 22 ch = 110 features \u2192 PCA(32)",
+    "feature_dim": 110,
+    "pca_components": 32,
+    "n_subjects": 20,
+    "n_trials": 600,
+    "seeds": [
+      539363089,
+      539363090,
+      539363091
+    ],
+    "chance_level": 0.25,
+    "loso": {
+      "per_subject_accuracy": [
+        0.3333333333333333,
+        0.4666666666666666,
+        0.3,
+        0.26666666666666666,
+        0.3333333333333333,
+        0.36666666666666664,
+        0.26666666666666666,
+        0.2333333333333333,
+        0.5333333333333333,
+        0.2333333333333333,
+        0.26666666666666666,
+        0.2333333333333333,
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3,
+        0.3,
+        0.20000000000000004,
+        0.26666666666666666,
+        0.26666666666666666,
+        0.26666666666666666
+      ],
+      "per_subject_accuracy_std_over_seeds": [
+        0.0,
+        5.551115123125783e-17,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.7755575615628914e-17,
+        0.0,
+        2.7755575615628914e-17,
+        0.0,
+        2.7755575615628914e-17,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.7755575615628914e-17,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mean_accuracy": 0.305,
+      "std_accuracy": 0.07967404355481317,
+      "ci95_accuracy": [
+        0.27499999999999997,
+        0.33999999999999997
+      ],
+      "mean_recall_at_1": 0.26722222222222225,
+      "mean_recall_at_5": 0.7349999999999998,
+      "mean_auc": 0.5295569240542066,
+      "n_folds": 20
+    },
+    "latency": {
+      "mean_ms": 0.0,
+      "type": "not measured (feature-based baseline)"
+    }
+  },
+  "EEGConformer": {
+    "status": "IMPLEMENTED",
+    "onnx_path": "public/models/eegconformer.onnx",
+    "channels": 22,
+    "embedding_dim": 32,
+    "fine_tuned_on": "BCI-IV-2a (production pretrained)",
+    "loso": {
+      "per_subject_accuracy": [
+        0.13333333333333333,
+        0.43333333333333335,
+        0.3333333333333333,
+        0.3333333333333333,
+        0.23333333333333334,
+        0.16666666666666666,
+        0.2,
+        0.26666666666666666,
+        0.3333333333333333,
+        0.16666666666666666,
+        0.3333333333333333,
+        0.26666666666666666,
+        0.36666666666666664,
+        0.26666666666666666,
+        0.23333333333333334,
+        0.26666666666666666,
+        0.26666666666666666,
+        0.26666666666666666,
+        0.26666666666666666,
+        0.3
+      ],
+      "mean_accuracy": 0.2716666666666666,
+      "std_accuracy": 0.07276896067298817,
+      "ci95_accuracy": [
+        0.23833333333333334,
+        0.30166666666666664
+      ],
+      "mean_auc": 0.5031863177583287,
+      "mean_recall_at_1": 0.23666666666666666,
+      "n_folds": 20
+    },
+    "latency": {
+      "mean_ms": 0.0,
+      "type": "not measured in this run"
+    }
+  },
+  "EEGConformer-FT": {
+    "status": "IMPLEMENTED",
+    "onnx_path": "training/artefacts/eegconformer-physionet-v3/eegconformer_finetuned.onnx",
+    "channels": 22,
+    "embedding_dim": 32,
+    "fine_tuned_on": "PhysioNet EEGMMIDB S006-S030 (30 subjects, 26 train + 4 val, held-out test S031-S050)",
+    "loso": {
+      "per_subject_accuracy": [
+        0.3,
+        0.4666666666666667,
+        0.3,
+        0.3333333333333333,
+        0.23333333333333334,
+        0.3333333333333333,
+        0.23333333333333334,
+        0.13333333333333333,
+        0.16666666666666666,
+        0.26666666666666666,
+        0.4,
+        0.26666666666666666,
+        0.43333333333333335,
+        0.3333333333333333,
+        0.23333333333333334,
+        0.23333333333333334,
+        0.3,
+        0.43333333333333335,
+        0.5,
+        0.3
+      ],
+      "mean_accuracy": 0.31,
+      "std_accuracy": 0.09739291615389213,
+      "ci95_accuracy": [
+        0.2732916666666667,
+        0.3516666666666667
+      ],
+      "mean_auc": 0.5110005822981367,
+      "mean_recall_at_1": 0.275,
+      "n_folds": 20
+    },
+    "latency": {
+      "mean_ms": 0.0,
+      "type": "not measured in this run"
+    }
+  },
+  "statistical_comparisons_vs_pca": [
+    {
+      "model": "EEGConformer",
+      "pca_accuracy": 0.305,
+      "model_accuracy": 0.2716666666666666,
+      "delta_vs_pca": -0.033333333333333326,
+      "pct_improvement_vs_pca": -10.928961748633878,
+      "t_statistic": -1.6966991126265958,
+      "p_value_paired_t": 0.10607575219925207,
+      "p_value_permutation": 0.1108891108891109,
+      "cohens_d": -0.4368739118593166,
+      "effect_size_interpretation": "small",
+      "significant_05": false,
+      "significant_perm_05": false,
+      "p_value_bonferroni": 0.21215150439850414,
+      "significant_bonferroni_05": false
+    },
+    {
+      "model": "EEGConformer-FT",
+      "pca_accuracy": 0.305,
+      "model_accuracy": 0.31,
+      "delta_vs_pca": 0.00500000000000001,
+      "pct_improvement_vs_pca": 1.6393442622950851,
+      "t_statistic": 0.17977494908644098,
+      "p_value_paired_t": 0.8592326812677655,
+      "p_value_permutation": 0.8201798201798202,
+      "cohens_d": 0.05619514237911299,
+      "effect_size_interpretation": "negligible",
+      "significant_05": false,
+      "significant_perm_05": false,
+      "p_value_bonferroni": 1.0,
+      "significant_bonferroni_05": false
+    }
+  ],
+  "statistical_comparison_ft_vs_original": {
+    "model_a": "EEGConformer-FT",
+    "model_b": "EEGConformer-Original",
+    "model_a_accuracy": 0.31,
+    "model_b_accuracy": 0.2716666666666666,
+    "delta_vs_original": 0.038333333333333344,
+    "pct_improvement_vs_original": 14.110429447852768,
+    "t_statistic": 1.747594605071982,
+    "p_value_paired_t": 0.0966772322787393,
+    "p_value_permutation": 0.10589410589410589,
+    "cohens_d": 0.4459067083097487,
+    "effect_size_interpretation": "small",
+    "significant_05": false,
+    "significant_perm_05": false
+  }
+}

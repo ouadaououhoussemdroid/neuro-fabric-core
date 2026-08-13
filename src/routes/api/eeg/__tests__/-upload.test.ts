@@ -108,7 +108,9 @@ describe("POST /api/eeg/upload", () => {
     });
     mockCheckRateLimit.mockResolvedValue({ allowed: true, retryAfterMs: 0 });
     const form = new FormData();
-    form.set("file", csvFile());
+    // T-031: 4-second window at 128 Hz = 512 samples minimum; use 1200 rows
+    // to guarantee at least one valid window with 50% overlap.
+    form.set("file", csvFile("signal.csv", 3, 1200));
     form.set("sampleRate", "128");
     const res = await callUpload(uploadRequest({ form }));
     expect(res.status).toBe(200);
@@ -121,7 +123,8 @@ describe("POST /api/eeg/upload", () => {
     });
     mockCheckRateLimit.mockRejectedValue(new Error("db unreachable"));
     const form = new FormData();
-    form.set("file", csvFile());
+    // T-031: use 1200 rows to provide enough signal for the 4-second window
+    form.set("file", csvFile("signal.csv", 3, 1200));
     form.set("sampleRate", "128");
     const res = await callUpload(uploadRequest({ form }));
     expect(res.status).toBe(503);
@@ -136,7 +139,8 @@ describe("POST /api/eeg/upload", () => {
     });
     mockCheckRateLimit.mockRejectedValue(new Error("db unreachable"));
     const form = new FormData();
-    form.set("file", csvFile());
+    // T-031: use 1200 rows to provide enough signal for the 4-second window
+    form.set("file", csvFile("signal.csv", 3, 1200));
     form.set("sampleRate", "128");
     const res = await callUpload(uploadRequest({ form }));
     expect(res.status).toBe(503);
@@ -195,7 +199,8 @@ describe("POST /api/eeg/upload", () => {
       supabase: fakeSupabase({ data: { id: "a1" }, error: null }),
     });
     const form = new FormData();
-    form.set("file", csvFile());
+    // T-031: use 1200 rows to provide enough signal for the 4-second window
+    form.set("file", csvFile("signal.csv", 3, 1200));
     const res = await callUpload(uploadRequest({ form }));
     expect(res.status).toBe(400);
     const body = await res.json();
@@ -219,7 +224,9 @@ describe("POST /api/eeg/upload", () => {
       supabase: fakeSupabase({ data: { id: "analysis-123" }, error: null }),
     });
     const form = new FormData();
-    form.set("file", csvFile("signal.csv", 3, 600));
+    // T-031: 4-second window at 128 Hz = 512 samples minimum; use 1200 rows
+    // to provide overlapping windows and exercise the production path.
+    form.set("file", csvFile("signal.csv", 3, 1200));
     form.set("sampleRate", "128");
     const res = await callUpload(uploadRequest({ form }));
     expect(res.status).toBe(200);
@@ -243,7 +250,8 @@ describe("POST /api/eeg/upload", () => {
       supabase: fakeSupabase({ data: null, error: { message: "insert failed" } }),
     });
     const form = new FormData();
-    form.set("file", csvFile("signal.csv", 3, 600));
+    // T-031: use 1200 rows to provide enough signal for the 4-second window
+    form.set("file", csvFile("signal.csv", 3, 1200));
     form.set("sampleRate", "128");
     const res = await callUpload(uploadRequest({ form }));
     expect(res.status).toBe(200);

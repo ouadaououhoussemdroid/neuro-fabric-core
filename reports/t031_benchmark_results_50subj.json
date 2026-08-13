@@ -1,0 +1,175 @@
+{
+  "PCA_Bandpower": {
+    "status": "IMPLEMENTED",
+    "model_type": "pca_bandpower_v1",
+    "channels": 22,
+    "bandpass": "5 bands (delta/theta/alpha/beta/gamma) \u00d7 22 ch = 110 features \u2192 PCA(32)",
+    "feature_dim": 110,
+    "pca_components": 32,
+    "n_subjects": 10,
+    "n_trials": 300,
+    "seeds": [
+      539363089,
+      539363090,
+      539363091
+    ],
+    "chance_level": 0.25,
+    "loso": {
+      "per_subject_accuracy": [
+        0.2333333333333333,
+        0.20000000000000004,
+        0.43333333333333335,
+        0.3333333333333333,
+        0.26666666666666666,
+        0.4000000000000001,
+        0.2333333333333333,
+        0.26666666666666666,
+        0.3,
+        0.2333333333333333
+      ],
+      "per_subject_accuracy_std_over_seeds": [
+        2.7755575615628914e-17,
+        2.7755575615628914e-17,
+        0.0,
+        0.0,
+        0.0,
+        5.551115123125783e-17,
+        2.7755575615628914e-17,
+        0.0,
+        0.0,
+        2.7755575615628914e-17
+      ],
+      "mean_accuracy": 0.29,
+      "std_accuracy": 0.07706018170844314,
+      "ci95_accuracy": [
+        0.24666666666666667,
+        0.33666666666666667
+      ],
+      "mean_recall_at_1": 0.2566666666666667,
+      "mean_recall_at_5": 0.7333333333333331,
+      "mean_auc": 0.5294289949181253,
+      "n_folds": 10
+    },
+    "latency": {
+      "mean_ms": 0.0,
+      "type": "not measured (feature-based baseline)"
+    }
+  },
+  "EEGConformer": {
+    "status": "IMPLEMENTED",
+    "onnx_path": "public/models/eegconformer.onnx",
+    "channels": 22,
+    "embedding_dim": 32,
+    "fine_tuned_on": "BCI-IV-2a (production pretrained)",
+    "loso": {
+      "per_subject_accuracy": [
+        0.26666666666666666,
+        0.26666666666666666,
+        0.43333333333333335,
+        0.23333333333333334,
+        0.3,
+        0.26666666666666666,
+        0.16666666666666666,
+        0.26666666666666666,
+        0.3333333333333333,
+        0.26666666666666666
+      ],
+      "mean_accuracy": 0.28,
+      "std_accuracy": 0.06885303726590963,
+      "ci95_accuracy": [
+        0.24333333333333332,
+        0.32333333333333336
+      ],
+      "mean_auc": 0.5280650056465274,
+      "mean_recall_at_1": 0.24000000000000005,
+      "n_folds": 10
+    },
+    "latency": {
+      "mean_ms": 0.0,
+      "type": "not measured in this run"
+    }
+  },
+  "EEGConformer-FT": {
+    "status": "IMPLEMENTED",
+    "onnx_path": "training/artefacts/eegconformer-physionet-v2/eegconformer_finetuned.onnx",
+    "channels": 22,
+    "embedding_dim": 32,
+    "fine_tuned_on": "PhysioNet EEGMMIDB S001-S040 (50 subjects available, 40 used for training)",
+    "loso": {
+      "per_subject_accuracy": [
+        0.3,
+        0.3,
+        0.4,
+        0.36666666666666664,
+        0.26666666666666666,
+        0.3,
+        0.13333333333333333,
+        0.5333333333333333,
+        0.36666666666666664,
+        0.3
+      ],
+      "mean_accuracy": 0.32666666666666666,
+      "std_accuracy": 0.10280029783307001,
+      "ci95_accuracy": [
+        0.2699999999999999,
+        0.3866666666666666
+      ],
+      "mean_auc": 0.5319505223037833,
+      "mean_recall_at_1": 0.31666666666666665,
+      "n_folds": 10
+    },
+    "latency": {
+      "mean_ms": 0.0,
+      "type": "not measured in this run"
+    }
+  },
+  "statistical_comparisons_vs_pca": [
+    {
+      "model": "EEGConformer",
+      "pca_accuracy": 0.29,
+      "model_accuracy": 0.28,
+      "delta_vs_pca": -0.010000000000000005,
+      "pct_improvement_vs_pca": -3.4482758620689675,
+      "t_statistic": -0.47368421052631604,
+      "p_value_paired_t": 0.6470046758624777,
+      "p_value_permutation": 0.6663336663336663,
+      "cohens_d": -0.13685144710022593,
+      "effect_size_interpretation": "negligible",
+      "significant_05": false,
+      "significant_perm_05": false,
+      "p_value_bonferroni": 1.0,
+      "significant_bonferroni_05": false
+    },
+    {
+      "model": "EEGConformer-FT",
+      "pca_accuracy": 0.29,
+      "model_accuracy": 0.32666666666666666,
+      "delta_vs_pca": 0.03666666666666666,
+      "pct_improvement_vs_pca": 12.643678160919539,
+      "t_statistic": 1.0826948796258977,
+      "p_value_paired_t": 0.3070971206499798,
+      "p_value_permutation": 0.3676323676323676,
+      "cohens_d": 0.40361117871460345,
+      "effect_size_interpretation": "small",
+      "significant_05": false,
+      "significant_perm_05": false,
+      "p_value_bonferroni": 0.6141942412999596,
+      "significant_bonferroni_05": false
+    }
+  ],
+  "statistical_comparison_ft_vs_original": {
+    "model_a": "EEGConformer-FT",
+    "model_b": "EEGConformer-Original",
+    "model_a_accuracy": 0.32666666666666666,
+    "model_b_accuracy": 0.28,
+    "delta_vs_original": 0.04666666666666666,
+    "pct_improvement_vs_original": 16.666666666666664,
+    "t_statistic": 1.6059101370939324,
+    "p_value_paired_t": 0.14275619048457358,
+    "p_value_permutation": 0.17482517482517482,
+    "cohens_d": 0.5334004724330651,
+    "effect_size_interpretation": "medium",
+    "significant_05": false,
+    "significant_perm_05": false
+  }
+}

@@ -247,9 +247,20 @@ export const Route = createFileRoute("/api/eeg/upload")({
           const nt = parseJsonField(form.get("notch"));
 
           const tPre = startTimer("eeg.upload.preprocess", { filename });
+          // T-031 — Match the EEGConformer training recipe exactly:
+          //   4 s windows @ 250 Hz = 1000 samples, 50% overlap.
+          // The production EEGConformer was trained on 1000-sample windows; the
+          // generic preprocessing default is 2 s (500 samples), which is too
+          // short and forces ONNXAdapter.selectRawWindow into its mean-pool
+          // fallback — producing wrong-length [1,22,500] inputs that buildTensor
+          // rejects, silently routing every upload through the PCA fallback.
+          // Passing the segment explicitly here (rather than mutating the generic
+          // defaults) keeps batch/evaluation paths untouched while guaranteeing
+          // the embed path sees 1000-sample windows the model was trained on.
           const pre = preprocess(signal, {
             bandpass: bp ? { low: Number(bp.low), high: Number(bp.high) } : undefined,
             notch: nt ? { fc: (Number(nt.fc) === 50 ? 50 : 60) as 50 | 60 } : undefined,
+            segment: { windowSec: 4, overlap: 0.5 },
           });
           const preprocessMs = tPre.end({
             steps: pre.report.steps.length,
