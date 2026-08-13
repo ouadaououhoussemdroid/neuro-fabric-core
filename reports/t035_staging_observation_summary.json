@@ -1,0 +1,18 @@
+{
+  "experiment": "T-035 Staging Observation",
+  "timestamp": "2026-08-12T15:40:14.059085+00:00",
+  "total_polls": 1,
+  "valid_polls": 1,
+  "rollout_stage": "ga",
+  "latency_p95_mean": 0.0,
+  "latency_p50_mean": 0.0,
+  "fallback_rate_max": 0.0,
+  "verification_failures": 0,
+  "verification_passes": 0,
+  "gates": {
+    "p95_latency_gt_600ms": false,
+    "p50_latency_gt_400ms": false,
+    "fallback_rate_exceeds_0_5_percent": false,
+    "has_verification_failures": false
+  }
+}

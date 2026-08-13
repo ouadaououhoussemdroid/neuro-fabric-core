@@ -31,7 +31,7 @@ interface HistogramValue {
 }
 
 const HISTOGRAM_BUCKETS = [
-  1, 2, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 30000, 60000, 120000,
+  1, 2, 5, 10, 25, 50, 100, 250, 400, 425, 450, 475, 500, 525, 550, 575, 600, 625, 650, 675, 700, 750, 800, 850, 900, 950, 1000, 2500, 5000, 10000, 30000, 60000, 120000,
 ];
 
 interface Registry {
@@ -164,6 +164,37 @@ export class Histogram {
       for (const b of baseEntry.buckets) {
         if (valueMs <= b.le) b.count += 1;
       }
+    }
+  }
+
+  /**
+   * Merge pre-aggregated histogram data (e.g., from Prometheus text format
+   * received via POST from a browser-side registry). Replaces the existing
+   * values for the given labels rather than accumulating.
+   *
+   * `bucounts` maps bucket upper-bound (le) → cumulative count.
+   */
+  setAggregated(
+    labels: Record<string, string> = {},
+    data: { sum: number; count: number; bucketCounts: Map<number, number> },
+  ): void {
+    const store = registry.histograms.get(this.name)!;
+    const key = labelKey(labels);
+    let entry = store.get(key);
+    if (!entry) {
+      entry = {
+        labels,
+        sum: 0,
+        count: 0,
+        buckets: HISTOGRAM_BUCKETS.map((le) => ({ le, count: 0 })),
+      };
+      store.set(key, entry);
+    }
+    entry.sum = data.sum;
+    entry.count = data.count;
+    for (const b of entry.buckets) {
+      const remote = data.bucketCounts.get(b.le);
+      if (remote !== undefined) b.count = remote;
     }
   }
 }

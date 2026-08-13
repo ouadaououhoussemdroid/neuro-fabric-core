@@ -1,0 +1,429 @@
+{
+  "PCA_Bandpower": {
+    "status": "IMPLEMENTED",
+    "model_type": "pca_bandpower_v1",
+    "channels": 22,
+    "bandpass": [
+      4.0,
+      38.0
+    ],
+    "feature_dim": 110,
+    "n_subjects": 20,
+    "n_trials": 593,
+    "seeds": [
+      539363089,
+      539363090,
+      539363091
+    ],
+    "n_seeds_per_fold": 3,
+    "chance_level": 0.25,
+    "loso": {
+      "per_subject_accuracy": [
+        0.3333333333333333,
+        0.3,
+        0.2333333333333333,
+        0.3,
+        0.3,
+        0.16666666666666666,
+        0.4000000000000001,
+        0.36666666666666664,
+        0.3333333333333333,
+        0.13333333333333333,
+        0.2333333333333333,
+        0.3333333333333333,
+        0.36666666666666664,
+        0.2608695652173913,
+        0.36666666666666664,
+        0.43333333333333335,
+        0.4666666666666666,
+        0.36666666666666664,
+        0.20000000000000004,
+        0.36666666666666664
+      ],
+      "per_subject_accuracy_std_over_seeds": [
+        0.0,
+        0.0,
+        2.7755575615628914e-17,
+        0.0,
+        0.0,
+        0.0,
+        5.551115123125783e-17,
+        0.0,
+        0.0,
+        0.0,
+        2.7755575615628914e-17,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        5.551115123125783e-17,
+        0.0,
+        2.7755575615628914e-17,
+        0.0
+      ],
+      "mean_accuracy": 0.3130434782608696,
+      "std_accuracy": 0.08696160676715964,
+      "ci95_accuracy": [
+        0.2760597826086956,
+        0.35304347826086946
+      ],
+      "mean_f1": 0.5138079186974353,
+      "mean_auc": 0.5138079186974353,
+      "mean_recall_at_1": 0.23128019323671495,
+      "n_folds": 20
+    },
+    "latency": {
+      "mean_ms": 0.0,
+      "type": "not measured (feature-based baseline)"
+    }
+  },
+  "EEGConformer": {
+    "status": "IMPLEMENTED",
+    "onnx_path": "public/models/eegconformer.onnx",
+    "channels": 22,
+    "embedding_dim": 32,
+    "loso": {
+      "per_subject_accuracy": [
+        0.26666666666666666,
+        0.2,
+        0.26666666666666666,
+        0.3,
+        0.3333333333333333,
+        0.36666666666666664,
+        0.26666666666666666,
+        0.36666666666666664,
+        0.36666666666666664,
+        0.3,
+        0.3333333333333333,
+        0.16666666666666666,
+        0.5,
+        0.21739130434782608,
+        0.2,
+        0.26666666666666666,
+        0.26666666666666666,
+        0.3,
+        0.16666666666666666,
+        0.2
+      ],
+      "mean_accuracy": 0.28253623188405796,
+      "std_accuracy": 0.08188284291977689,
+      "ci95_accuracy": [
+        0.2508514492753623,
+        0.31675905797101445
+      ],
+      "mean_f1": 0.5088835276803668,
+      "mean_auc": 0.5088835276803668,
+      "mean_recall_at_1": 0.24137681159420293,
+      "n_folds": 20
+    },
+    "latency": {
+      "mean_ms": 5.840751000359887,
+      "std_ms": 0.7371571417721845,
+      "type": "measured (per-trial forward pass, mean of 5 runs, CPU)"
+    }
+  },
+  "EEGConformer-FT": {
+    "status": "IMPLEMENTED",
+    "onnx_path": "training/artefacts/eegconformer-physionet-v1/eegconformer_finetuned.onnx",
+    "channels": 22,
+    "embedding_dim": 32,
+    "loso": {
+      "per_subject_accuracy": [
+        0.36666666666666664,
+        0.36666666666666664,
+        0.3333333333333333,
+        0.43333333333333335,
+        0.36666666666666664,
+        0.36666666666666664,
+        0.43333333333333335,
+        0.3333333333333333,
+        0.3,
+        0.23333333333333334,
+        0.36666666666666664,
+        0.23333333333333334,
+        0.4,
+        0.21739130434782608,
+        0.3333333333333333,
+        0.4,
+        0.26666666666666666,
+        0.3,
+        0.26666666666666666,
+        0.36666666666666664
+      ],
+      "mean_accuracy": 0.3342028985507246,
+      "std_accuracy": 0.06492671896619778,
+      "ci95_accuracy": [
+        0.3058514492753623,
+        0.3617083333333333
+      ],
+      "mean_f1": 0.527027744138013,
+      "mean_auc": 0.527027744138013,
+      "mean_recall_at_1": 0.2652173913043478,
+      "n_folds": 20
+    },
+    "latency": {
+      "mean_ms": 5.86637500076904,
+      "std_ms": 1.2154122992916165,
+      "type": "measured (per-trial forward pass, mean of 5 runs, CPU)"
+    }
+  },
+  "LaBraM": {
+    "status": "IMPLEMENTED",
+    "onnx_path": "public/models/labram-encoder.onnx",
+    "channels": 16,
+    "embedding_dim": 200,
+    "loso": {
+      "per_subject_accuracy": [
+        0.3,
+        0.3,
+        0.16666666666666666,
+        0.23333333333333334,
+        0.3,
+        0.16666666666666666,
+        0.3333333333333333,
+        0.43333333333333335,
+        0.26666666666666666,
+        0.3,
+        0.3,
+        0.2,
+        0.43333333333333335,
+        0.391304347826087,
+        0.3,
+        0.4,
+        0.26666666666666666,
+        0.43333333333333335,
+        0.23333333333333334,
+        0.3333333333333333
+      ],
+      "mean_accuracy": 0.3045652173913044,
+      "std_accuracy": 0.08276214554135876,
+      "ci95_accuracy": [
+        0.26998913043478256,
+        0.33957608695652175
+      ],
+      "mean_f1": 0.5110589715395207,
+      "mean_auc": 0.5110589715395207,
+      "mean_recall_at_1": 0.22637681159420292,
+      "n_folds": 20
+    },
+    "latency": {
+      "mean_ms": 47.09187800013751,
+      "std_ms": 6.686061536593474,
+      "type": "measured (per-trial forward pass, mean of 5 runs, CPU)"
+    }
+  },
+  "CBraMod": {
+    "status": "IMPLEMENTED",
+    "onnx_path": "public/models/cbramod-encoder.onnx",
+    "channels": 19,
+    "embedding_dim": 200,
+    "loso": {
+      "per_subject_accuracy": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.23333333333333334,
+        0.4666666666666667,
+        0.36666666666666664,
+        0.2,
+        0.43333333333333335,
+        0.36666666666666664,
+        0.3,
+        0.2,
+        0.3,
+        0.23333333333333334,
+        0.3,
+        0.30434782608695654,
+        0.23333333333333334,
+        0.4,
+        0.4,
+        0.5,
+        0.3,
+        0.23333333333333334
+      ],
+      "mean_accuracy": 0.3218840579710145,
+      "std_accuracy": 0.08732429220426835,
+      "ci95_accuracy": [
+        0.2852173913043478,
+        0.36
+      ],
+      "mean_f1": 0.5182351227624397,
+      "mean_auc": 0.5182351227624397,
+      "mean_recall_at_1": 0.27905797101449276,
+      "n_folds": 20
+    },
+    "latency": {
+      "mean_ms": 40.15495999978157,
+      "std_ms": 2.593690853141406,
+      "type": "measured (per-trial forward pass, mean of 5 runs, CPU)"
+    }
+  },
+  "EEGPT": {
+    "status": "IMPLEMENTED",
+    "onnx_path": "public/models/eegpt-encoder-int8.onnx",
+    "channels": 62,
+    "embedding_dim": 2048,
+    "loso": {
+      "per_subject_accuracy": [
+        0.3333,
+        0.3,
+        0.3,
+        0.2333,
+        0.3667,
+        0.2333,
+        0.4,
+        0.3667,
+        0.2667,
+        0.2667
+      ],
+      "mean_accuracy": 0.3067,
+      "std_accuracy": 0.0584,
+      "ci95_accuracy": [
+        0.271,
+        0.3423
+      ],
+      "mean_f1": 0.2618,
+      "mean_auc": 0.5072,
+      "mean_recall_at_1": 0.25,
+      "n_folds": 10
+    },
+    "latency": {
+      "mean_ms": 4820,
+      "std_ms": 0,
+      "type": "measured"
+    }
+  },
+  "FEMBA-tiny": {
+    "status": "IMPLEMENTED",
+    "onnx_path": "public/models/femba-tiny-encoder.onnx",
+    "channels": 22,
+    "embedding_dim": 385,
+    "loso": {
+      "per_subject_accuracy": [
+        0.2667,
+        0.2333,
+        0.3667,
+        0.3,
+        0.2,
+        0.1667,
+        0.2333,
+        0.2,
+        0.1667,
+        0.2667
+      ],
+      "mean_accuracy": 0.24,
+      "std_accuracy": 0.0625,
+      "ci95_accuracy": [
+        0.2052,
+        0.2748
+      ],
+      "mean_f1": 0.176,
+      "mean_auc": 0.5035,
+      "mean_recall_at_1": 0.2367,
+      "n_folds": 10
+    },
+    "latency": {
+      "mean_ms": 960,
+      "std_ms": 0,
+      "type": "measured"
+    }
+  },
+  "statistical_comparisons_vs_pca": [
+    {
+      "model": "EEGConformer",
+      "pca_accuracy": 0.3130434782608696,
+      "model_accuracy": 0.28253623188405796,
+      "delta_accuracy": -0.03050724637681159,
+      "pct_improvement": -9.745370370370368,
+      "t_statistic": -1.1422644503091086,
+      "p_value_paired_t": 0.26753511810931263,
+      "p_value_permutation": 0.24075924075924077,
+      "cohens_d": -0.36120169806994223,
+      "effect_size_interpretation": "small",
+      "significant_05": false,
+      "significant_perm_05": false,
+      "p_value_bonferroni": 1.0,
+      "significant_bonferroni_05": false
+    },
+    {
+      "model": "EEGConformer-FT",
+      "pca_accuracy": 0.3130434782608696,
+      "model_accuracy": 0.3342028985507246,
+      "delta_accuracy": 0.021159420289855076,
+      "pct_improvement": 6.7592592592592595,
+      "t_statistic": 1.0183834954185058,
+      "p_value_paired_t": 0.3212889451622396,
+      "p_value_permutation": 0.3246753246753247,
+      "cohens_d": 0.27573165067089433,
+      "effect_size_interpretation": "small",
+      "significant_05": false,
+      "significant_perm_05": false,
+      "p_value_bonferroni": 1.0,
+      "significant_bonferroni_05": false
+    },
+    {
+      "model": "LaBraM",
+      "pca_accuracy": 0.3130434782608696,
+      "model_accuracy": 0.3045652173913044,
+      "delta_accuracy": -0.00847826086956521,
+      "pct_improvement": -2.708333333333331,
+      "t_statistic": -0.4331658973967603,
+      "p_value_paired_t": 0.6697718597305481,
+      "p_value_permutation": 0.6283716283716284,
+      "cohens_d": -0.09987601263756178,
+      "effect_size_interpretation": "negligible",
+      "significant_05": false,
+      "significant_perm_05": false,
+      "p_value_bonferroni": 1.0,
+      "significant_bonferroni_05": false
+    },
+    {
+      "model": "CBraMod",
+      "pca_accuracy": 0.3130434782608696,
+      "model_accuracy": 0.3218840579710145,
+      "delta_accuracy": 0.008840579710144935,
+      "pct_improvement": 2.8240740740740766,
+      "t_statistic": 0.4794178234270572,
+      "p_value_paired_t": 0.6371133603239022,
+      "p_value_permutation": 0.6003996003996004,
+      "cohens_d": 0.10144893655689037,
+      "effect_size_interpretation": "negligible",
+      "significant_05": false,
+      "significant_perm_05": false,
+      "p_value_bonferroni": 1.0,
+      "significant_bonferroni_05": false
+    },
+    {
+      "model": "EEGPT",
+      "pca_accuracy": 0.2866666666666667,
+      "model_accuracy": 0.30667000000000005,
+      "delta_accuracy": 0.02000333333333334,
+      "pct_improvement": 6.977906976744189,
+      "t_statistic": 1.0000616209575828,
+      "p_value_paired_t": 0.34340815849755185,
+      "p_value_permutation": 0.31368631368631367,
+      "cohens_d": 0.27452780542419813,
+      "effect_size_interpretation": "small",
+      "significant_05": false,
+      "significant_perm_05": false,
+      "p_value_bonferroni": 1.0,
+      "significant_bonferroni_05": false
+    },
+    {
+      "model": "FEMBA-tiny",
+      "pca_accuracy": 0.2866666666666667,
+      "model_accuracy": 0.24001,
+      "delta_accuracy": -0.04665666666666666,
+      "pct_improvement": -16.275581395348834,
+      "t_statistic": -1.2994369452342507,
+      "p_value_paired_t": 0.2260912672330305,
+      "p_value_permutation": 0.2597402597402597,
+      "cohens_d": -0.6259550274255486,
+      "effect_size_interpretation": "medium",
+      "significant_05": false,
+      "significant_perm_05": false,
+      "p_value_bonferroni": 1.0,
+      "significant_bonferroni_05": false
+    }
+  ]
+}

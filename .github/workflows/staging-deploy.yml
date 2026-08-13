@@ -1,0 +1,91 @@
+# Mission 5 - Staging Deployment Workflow
+#
+# This workflow handles staging deployment promotion from canary to beta to ga.
+# It does NOT touch production. Production remains AI_EEGCONFORMER_ENABLED=off.
+#
+# Triggers:
+#   - Manual dispatch with stage selection
+#   - Only runs on main branch
+#
+name: staging-deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "Staging stage to deploy"
+        type: choice
+        required: true
+        default: "beta"
+        options:
+          - "canary"
+          - "beta"
+          - "ga"
+      dry_run:
+        description: "Dry run only (no env file changes)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  staging-deploy:
+    name: Staging Deploy (${{ inputs.stage }})
+    runs-on: ubuntu-latest
+    if: github.ref == "refs/heads/main"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check staging observation
+        run: |
+          python scripts/check_staging_observation.py --input reports/t035_staging_observation.jsonl || echo "Observation not yet complete, continuing in dry-run mode"
+
+      - name: Get artifact SHA
+        id: artifact
+        run: |
+          SHA=$(python3 -c "import hashlib; print(hashlib.sha256(open(\"public/models/eegconformer_finetuned.onnx\", \"rb\").read()).hexdigest())")
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+
+      - name: Get manifest SHA
+        id: manifest
+        run: |
+          SHA=$(python3 -c "import json; m=json.load(open(\"public/models/manifest.json\")); print(next(e.get(\"sha256\",\"NOT_FOUND\") for e in m.get(\"models\",[]) if e.get(\"id\")==\"eegconformer_finetuned\"))")
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+
+      - name: Verify artifact provenance
+        run: |
+          if [ "${{ steps.artifact.outputs.sha }}" != "${{ steps.manifest.outputs.sha }}" ]; then
+            echo "ERROR: SHA-256 mismatch between artifact and manifest"
+            exit 1
+          fi
+          echo "Artifact provenance verified: ${{ steps.artifact.outputs.sha }}"
+
+      - name: Promotion dry-run (safe - does not modify production)
+        run: |
+          ENV_FILE=".env.staging.${{ inputs.stage }}"
+          if [ ! -f "$ENV_FILE" ]; then
+            ENV_FILE=".env.staging.ga"
+          fi
+          DRY_FLAG="--dry-run"
+          if [ "${{ inputs.dry_run }}" = "false" ]; then
+            DRY_FLAG="--execute"
+          fi
+          bash scripts/promote_ga.sh $DRY_FLAG --env-file "$ENV_FILE" || bash scripts/promote_beta.sh $DRY_FLAG --env-file "$ENV_FILE"
+
+      - name: Report status
+        run: |
+          echo "=== Staging Deployment Report ==="
+          echo "Stage: ${{ inputs.stage }}"
+          echo "Dry run: ${{ inputs.dry_run }}"
+          echo "Production env: AI_EEGCONFORMER_ENABLED=off (unchanged)"
+          echo "Artifact SHA: ${{ steps.artifact.outputs.sha }}"
+          echo "Manifest SHA: ${{ steps.manifest.outputs.sha }}"

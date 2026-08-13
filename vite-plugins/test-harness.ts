@@ -20,7 +20,7 @@ import type { Plugin } from "vite";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
-const HARNESS_PATH = "/smoke-harness.html";
+const HARNESS_PATHS = ["/smoke-harness.html", "/staging-harness.html"];
 const FALLBACK_SCRIPT = "/src/testing/harness.ts";
 
 /** Inline HTML template used when smoke-harness.html is absent. */
@@ -41,21 +41,24 @@ export function testHarnessPlugin(): Plugin {
       // prepend: true ensures this runs BEFORE Vite's internal middlewares
       // and the TanStack Start SPA fallback, which would otherwise intercept
       // the route and return a 404 page.
-      server.middlewares.use(
-        HARNESS_PATH,
-        (_req, res, _next) => {
-          let html: string;
-          try {
-            html = readFileSync(join(cwd, "smoke-harness.html"), "utf-8");
-          } catch {
-            html = FALLBACK_HTML;
-          }
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "text/html; charset=utf-8");
-          res.end(html);
-        },
-        { prepend: true },
-      );
+      for (const harnessPath of HARNESS_PATHS) {
+        server.middlewares.use(
+          harnessPath,
+          (_req, res, _next) => {
+            const htmlFile = harnessPath.replace(/^\//, "");
+            let html: string;
+            try {
+              html = readFileSync(join(cwd, htmlFile), "utf-8");
+            } catch {
+              html = FALLBACK_HTML;
+            }
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "text/html; charset=utf-8");
+            res.end(html);
+          },
+          { prepend: true },
+        );
+      }
 
       // --- Serve .wasm files from public/ with correct content-type ---
       // TanStack Start's SPA middleware intercepts .wasm requests and returns

@@ -13,6 +13,12 @@ export const TIER4_MANIFEST_METADATA: ManifestMetadata = {
     registryId: "braindecode-eegconformer-prod",
     wasmCompatible: true,
   },
+  // EEGConformer v2 — fine-tuned on PhysioNet EEGMMIDB (20 subjects)
+  // External data merged into ONNX for WASM compatibility (no external data file)
+  eegconformer_finetuned: {
+    registryId: "braindecode-eegconformer-prod-v2",
+    wasmCompatible: true,
+  },
   // EEGPT — ViT transformer, INT8-quantised
   "eegpt-encoder-int8": {
     registryId: "onnx-eegpt",

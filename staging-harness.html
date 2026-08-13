@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Neuro-Fabric Staging Validation Harness</title>
+  </head>
+  <body>
+    <!--
+      Browser staging-validation harness. Extends the smoke-test harness with
+      high-resolution latency measurement and fallback-rate tracking for the
+      EEGConformer v2 staging rollout gate.
+
+      Exposes both window.__neuroTest (smoke harness) and window.__stagingTest
+      (latency/fallback monitoring) for Playwright-driven browser tests.
+    -->
+    <script type="module" src="/src/testing/staging-harness.ts"></script>
+  </body>
+</html>

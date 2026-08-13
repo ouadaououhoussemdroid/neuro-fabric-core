@@ -73,6 +73,16 @@ registerBraindecodeEEGConformer({
   enableVerification: true,
 });
 
+// T-031 — EEGConformer v2 (fine-tuned on PhysioNet EEGMMIDB, 20 subjects).
+// Registered but NOT promoted to default yet — embedEEG() still defaults to
+// braindecode-eegconformer-prod (v1) per the rollout gate. V2 is available
+// for explicit selection via preferredModelId.
+registerBraindecodeEEGConformer({
+  id: "braindecode-eegconformer-prod-v2",
+  artifact: "/models/eegconformer_finetuned.onnx",
+  enableVerification: true,
+});
+
 // T-015 — Braindecode model zoo: register ShallowFBCSPNet, Deep4Net
 // alongside EEGConformer for comparative ablations. EEGNetv4 was already
 // registered above; no duplicate entry needed.

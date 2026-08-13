@@ -45,6 +45,7 @@ import { Route as ApiEvaluateCrossSubjectRouteImport } from './routes/api/evalua
 import { Route as ApiPublicMetricsRouteImport } from './routes/api/public/metrics'
 import { Route as ApiPublicNotebooksRouteImport } from './routes/api/public/notebooks'
 import { Route as ApiPublicCronRecallRouteImport } from './routes/api/public/cron/recall'
+import { Route as ApiPublicStagingMetricsRouteImport } from './routes/api/public/staging/metrics'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -231,6 +232,11 @@ const ApiPublicCronRecallRoute = ApiPublicCronRecallRouteImport.update({
   path: '/api/public/cron/recall',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicStagingMetricsRoute = ApiPublicStagingMetricsRouteImport.update({
+  id: '/api/public/staging/metrics',
+  path: '/api/public/staging/metrics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -268,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/api/annotations/': typeof ApiAnnotationsIndexRoute
   '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
+  '/api/public/staging/metrics': typeof ApiPublicStagingMetricsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -304,6 +311,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/api/annotations': typeof ApiAnnotationsIndexRoute
   '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
+  '/api/public/staging/metrics': typeof ApiPublicStagingMetricsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -343,6 +351,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/api/annotations/': typeof ApiAnnotationsIndexRoute
   '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
+  '/api/public/staging/metrics': typeof ApiPublicStagingMetricsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -382,6 +391,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/api/annotations/'
     | '/api/public/cron/recall'
+    | '/api/public/staging/metrics'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -418,6 +428,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/api/annotations'
     | '/api/public/cron/recall'
+    | '/api/public/staging/metrics'
   id:
     | '__root__'
     | '/'
@@ -456,6 +467,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/'
     | '/api/annotations/'
     | '/api/public/cron/recall'
+    | '/api/public/staging/metrics'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -482,6 +494,7 @@ export interface RootRouteChildren {
   ApiPublicNotebooksRoute: typeof ApiPublicNotebooksRoute
   ApiAnnotationsIndexRoute: typeof ApiAnnotationsIndexRoute
   ApiPublicCronRecallRoute: typeof ApiPublicCronRecallRoute
+  ApiPublicStagingMetricsRoute: typeof ApiPublicStagingMetricsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -738,6 +751,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronRecallRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/staging/metrics': {
+      id: '/api/public/staging/metrics'
+      path: '/api/public/staging/metrics'
+      fullPath: '/api/public/staging/metrics'
+      preLoaderRoute: typeof ApiPublicStagingMetricsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -815,6 +835,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicNotebooksRoute: ApiPublicNotebooksRoute,
   ApiAnnotationsIndexRoute: ApiAnnotationsIndexRoute,
   ApiPublicCronRecallRoute: ApiPublicCronRecallRoute,
+  ApiPublicStagingMetricsRoute: ApiPublicStagingMetricsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

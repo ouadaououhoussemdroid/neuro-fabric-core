@@ -1,0 +1,72 @@
+{
+  "experiment": "T-035 Staging Validation",
+  "timestamp": "2026-08-12T14:15:00Z",
+  "artifact": {
+    "model": "eegconformer_finetuned.onnx",
+    "sha256": "18644de187e984a667d78ca79b3f4c0d2c0ada252c7084f4107343f77168f931",
+    "size_bytes": 3359557,
+    "wasm_compatible": true,
+    "registry_id": "braindecode-eegconformer-prod-v2"
+  },
+  "environment": {
+    "stage": "ga",
+    "env_file": ".env.staging.ga",
+    "browsers": ["chromium", "firefox"],
+    "execution_provider": "wasm",
+    "wasm_path": "/ort/ort-wasm-simd-threaded.wasm",
+    "iterations": 20,
+    "warmup_iterations": 3,
+    "input": "sine_wave_22ch_1000samples_250hz"
+  },
+  "latency_measurements": {
+    "chromium": {
+      "eegconformer_v1": {
+        "n": 20, "mean": 287.89, "p50": 215.70, "p95": 524.90, "p99": 529.60,
+        "min": 192.20, "max": 529.60, "fallback_count": 0, "fallback_rate": 0
+      },
+      "eegconformer_v2": {
+        "n": 20, "mean": 305.90, "p50": 300.70, "p95": 442.10, "p99": 556.20,
+        "min": 195.10, "max": 556.20, "fallback_count": 0, "fallback_rate": 0
+      }
+    },
+    "firefox": {
+      "eegconformer_v1": {
+        "n": 20, "mean": 896.35, "p50": 852.00, "p95": 1089.00, "p99": 1139.00,
+        "min": 807.00, "max": 1139.00, "fallback_count": 0, "fallback_rate": 0
+      },
+      "eegconformer_v2": {
+        "n": 20, "mean": 1451.55, "p50": 1447.00, "p95": 1576.00, "p99": 1583.00,
+        "min": 1360.00, "max": 1583.00, "fallback_count": 0, "fallback_rate": 0
+      }
+    }
+  },
+  "determinism": {
+    "chromium_v2_cosine": 1.0,
+    "firefox_v2_cosine": 1.0
+  },
+  "artifact_verification": {
+    "sha256_verified_in_browser": true,
+    "web_crypto_api_used": true,
+    "verification_pass_count_chromium": 1,
+    "verification_pass_count_firefox": 1
+  },
+  "rollback_drill": {
+    "mttr_seconds": 0.001,
+    "mttr_threshold_seconds": 300,
+    "passed": true,
+    "mechanism": "synchronous Map.delete() + env var flip"
+  },
+  "existing_tests": {
+    "tier4-production-path.test.ts": {"passed": 47, "failed": 0},
+    "e2e-v2-inference.test.ts": {"passed": 8, "failed": 0},
+    "canary-deployment.test.ts": {"passed": 8, "failed": 0},
+    "beta-deployment.test.ts": {"passed": 10, "failed": 0},
+    "cohort.test.ts": {"passed": 5, "failed": 0},
+    "rollout.test.ts": {"passed": 4, "failed": 0},
+    "validation-metrics.test.ts": {"passed": 6, "failed": 0},
+    "model-comparison.test.ts": {"passed": 2, "failed": 0},
+    "upload.test.ts": {"passed": 15, "failed": 0},
+    "wasm-smoke.test.ts": {"passed": 13, "failed": 0, "flaky": 1},
+    "staging-latency.test.ts": {"passed": 14, "failed": 2}
+  }
+}
