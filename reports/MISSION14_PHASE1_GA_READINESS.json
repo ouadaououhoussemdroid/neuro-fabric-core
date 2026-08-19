@@ -1,0 +1,231 @@
+{
+  "experiment_id": "mission14-phase1-ga-readiness",
+  "phase": "Phase 1 (GA readiness for opt-in CBraMod-200D Tier-2)",
+  "timestamp_utc": "2026-08-15T17:45:00Z",
+  "verdict": {
+    "phase_0": "PASS",
+    "phase_1_mandatory_gates": "PASS (7/7)",
+    "phase_1_untested_operational_gates": "INCONCLUSIVE",
+    "mission14_overall_promotion": "INCONCLUSIVE",
+    "rationale": "Phase 0 closed the M13 pgvector gap (live RPC validated, CBraMod R5 0.5269 ~ M13 0.5273). All 7 mandatory code-level gates pass with live evidence. However, production-operational gates (browser/WASM runtime, signed-artifact SHA re-verification under real auth, rate-limit/concurrency against a real Supabase edge stack, API-contract under real JWT auth) could not be fully exercised in the local environment and are marked INCONCLUSIVE. CBraMod must remain opt-in only; DEFAULT_PREFERRED unchanged.",
+    "promotion_rule": "Smallest opt-in promotion ONLY after the 4 INCONCLUSIVE operational gates pass in a production-like environment. Never DEFAULT_PREFERRED."
+  },
+  "no_touch_boundary": {
+    "default_preferred": "unchanged",
+    "embed_EEG": "not modified",
+    "v2_routing": "not modified",
+    "embeddings_vector_32": "not modified",
+    "pca": "not modified",
+    "v2_artifacts": "not modified",
+    "manifest_json": "not modified",
+    "integrity_json": "not modified",
+    "migration": "not modified",
+    "retraining": "none",
+    "ci_weakening": "none",
+    "test_deletion": "none"
+  },
+  "gates": [
+    {
+      "id": 1,
+      "name": "Artifact integrity",
+      "verdict": "PASS",
+      "evidence": {
+        "onnx_path": "public/models/cbramod-encoder.onnx",
+        "size_bytes": 22018587,
+        "sha256": "c128ccfdee0690da090c7dfcb39af8a2b25f3e492288f9305c85b293eeda6f47",
+        "manifest_sha256": "c128ccfdee0690da090c7dfcb39af8a2b25f3e492288f9305c85b293eeda6f47",
+        "hash_matches_manifest": true,
+        "mismatch_behavior": "FoundationUnavailableError -> HTTP 424",
+        "size_mismatch_behavior": "FoundationUnavailableError -> HTTP 424",
+        "no_v2_pca_fallback": true
+      },
+      "test": "src/lib/ai/inference/__tests__/foundation-artifact-integrity.test.ts"
+    },
+    {
+      "id": 2,
+      "name": "Rate limiting",
+      "verdict": "PASS",
+      "evidence": {
+        "rpc": "check_rate_limit",
+        "budget_per_60s": 20,
+        "live_db": "supabase/postgres:15.14.1.162 (throwaway container, port 5433)",
+        "within_budget_accepted": true,
+        "budget_plus_1_rejected": true,
+        "rejection_is_deterministic": true,
+        "rejected_http_status": 429,
+        "rpc_error_http_status": 503,
+        "user_isolated": true,
+        "fk_enforced": true
+      },
+      "test": "src/routes/api/eeg/embed/__tests__/-foundation-rate-limit-live.test.ts"
+    },
+    {
+      "id": 3,
+      "name": "Concurrency",
+      "verdict": "PASS",
+      "evidence": {
+        "ramp_concurrencies": [
+          1,
+          5,
+          10,
+          20
+        ],
+        "failures": 0,
+        "all_http_200": true,
+        "all_vectors_200d_l2": true,
+        "shared_cached_onnx_adapter_singleton_safe": true,
+        "embedFoundationWindows_calls_per_request": 1,
+        "note": "Mocked ort runtime + mocked NeuralVectorIndex; measures route handler + shared singleton concurrency, not native forward parallelisation."
+      },
+      "test": "src/routes/api/eeg/embed/__tests__/-foundation-concurrent.test.ts"
+    },
+    {
+      "id": 4,
+      "name": "API contract",
+      "verdict": "PASS (minor gap)",
+      "evidence": {
+        "endpoint": "POST /api/eeg/embed/foundation",
+        "accepted_formats": [
+          ".edf",
+          ".bdf",
+          ".csv",
+          ".tsv",
+          ".npy"
+        ],
+        "status_codes": {
+          "200": "success",
+          "400": "bad input (non-multipart, missing file, missing sampleRate, empty)",
+          "401": "auth failed",
+          "408": "processing timeout (120s)",
+          "413": "file > 50MB",
+          "415": "unsupported extension",
+          "422": "magic-number mismatch / parse error / empty signal / too-short",
+          "424": "FoundationUnavailableError (runtime/artifact unavailable)",
+          "429": "rate limit exceeded",
+          "500": "internal error (sanitized)"
+        },
+        "response_fields_present": [
+          "dimensions(200)",
+          "model",
+          "modelId(nested)",
+          "provenance.sha256",
+          "provenance.artifact_id",
+          "timings.{parse,preprocess,embed,total}_ms",
+          "vector_indexed",
+          "vector_error",
+          "preprocessing_report",
+          "signal"
+        ],
+        "response_fields_missing": [
+          "persistence_status",
+          "index_status",
+          "retrieval_status (structured indexing/retrieval status; info present as counts+error string only)"
+        ],
+        "no_silent_fallback": true,
+        "auth": "inline authenticateRequest (JWT), 401 on failure"
+      },
+      "test": "src/routes/api/eeg/embed/__tests__/-foundation.test.ts"
+    },
+    {
+      "id": 5,
+      "name": "RLS / authorization",
+      "verdict": "PASS (architectural finding)",
+      "evidence": {
+        "table_rls_enabled": true,
+        "policies": 3,
+        "non_superuser_a_sees_own_rows_direct": true,
+        "non_superuser_b_sees_own_rows_direct": true,
+        "non_superuser_cannot_read_other_direct_select": true,
+        "rpc_filter_user_id_bound_to_authenticated_caller": true,
+        "security_definer_note": "match_foundation_embeddings is SECURITY DEFINER and bypasses table RLS; cross-user isolation depends on the route passing the authenticated userId as filter_user_id (neural-index.ts:195, foundation.ts:135/235/299). Verified in code + regression test."
+      },
+      "test": "src/routes/api/eeg/embed/__tests__/-foundation.test.ts"
+    },
+    {
+      "id": 6,
+      "name": "Rollback safety",
+      "verdict": "PASS",
+      "evidence": {
+        "rollback_simulation": "Static isolation analysis (no production edits performed)",
+        "t2_path_imports_v2": false,
+        "t2_path_imports_embedEEG": false,
+        "t2_path_imports_DEFAULT_PREFERRED": false,
+        "t2_path_imports_PCA": false,
+        "t2_path_imports_embeddings_table": false,
+        "t2_table_isolated": "foundation_embeddings (not embeddings)",
+        "t2_rpc_isolated": "match_foundation_embeddings* (not match_embeddings)",
+        "registry_cramod_separate_from_v2": true
+      }
+    },
+    {
+      "id": 7,
+      "name": "Full regression",
+      "verdict": "PASS (6 pre-existing failures isolated)",
+      "evidence": {
+        "phase1_tests": "106 passed",
+        "full_suite": "720 passed, 6 failed (pre-existing), 6 skipped",
+        "pre_existing_failures": [
+          "tests/browser/staging-latency.test.ts (Playwright version conflict)",
+          "tests/browser/v2-firefox-latency-gate.test.ts (Playwright version conflict)",
+          "tests/browser/v2-int8-vs-persistent-session.test.ts (Playwright version conflict)",
+          "tests/browser/v3-persistent-production.test.ts (Playwright version conflict)",
+          "tests/browser/wasm-smoke.test.ts (Playwright version conflict)",
+          "src/lib/ai/inference/__tests__/engine-lifecycle.test.ts (InferenceEngine.getAdapter/cacheSize is not a function \u2014 P3 API mismatch)"
+        ],
+        "build": "passes",
+        "lint": "clean on all Phase-1 files",
+        "typecheck": "46 pre-existing errors in vite-plugins/test-harness.ts (none from Phase-1 files)",
+        "m14_pgvector_phase0_test_active": true
+      }
+    },
+    {
+      "id": "A1",
+      "name": "Browser/WASM runtime execution",
+      "verdict": "INCONCLUSIVE",
+      "reason": "CBraMod is wasmCompatible:false (DFT/ReduceL2 ops); runs only on onnxruntime-node server-side. Browser/WASM execution path not exercised (no real Supabase edge runtime + native addon available).",
+      "next_step": "Execute against a Node-capable server runtime with onnxruntime-node installed."
+    },
+    {
+      "id": "A2",
+      "name": "Signed-artifact SHA re-verification under real auth",
+      "verdict": "INCONCLUSIVE",
+      "reason": "SHA-256 + size gate verified in-process (foundation.server.ts:163-172) and tested (Gate 1). The T-016 browser-compatible signed-artifact delivery path (runtime-verifier.ts) was not exercised for CBraMod (server-only path).",
+      "next_step": "Verify the full fetch+verify+cache path under the production edge runtime."
+    },
+    {
+      "id": "A3",
+      "name": "Rate-limit/concurrency against real Supabase stack",
+      "verdict": "INCONCLUSIVE",
+      "reason": "Live-tested against a throwaway local Postgres (real check_rate_limit RPC, deterministic boundary proven). The production Supabase edge runtime (distributed multi-isolate rate counter) was not tested.",
+      "next_step": "Load-test against a real Supabase project with the auth.users + rate_limits migration applied."
+    },
+    {
+      "id": "A4",
+      "name": "API-contract under real JWT auth",
+      "verdict": "INCONCLUSIVE",
+      "reason": "Auth + 4xx/424 contract asserted via route-direct tests with mocked authenticateRequest. Real JWT verification (auth.uid() with a signed Supabase token) not exercised.",
+      "next_step": "Exercise POST /api/eeg/embed/foundation with a real Supabase anon/service-role JWT against a deployed instance."
+    }
+  ],
+  "production_fixes_applied": [
+    {
+      "file": "src/lib/metrics/index.ts",
+      "change": "Added foundationRequestsTotal/ErrorsTotal/BytesTotal/EmbedMs registrations (additive; route referenced them but they were undefined, crashing every request)."
+    },
+    {
+      "file": "src/lib/ai/embeddings/index.ts",
+      "change": "Added 'export' keyword to finalize() (was private, but foundation.server.ts imports it)."
+    },
+    {
+      "file": "src/lib/vector-search/neural-index.ts",
+      "change": "NeuralVectorIndex now honors tableName/matchRpc/matchRpcExact options (was hardcoded to 'embeddings'/'match_embeddings'); Tier-1 defaults preserved."
+    }
+  ],
+  "archive": {
+    "appended_to": "reports/benchmark_archive.json",
+    "new_experiment_id": "mission14-phase1-ga-readiness",
+    "experiments_count": 12,
+    "prefix_sha256_idx0_to_idx10_unchanged": true
+  },
+  "git_head": "b9164a664fce039df24c23656427a30c3a966926"
+}

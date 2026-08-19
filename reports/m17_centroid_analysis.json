@@ -1,0 +1,41 @@
+{
+  "centroid_subject_retrieval": {
+    "R@1": 0.2907,
+    "R@5": 0.596,
+    "R@10": 0.744
+  },
+  "nn_subject_retrieval": {
+    "R@1": 0.228,
+    "R@5": 0.4813,
+    "R@10": 0.6147
+  },
+  "centroid_gain_over_nn": {
+    "R@1": 0.0627,
+    "R@5": 0.1147,
+    "R@10": 0.1293
+  },
+  "mi_label_centroid_retrieval": {
+    "left_hand": {
+      "R@1": 0.373,
+      "R@2": 0.4378,
+      "R@3": 0.4865,
+      "R@4": 1.0
+    },
+    "right_hand": {
+      "R@1": 0.1026,
+      "R@2": 0.4421,
+      "R@3": 0.9842,
+      "R@4": 1.0
+    }
+  },
+  "task_signal": {
+    "same_task_cosine_mean": 0.9626,
+    "diff_task_cosine_mean": 0.9622,
+    "gap": 0.0004
+  },
+  "mi_label_signal": {
+    "same_label_cosine_mean": 0.9627,
+    "diff_label_cosine_mean": 0.9623,
+    "gap": 0.0004
+  }
+}

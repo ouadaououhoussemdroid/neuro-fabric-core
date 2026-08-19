@@ -2,17 +2,17 @@
  * T-016 Final Gate — VERIFICATION 3: Real EEGConformer factory chain.
  *
  * Proves the full production routing path end-to-end:
- *   embedEEG() → embed() → createAdapter("braindecode-eegconformer-prod")
+ *   embedEEG() → InferenceEngine.embed() → createAdapter("braindecode-eegconformer-prod-v2")
  *     → BraindecodeAdapter → createONNXBraindecodeBridge → ONNXAdapter
  *     → onnxruntime-web (Node CPU/WASM EP) → real EEGConformer ONNX
  *     → 32-dim embedding → pgvector-compatible vector(32)
  *
  * The gate is set to "ga" so isEEGConformerEnabledForUser returns true and
- * embedEEG routes to braindecode-eegconformer-prod (not PCA fallback).
+ * embedEEG routes to braindecode-eegconformer-prod-v2 (not PCA fallback).
  *
  * The adapter is registered with the real filesystem artifact path (not the
- * production URL /models/eegconformer.onnx) and a clean nodeRuntime that clears
- * any wasmPaths pollution from prior defaultRuntime() calls.
+ * production URL /models/eegconformer_finetuned.onnx) and a clean nodeRuntime
+ * that clears any wasmPaths pollution from prior defaultRuntime() calls.
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { join } from "node:path";
@@ -26,7 +26,7 @@ import type { ModelInput } from "../../types";
 import { getExecutionProviders } from "../webgpu-flag";
 
 const MODELS_DIR = join(process.cwd(), "public", "models");
-const EEGCONFORMER_ARTIFACT = join(MODELS_DIR, "eegconformer.onnx");
+const EEGCONFORMER_ARTIFACT = join(MODELS_DIR, "eegconformer_finetuned.onnx");
 const MANIFEST = JSON.parse(readFileSync(join(MODELS_DIR, "manifest.json"), "utf-8"));
 
 /** Node-compatible runtime: clears wasmPaths pollution so WASM init is clean. */
@@ -53,7 +53,7 @@ function makeEEGConformerInput(): ModelInput {
   };
 }
 
-const EEGCONFORMER_ID = "braindecode-eegconformer-prod";
+const EEGCONFORMER_ID = "braindecode-eegconformer-prod-v2";
 
 describe("T-016 Final Gate: Real EEGConformer factory chain", () => {
   beforeEach(() => {
@@ -69,7 +69,10 @@ describe("T-016 Final Gate: Real EEGConformer factory chain", () => {
     if (hasModel(EEGCONFORMER_ID)) {
       // Re-register with the production URL artifact (default) instead of the
       // filesystem path used in the test, so the descriptor matches production.
-      registerBraindecodeEEGConformer({ artifact: "/models/eegconformer.onnx" });
+      registerBraindecodeEEGConformer({
+        id: EEGCONFORMER_ID,
+        artifact: "/models/eegconformer_finetuned.onnx",
+      });
     }
   });
 
@@ -80,7 +83,7 @@ describe("T-016 Final Gate: Real EEGConformer factory chain", () => {
     //   → onnxruntime-web (WASM) → real inference.
     expect(existsSync(EEGCONFORMER_ARTIFACT)).toBe(true);
 
-    const manifestEntry = MANIFEST.models["eegconformer"];
+    const manifestEntry = MANIFEST.models["eegconformer_finetuned"];
     expect(manifestEntry).toBeDefined();
     // Verify SHA-256 integrity of the artifact we're about to load.
     const buf = readFileSync(EEGCONFORMER_ARTIFACT);
@@ -89,6 +92,7 @@ describe("T-016 Final Gate: Real EEGConformer factory chain", () => {
 
     // Register the production EEGConformer with real artifact + nodeRuntime.
     registerBraindecodeEEGConformer({
+      id: EEGCONFORMER_ID,
       artifact: EEGCONFORMER_ARTIFACT,
       runtime: nodeRuntime,
       executionProviders: ["wasm"],
@@ -126,6 +130,7 @@ describe("T-016 Final Gate: Real EEGConformer factory chain", () => {
     setRolloutStage("off");
 
     registerBraindecodeEEGConformer({
+      id: EEGCONFORMER_ID,
       artifact: EEGCONFORMER_ARTIFACT,
       runtime: nodeRuntime,
       executionProviders: ["wasm"],

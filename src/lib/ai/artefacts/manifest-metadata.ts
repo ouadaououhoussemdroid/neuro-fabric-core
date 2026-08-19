@@ -8,12 +8,12 @@
 import type { ManifestMetadata } from "./hashed-artefact";
 
 export const TIER4_MANIFEST_METADATA: ManifestMetadata = {
-  // Braindecode EEGConformer — production default
+  // Braindecode EEGConformer v1 — rollback-only after V2 GA promotion
   eegconformer: {
     registryId: "braindecode-eegconformer-prod",
     wasmCompatible: true,
   },
-  // EEGConformer v2 — fine-tuned on PhysioNet EEGMMIDB (20 subjects)
+  // EEGConformer v2 — GA default model (fine-tuned on PhysioNet EEGMMIDB, 20 subjects)
   // External data merged into ONNX for WASM compatibility (no external data file)
   eegconformer_finetuned: {
     registryId: "braindecode-eegconformer-prod-v2",

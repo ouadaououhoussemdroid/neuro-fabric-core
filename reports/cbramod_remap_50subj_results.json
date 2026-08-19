@@ -1,0 +1,513 @@
+{
+  "experiment_id": "MISSION6-CBRAMOD-REMAP-50SUBJ",
+  "experiment_name": "CBraMod 19->22 channel remap study + 50-subject LOSO validation",
+  "timestamp_start": "2026-08-14T03:37:06+00:00",
+  "timestamp_end": "2026-08-14T03:40:14+00:00",
+  "mission": "Mission 6 (Next Model Mission)",
+  "author": "zcode-agent",
+  "git_head": "b9164a664fce039df24c23656427a30c3a966926",
+  "description": "CBraMod 19->22 remap study: CBraMod (native 19-ch, 200-D mean-tokens) vs EEGConformer v2 (22-ch, 32-D) vs PCA bandpower (32-D), on the locked T-032 50-subject LOSO protocol, Bonferroni-corrected.",
+  "remap_design": {
+    "option": "A: native-montage from a shared raw source",
+    "assumption": "CBraMod and V2 are FIXED-shape ONNX (19 and 22 inputs); retraining forbidden. Each model runs its NATIVE montage from the SAME 64-channel PhysioNet raw trial. CBraMod selects its 19 native channels (all present in PhysioNet 64-ch); V2 selects the 22-channel prod subset; PCA uses 110 bandpower features (5x22). The 19<->22 channel-space gap (10 shared / 7 CBraMod-only / 12 prod-only) is documented, NOT interpolated/zero-filled.",
+    "shared_channels": 10,
+    "cbramod_only_channels": [
+      "O1",
+      "O2",
+      "F7",
+      "F8",
+      "FZ",
+      "CZ",
+      "PZ"
+    ],
+    "prod_only_channels": [
+      "F5",
+      "F6",
+      "F1",
+      "F2",
+      "FC5",
+      "FC6",
+      "FC3",
+      "FC4",
+      "C5",
+      "C6",
+      "P5",
+      "P6"
+    ],
+    "zero_filled_channels": [],
+    "interpolated_channels": [],
+    "fairness_note": "Each model uses its native channel count; metrics are cosine-based (dimension-agnostic). CBraMod=200-D (mean-tokens), V2/PCA=32-D."
+  },
+  "data": {
+    "dataset": "PhysioNet EEGMMIDB 1.0.0",
+    "subjects": "S001-S050 (50)",
+    "runs": [
+      5,
+      6
+    ],
+    "classes": [
+      "left_hand",
+      "right_hand",
+      "feet",
+      "tongue"
+    ],
+    "n_classes": 4,
+    "chance_level": 0.25,
+    "data_dir": "/tmp\\eegmmidb",
+    "n_trials": 1493
+  },
+  "preprocessing": {
+    "channels_cbramod": [
+      "FP1",
+      "FP2",
+      "F3",
+      "F4",
+      "C3",
+      "C4",
+      "P3",
+      "P4",
+      "O1",
+      "O2",
+      "F7",
+      "F8",
+      "T7",
+      "T8",
+      "P7",
+      "P8",
+      "FZ",
+      "CZ",
+      "PZ"
+    ],
+    "channels_v2_prod": [
+      "FP1",
+      "FP2",
+      "F5",
+      "F6",
+      "F3",
+      "F4",
+      "F1",
+      "F2",
+      "FC5",
+      "FC6",
+      "FC3",
+      "FC4",
+      "C5",
+      "C6",
+      "C3",
+      "C4",
+      "T7",
+      "T8",
+      "P7",
+      "P8",
+      "P5",
+      "P6"
+    ],
+    "sample_rate_hz": 250,
+    "window_samples": 1000,
+    "bandpass_hz": [
+      4.0,
+      38.0
+    ],
+    "normalization": "z-score per channel",
+    "resampling": "160->250 Hz (linear interpolation)",
+    "pca_features": "5 bands x 22 channels = 110",
+    "pca_components": 32,
+    "pca_fit": "train-only, per LOSO fold (no leakage)",
+    "protocol": "LOSO 50 folds, nearest-centroid (cosine), Recall@K train-only pool, no self-retrieval"
+  },
+  "artifacts": {
+    "cbramod": {
+      "path": "public/models/cbramod-encoder.onnx",
+      "sha256": "c128ccfdee0690da090c7dfcb39af8a2b25f3e492288f9305c85b293eeda6f47",
+      "input": "eeg[1,19,1000]",
+      "output": "embedding[1,19,5,200]->200 (mean-tokens)",
+      "wasm_compatible": false,
+      "dims": 200
+    },
+    "eegconformer_v2": {
+      "path": "public/models/eegconformer_finetuned.onnx",
+      "sha256": "18644de187e984a667d78ca79b3f4c0d2c0ada252c7084f4107343f77168f931",
+      "input": "input[1,22,1000]",
+      "output": "embedding[1,32]",
+      "wasm_compatible": true,
+      "dims": 32,
+      "note": "production GA default; read-only"
+    },
+    "pca": {
+      "description": "sklearn PCA(32) on 110 bandpower features, random_state=42, train-only per fold",
+      "dims": 32
+    }
+  },
+  "results": {
+    "onnx-cbramod": {
+      "model": "onnx-cbramod",
+      "loso": {
+        "n_folds": 50,
+        "mean_accuracy": 0.30434782608695654,
+        "std_accuracy": 0.08000724390558368,
+        "stderr_accuracy": 0.01131473294193686,
+        "ci95_accuracy": [
+          0.28161001895210974,
+          0.32708563322180334
+        ],
+        "mean_macro_f1": 0.21193778309858047,
+        "recall_at_1": {
+          "mean": 0.2645507246376812,
+          "ci95": [
+            0.243203064939907,
+            0.2858983843354554
+          ]
+        },
+        "recall_at_5": {
+          "mean": 0.7760579710144928,
+          "ci95": [
+            0.7528312879625225,
+            0.7992846540664631
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.9393333333333334,
+          "ci95": [
+            0.9261164628971335,
+            0.9525502037695333
+          ]
+        },
+        "per_fold_accuracy": [
+          0.2,
+          0.26666666666666666,
+          0.23333333333333334,
+          0.43333333333333335,
+          0.26666666666666666,
+          0.3,
+          0.4,
+          0.4,
+          0.26666666666666666,
+          0.13333333333333333,
+          0.36666666666666664,
+          0.26666666666666666,
+          0.26666666666666666,
+          0.21739130434782608,
+          0.3,
+          0.4666666666666667,
+          0.4,
+          0.4666666666666667,
+          0.26666666666666666,
+          0.3333333333333333,
+          0.43333333333333335,
+          0.23333333333333334,
+          0.4,
+          0.23333333333333334,
+          0.23333333333333334,
+          0.43333333333333335,
+          0.26666666666666666,
+          0.26666666666666666,
+          0.26666666666666666,
+          0.26666666666666666,
+          0.16666666666666666,
+          0.43333333333333335,
+          0.23333333333333334,
+          0.26666666666666666,
+          0.26666666666666666,
+          0.3,
+          0.26666666666666666,
+          0.3333333333333333,
+          0.26666666666666666,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.23333333333333334,
+          0.36666666666666664,
+          0.26666666666666666,
+          0.23333333333333334,
+          0.36666666666666664,
+          0.23333333333333334,
+          0.4,
+          0.36666666666666664,
+          0.26666666666666666
+        ],
+        "n_trials": 1493
+      }
+    },
+    "braindecode-eegconformer-prod-v2": {
+      "model": "braindecode-eegconformer-prod-v2",
+      "loso": {
+        "n_folds": 50,
+        "mean_accuracy": 0.3249565217391304,
+        "std_accuracy": 0.0731586264863228,
+        "stderr_accuracy": 0.010346192178154523,
+        "ci95_accuracy": [
+          0.30416507013933086,
+          0.34574797333893
+        ],
+        "mean_macro_f1": 0.2854437784314287,
+        "recall_at_1": {
+          "mean": 0.292231884057971,
+          "ci95": [
+            0.26923009834356515,
+            0.3152336697723769
+          ]
+        },
+        "recall_at_5": {
+          "mean": 0.7791884057971015,
+          "ci95": [
+            0.7587931318532448,
+            0.7995836797409581
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.9455942028985508,
+          "ci95": [
+            0.9350586643297915,
+            0.9561297414673101
+          ]
+        },
+        "per_fold_accuracy": [
+          0.43333333333333335,
+          0.3333333333333333,
+          0.3,
+          0.4,
+          0.16666666666666666,
+          0.23333333333333334,
+          0.43333333333333335,
+          0.3,
+          0.4666666666666667,
+          0.2,
+          0.26666666666666666,
+          0.3333333333333333,
+          0.4,
+          0.34782608695652173,
+          0.4,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.43333333333333335,
+          0.3,
+          0.36666666666666664,
+          0.36666666666666664,
+          0.3333333333333333,
+          0.26666666666666666,
+          0.23333333333333334,
+          0.3,
+          0.36666666666666664,
+          0.3,
+          0.3,
+          0.26666666666666666,
+          0.5,
+          0.23333333333333334,
+          0.3333333333333333,
+          0.26666666666666666,
+          0.43333333333333335,
+          0.36666666666666664,
+          0.26666666666666666,
+          0.36666666666666664,
+          0.26666666666666666,
+          0.2,
+          0.3333333333333333,
+          0.26666666666666666,
+          0.3333333333333333,
+          0.3,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.4,
+          0.2,
+          0.4,
+          0.3,
+          0.3
+        ],
+        "n_trials": 1493
+      }
+    },
+    "pca-bandpower": {
+      "model": "pca-bandpower",
+      "loso": {
+        "n_folds": 50,
+        "mean_accuracy": 0.30649275362318845,
+        "std_accuracy": 0.08145583257204729,
+        "stderr_accuracy": 0.011519594315778139,
+        "ci95_accuracy": [
+          0.28334326214442596,
+          0.32964224510195095
+        ],
+        "mean_macro_f1": 0.23150679373159386,
+        "recall_at_1": {
+          "mean": 0.274231884057971,
+          "ci95": [
+            0.25014740100054456,
+            0.29831636711539744
+          ]
+        },
+        "recall_at_5": {
+          "mean": 0.7405217391304347,
+          "ci95": [
+            0.7130717980626808,
+            0.7679716801981886
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.9062608695652175,
+          "ci95": [
+            0.8878343983211255,
+            0.9246873408093094
+          ]
+        },
+        "per_fold_accuracy": [
+          0.3333333333333333,
+          0.23333333333333334,
+          0.23333333333333334,
+          0.26666666666666666,
+          0.3333333333333333,
+          0.23333333333333334,
+          0.3,
+          0.4666666666666667,
+          0.26666666666666666,
+          0.23333333333333334,
+          0.3,
+          0.2,
+          0.26666666666666666,
+          0.391304347826087,
+          0.3,
+          0.4,
+          0.36666666666666664,
+          0.43333333333333335,
+          0.26666666666666666,
+          0.3,
+          0.3333333333333333,
+          0.23333333333333334,
+          0.43333333333333335,
+          0.23333333333333334,
+          0.23333333333333334,
+          0.36666666666666664,
+          0.26666666666666666,
+          0.26666666666666666,
+          0.36666666666666664,
+          0.3,
+          0.1,
+          0.4666666666666667,
+          0.4,
+          0.26666666666666666,
+          0.3,
+          0.23333333333333334,
+          0.3333333333333333,
+          0.23333333333333334,
+          0.2,
+          0.3333333333333333,
+          0.43333333333333335,
+          0.23333333333333334,
+          0.3,
+          0.26666666666666666,
+          0.26666666666666666,
+          0.3,
+          0.26666666666666666,
+          0.4666666666666667,
+          0.3,
+          0.4666666666666667
+        ],
+        "n_trials": 1493
+      }
+    }
+  },
+  "class_separability": {
+    "onnx-cbramod": {
+      "intra_class_cosine_mean": 0.964723527431488,
+      "intra_class_cosine_std": 0.031497661024332047,
+      "inter_class_cosine_mean": 0.9643750190734863,
+      "inter_class_cosine_std": 0.03187640383839607,
+      "separation_margin": 0.000348508358001709,
+      "fisher_score": 0.0023463282268494368,
+      "n_intra_pairs": 277936,
+      "n_inter_pairs": 835842
+    },
+    "braindecode-eegconformer-prod-v2": {
+      "intra_class_cosine_mean": 0.9071558713912964,
+      "intra_class_cosine_std": 0.11907968670129776,
+      "inter_class_cosine_mean": 0.903742253780365,
+      "inter_class_cosine_std": 0.12283571809530258,
+      "separation_margin": 0.0034136176109313965,
+      "fisher_score": 0.007218833081424236,
+      "n_intra_pairs": 277936,
+      "n_inter_pairs": 835842
+    },
+    "pca-bandpower": {
+      "intra_class_cosine_mean": 0.017554156482219696,
+      "intra_class_cosine_std": 0.41753989458084106,
+      "inter_class_cosine_mean": 0.002101349178701639,
+      "inter_class_cosine_std": 0.41547852754592896,
+      "separation_margin": 0.015452807769179344,
+      "fisher_score": 0.0034760760609060526,
+      "n_intra_pairs": 277936,
+      "n_inter_pairs": 835842
+    }
+  },
+  "latency_ms": {
+    "onnx-cbramod_warm": 60.73837933334289,
+    "eegconformer_v2_warm": 7.421537333381518,
+    "pca_bandpower_estimate": 12.723612000020998,
+    "engine": "onnxruntime CPU EP (server-side; CBraMod NOT WASM-compatible)"
+  },
+  "statistical_comparisons": [
+    {
+      "model_a": "onnx-cbramod",
+      "model_b": "braindecode-eegconformer-prod-v2",
+      "metric": "loso_accuracy",
+      "mean_a": 0.30434782608695654,
+      "mean_b": 0.3249565217391304,
+      "delta_a_minus_b": -0.02060869565217388,
+      "t_statistic": -1.5926641373264383,
+      "p_value": 0.11766681544697186,
+      "p_value_bonferroni": 0.35300044634091554,
+      "significant_bonferroni": false,
+      "cohens_d": -0.2252366977146422,
+      "recall_at_1_delta": -0.027681159420289814,
+      "recall_at_1_p_bonferroni": 0.2270756372575174,
+      "n_folds": 50
+    },
+    {
+      "model_a": "onnx-cbramod",
+      "model_b": "pca-bandpower",
+      "metric": "loso_accuracy",
+      "mean_a": 0.30434782608695654,
+      "mean_b": 0.30649275362318845,
+      "delta_a_minus_b": -0.002144927536231911,
+      "t_statistic": -0.20023709002375364,
+      "p_value": 0.8421239153995841,
+      "p_value_bonferroni": 1.0,
+      "significant_bonferroni": false,
+      "cohens_d": -0.028317797101594187,
+      "recall_at_1_delta": -0.009681159420289798,
+      "recall_at_1_p_bonferroni": 1.0,
+      "n_folds": 50
+    },
+    {
+      "model_a": "braindecode-eegconformer-prod-v2",
+      "model_b": "pca-bandpower",
+      "metric": "loso_accuracy",
+      "mean_a": 0.3249565217391304,
+      "mean_b": 0.30649275362318845,
+      "delta_a_minus_b": 0.01846376811594197,
+      "t_statistic": 1.323163983669611,
+      "p_value": 0.19192221700074974,
+      "p_value_bonferroni": 0.5757666510022492,
+      "significant_bonferroni": false,
+      "cohens_d": 0.18712362613061156,
+      "recall_at_1_delta": 0.018000000000000016,
+      "recall_at_1_p_bonferroni": 0.8081084377572408,
+      "n_folds": 50
+    }
+  ],
+  "bonferroni": {
+    "n_comparisons": 3,
+    "corrected_alpha": 0.016666666666666666
+  },
+  "decision": {
+    "cbramod_accuracy": 0.30434782608695654,
+    "v2_accuracy": 0.3249565217391304,
+    "pca_accuracy": 0.30649275362318845,
+    "evidence_gate": "CBraMod acc >= PCA AND >= V2, Bonferroni p<0.05 on 50-subject LOSO",
+    "cbramod_vs_v2_significant": false,
+    "cbramod_vs_pca_significant": false,
+    "result": "DO NOT promote/route CBraMod (negative result)"
+  },
+  "constraints": {
+    "v2_production": "UNCHANGED (path/rollout/.env=ga, artifact read-only)",
+    "retrain": "NONE (CBraMod, V2, and all other models untouched)",
+    "deploy": "CBraMod NOT deployed (wasmCompatible:false); server-side specialist role gated on this study"
+  }
+}

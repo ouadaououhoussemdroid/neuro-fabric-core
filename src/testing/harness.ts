@@ -29,6 +29,7 @@ import {
   resolveVerification,
 } from "@/lib/ai/artefacts/runtime-verifier";
 import { hasModel, registerBraindecodeEEGConformer, unregisterModel } from "@/lib/ai/models/registry";
+import { inferenceEngine } from "@/lib/ai/inference/engine";
 
 /** Synthetic EEG input generator — deterministic mathematical signal. */
 export function makeSyntheticInput(
@@ -87,7 +88,7 @@ declare global {
   interface Window {
     __neuroTest: {
       /** Production embedEEG entry point (exact same function upload.ts uses). */
-      embedEEG: (input: unknown, opts?: EmbedEEGOptions) => Promise<import("@/lib/ai/embeddings").EmbedResult>;
+      embedEEG: typeof embedEEG;
       /** In-memory rollout stage selector (does NOT touch AI_EEGCONFORMER_ENABLED env). */
       setRolloutStage: typeof setRolloutStage;
       /** Reset all in-process metrics counters (test isolation). */
@@ -112,6 +113,8 @@ declare global {
       makeSyntheticInput: typeof makeSyntheticInput;
       /** Read Performance API entries for ORT WASM resource loads. */
       wasmResourceEntries: typeof wasmResourceEntries;
+      /** Cached InferenceEngine (production singleton) for test teardown. */
+      inferenceEngine: typeof inferenceEngine;
     };
   }
 }
@@ -130,4 +133,5 @@ window.__neuroTest = {
   unregisterModel,
   makeSyntheticInput,
   wasmResourceEntries,
+  inferenceEngine,
 };

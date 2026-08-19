@@ -10,13 +10,17 @@ import { getEEGConformerRolloutStage } from "../env.server";
 import { setRolloutStage } from "./rollout";
 import { registerBraindecodeEEGConformer, unregisterModel, hasModel } from "./models/registry";
 
-const EEGCONFORMER_ID = "braindecode-eegconformer-prod";
+const EEGCONFORMER_ID = "braindecode-eegconformer-prod-v2";
 
 /**
  * Apply the current rollout stage to the model registry and cohort gate.
- * - off    → unregister EEGConformer (embed falls back to PCA)
- * - canary/beta/ga → ensure EEGConformer is registered; per-user cohort
+ * - off    → unregister EEGConformer v2 (embed falls back to PCA)
+ * - canary/beta/ga → ensure EEGConformer v2 is registered; per-user cohort
  *   routing is handled by isEEGConformerEnabledForUser() in embedEEG().
+ *
+ * V1 (braindecode-eegconformer-prod, /models/eegconformer.onnx) is always
+ * registered from registry.ts as the rollback-only model — this function
+ * never touches V1.
  */
 export function applyEEGConformerRollout(): void {
   const stage = getEEGConformerRolloutStage();
@@ -25,7 +29,11 @@ export function applyEEGConformerRollout(): void {
     if (hasModel(EEGCONFORMER_ID)) unregisterModel(EEGCONFORMER_ID);
   } else {
     if (!hasModel(EEGCONFORMER_ID)) {
-      registerBraindecodeEEGConformer({ artifact: "/models/eegconformer.onnx" });
+      registerBraindecodeEEGConformer({
+        id: "braindecode-eegconformer-prod-v2",
+        artifact: "/models/eegconformer_finetuned.onnx",
+        enableVerification: true,
+      });
     }
   }
 }

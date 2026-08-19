@@ -41,10 +41,13 @@ export class VectorIndexError extends Error {
 }
 
 export interface NeuralVectorIndexOptions {
-  /** Supabase client with service-role or authenticated access to the embeddings table. */
+  /** Supabase client with service-role or authenticated access. */
   supabase?: {
     from: (table: string) => unknown;
+    rpc?: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
   };
+  /** Table name to read/write (default: "embeddings"; Tier-2 uses "foundation_embeddings"). */
+  tableName?: string;
   /** Model id to tag inserted embeddings with. */
   modelId?: string;
   /** User id for RLS-scoped queries. */
@@ -58,6 +61,10 @@ export interface NeuralVectorIndexOptions {
    * in-memory {@link VectorIndex} is always used regardless of this option.
    */
   searchMode?: SearchMode;
+  /** RPC name for ANN search (default: "match_embeddings"). Tier-2: "match_foundation_embeddings". */
+  matchRpc?: string;
+  /** RPC name for exact search (default: "match_embeddings_exact"). Tier-2: "match_foundation_embeddings_exact". */
+  matchRpcExact?: string;
 }
 
 interface EmbeddingRow {
@@ -94,17 +101,23 @@ interface SupabaseRpcClient {
 export class NeuralVectorIndex<M = unknown> {
   private readonly fallback = new VectorIndex<M>();
   private readonly supabase: NeuralVectorIndexOptions["supabase"];
+  private readonly tableName: string;
   private readonly modelId: string;
   private readonly userId?: string;
   private readonly dimensions: number;
   private readonly searchMode: SearchMode;
+  private readonly matchRpcName: string;
+  private readonly matchRpcExactName: string;
 
   constructor(opts: NeuralVectorIndexOptions = {}) {
     this.supabase = opts.supabase;
+    this.tableName = opts.tableName ?? "embeddings";
     this.modelId = opts.modelId ?? "unknown";
     this.userId = opts.userId;
     this.dimensions = opts.dimensions ?? 32;
     this.searchMode = opts.searchMode ?? "ann";
+    this.matchRpcName = opts.matchRpc ?? "match_embeddings";
+    this.matchRpcExactName = opts.matchRpcExact ?? "match_embeddings_exact";
   }
 
   /** Whether the index is backed by pgvector (true) or in-memory (false). */
@@ -132,7 +145,9 @@ export class NeuralVectorIndex<M = unknown> {
       embedding_dim: this.dimensions,
       metadata: { ...((item.meta as object) ?? {}), _localId: item.id } as Record<string, unknown>,
     };
-    const qb = (this.supabase as { from: (t: string) => SupabaseQueryBuilder }).from("embeddings");
+    const qb = (this.supabase as { from: (t: string) => SupabaseQueryBuilder }).from(
+      this.tableName,
+    );
     const { error } = await qb.insert(row).select();
     if (error) {
       // Propagate DB errors — do NOT silently fall back to in-memory.
@@ -158,8 +173,10 @@ export class NeuralVectorIndex<M = unknown> {
     if (typeof rpcClient.rpc !== "function") {
       return this.fallback.search(query, k);
     }
-    // Select the exact RPC based on search mode.
-    const rpcName = this.searchMode === "exact" ? "match_embeddings_exact" : "match_embeddings";
+    // Select the exact RPC based on search mode. The RPC names default to the
+    // Tier-1 `match_embeddings` / `match_embeddings_exact` but the Tier-2 route
+    // passes `matchRpc` / `matchRpcExact` = `match_foundation_embeddings*`.
+    const rpcName = this.searchMode === "exact" ? this.matchRpcExactName : this.matchRpcName;
     const { data, error } = await rpcClient.rpc(rpcName, {
       query_embedding: query,
       match_count: k,

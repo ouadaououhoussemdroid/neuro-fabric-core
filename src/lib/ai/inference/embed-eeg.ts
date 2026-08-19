@@ -10,9 +10,16 @@
  *
  * Validation (NaN, dim, zero-vector) and L2 normalisation are handled by the
  * underlying `embed()` facade; we only assemble the chain + observability.
+ *
+ * P3: the preferred (non-PCA) model is now routed through the process-wide
+ * `InferenceEngine`, which caches a single ONNX InferenceSession per model and
+ * reuses it across requests. This amortises the per-call fetch+compile+worker-
+ * init cost that dominated Firefox latency (P95 1589 ms → 162 ms) and clears
+ * the GA latency gate on the canonical FP32 artifact (sha 18644de1…).
  */
-import { embed, type EmbedResult } from "../embeddings";
+import { embed, type EmbedResult, finalize } from "../embeddings";
 import { hasModel } from "../models/registry";
+import { inferenceEngine } from "./engine";
 import type { ModelInput } from "../types";
 import { log } from "../../logging";
 import { isEEGConformerEnabledForUser } from "../rollout";
@@ -31,7 +38,7 @@ export interface EmbedEEGOptions {
   userId?: string;
 }
 
-const DEFAULT_PREFERRED = "braindecode-eegconformer-prod";
+const DEFAULT_PREFERRED = "braindecode-eegconformer-prod-v2";
 
 export async function embedEEG(
   input: ModelInput,
@@ -54,14 +61,35 @@ export async function embedEEG(
     }
   }
 
+  const normalize = opts.normalize !== false;
+
+  // P3: route the preferred non-PCA model through the cached InferenceEngine
+  // so a single InferenceSession is created and reused (amortises the
+  // fetch + verify + compile + worker-init cost). The engine's per-model
+  // async mutex serializes session.run() (ORT-Web WASM is not reentrant).
   const startId = enabled && hasModel(preferred) ? preferred : chain[0];
   log("info", "ai.embedEEG.start", { startId, chain });
+
+  if (startId !== "pca-legacy-v1") {
+    try {
+      const out = await inferenceEngine.embed(startId, input);
+      const result = finalize(out, false, undefined, normalize, opts.expectedDim);
+      metrics.modelSelectedTotal.inc({ model: result.modelId, fell_back: "false" });
+      return result;
+    } catch (err) {
+      const reason = (err as Error).message;
+      log("warn", "ai.embedEEG.engine.fail", { modelId: startId, reason });
+      // Evict the broken session so the next request retries a fresh one.
+      await inferenceEngine.disposeModel(startId);
+      // Fall through to per-call facade → re-verify SHA → fallbackChain → PCA.
+    }
+  }
 
   const result = await embed(input, {
     modelId: startId,
     fallbackChain: chain,
     fallbackToPCA: true,
-    normalize: opts.normalize !== false,
+    normalize,
     expectedDim: opts.expectedDim,
   });
 
@@ -72,3 +100,5 @@ export async function embedEEG(
 
   return result;
 }
+
+export { DEFAULT_PREFERRED }; // keep export at end for readability

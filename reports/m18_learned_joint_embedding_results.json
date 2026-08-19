@@ -1,0 +1,242 @@
+{
+  "experiment_id": "m18-learned-joint-embedding",
+  "timestamp": "2026-08-16T04:28:49.972670+00:00",
+  "cache_path": "C:\\Users\\pc\\Documents\\GitHub\\neuro-fabric-core\\reports\\.m18_learned_joint_embedding_cache.npz",
+  "seed": 42,
+  "bonferroni_alpha": 0.0125,
+  "protocol": {
+    "dataset": "PhysioNet EEGMMIDB (S001-S050)",
+    "subjects": 50,
+    "runs": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "trials_per_run": 15,
+    "total_trials": 4500,
+    "n_folds_loso": 50,
+    "session_disjoint_splits": 300,
+    "query": "one run (15 trials) of held-out subject",
+    "pool": "all other trials",
+    "fusion_purpose": "learn actual embedding transformations from 264-D joint space",
+    "baseline_r5_264d": 0.7584
+  },
+  "models": {
+    "cbramod": {
+      "onnx_path": "public/models/cbramod-encoder.onnx",
+      "sha256": "c128ccfdee0690da090c7dfcb39af8a2b25f3e492288f9305c85b293eeda6f47",
+      "embedding_dim": 200,
+      "channels": 19,
+      "frozen": true
+    },
+    "v2_eeegconformer": {
+      "onnx_path": "public/models/eegconformer_finetuned.onnx",
+      "sha256": "18644de187e984a667d78ca79b3f4c0d2c0ada252c7084f4107343f77168f931",
+      "embedding_dim": 32,
+      "channels": 22,
+      "frozen": true
+    },
+    "pca": {
+      "input_features": 110,
+      "output_dim": 32,
+      "n_bands": 5,
+      "fit_per_fold": true,
+      "frozen": true
+    }
+  },
+  "individual_baselines": {
+    "cbramod_200_raw_cosine": {
+      "R@1": 0.24266666666666667,
+      "R@5": 0.5275555555555556,
+      "R@10": 0.6586666666666666,
+      "MRR": 0.3775736780156068
+    },
+    "v2_32_raw_cosine": {
+      "R@1": 0.06866666666666667,
+      "R@5": 0.2157777777777778,
+      "R@10": 0.33644444444444443,
+      "MRR": 0.1567726332104968
+    },
+    "pca_32_bandpower": {
+      "R@1": 0.4855555555555556,
+      "R@5": 0.7404444444444445,
+      "R@10": 0.8264444444444444,
+      "MRR": 0.6015564175674897
+    }
+  },
+  "primary_baseline": {
+    "name": "raw_264d_concatenation",
+    "R@1": 0.4891111111111111,
+    "R@5": 0.7584444444444445,
+    "R@10": 0.8364444444444444,
+    "MRR": 0.6099819536914076,
+    "dim": 264
+  },
+  "learned_methods": {
+    "weighted_concat": {
+      "description": "Learned block-level weights for [CBraMod|V2|PCA] via RidgeClassifier",
+      "dim": 264,
+      "fitting": "Train-only per fold via RidgeClassifier coefficients",
+      "R@1": 0.5271111111111111,
+      "R@5": 0.7855555555555556,
+      "R@10": 0.8622222222222222,
+      "MRR": 0.6418564153508289,
+      "n_splits": 4500,
+      "block_weights": {
+        "cbramod": 0.6216307282447815,
+        "v2": 0.16190451383590698,
+        "pca": 0.21646469831466675
+      }
+    },
+    "supervised_linear": {
+      "linear_32d": {
+        "description": "Supervised linear projection (264->32) via LDA/RidgeClassifier",
+        "dim": 32,
+        "fitting": "Train-only per fold",
+        "R@1": 0.13111111111111112,
+        "R@5": 0.3917777777777778,
+        "R@10": 0.5504444444444444,
+        "MRR": 0.26217754355817297
+      },
+      "linear_64d": {
+        "description": "Supervised linear projection (264->64) via LDA/RidgeClassifier",
+        "dim": 64,
+        "fitting": "Train-only per fold",
+        "R@1": 0.37222222222222223,
+        "R@5": 0.6406666666666667,
+        "R@10": 0.7582222222222222,
+        "MRR": 0.4977510231631628
+      },
+      "linear_128d": {
+        "description": "Supervised linear projection (264->128) via LDA/RidgeClassifier",
+        "dim": 128,
+        "fitting": "Train-only per fold",
+        "R@1": 0.4491111111111111,
+        "R@5": 0.7064444444444444,
+        "R@10": 0.802,
+        "MRR": 0.5664249854862137
+      },
+      "linear_256d": {
+        "description": "Supervised linear projection (264->256) via LDA/RidgeClassifier",
+        "dim": 256,
+        "fitting": "Train-only per fold",
+        "R@1": 0.44377777777777777,
+        "R@5": 0.7042222222222222,
+        "R@10": 0.8011111111111111,
+        "MRR": 0.5632046763170789
+      }
+    },
+    "mlp_nonlinear": {
+      "mlp_64d": {
+        "description": "MLP: 264->128->64, ReLU, dropout=0.3, early stopping",
+        "dim": 64,
+        "fitting": "Train-only per fold with validation split",
+        "R@1": 0.37622222222222224,
+        "R@5": 0.6826666666666666,
+        "R@10": 0.7848888888888889,
+        "MRR": 0.5120779571418963,
+        "mean_val_acc": 1.1817971800698672
+      }
+    },
+    "supcon_metric_learning": {
+      "supcon_64d": {
+        "description": "Supervised contrastive learning (264->128->64), temperature=0.1",
+        "dim": 64,
+        "fitting": "Train-only per fold with validation split",
+        "R@1": 0.3164444444444444,
+        "R@5": 0.6228888888888889,
+        "R@10": 0.7426666666666667,
+        "MRR": 0.4576265355250097,
+        "mean_val_acc": 0.9585579273555864
+      }
+    }
+  },
+  "best_learned_method": "weighted_concat",
+  "best_learned_r5": 0.7855555555555556,
+  "baseline_r5": 0.7584444444444445,
+  "improvement_over_baseline_pp": 2.71,
+  "beats_baseline": true,
+  "additional_metrics": {
+    "baseline_264d_fisher": 0.7022,
+    "baseline_264d_intra_cosine": 2.3347,
+    "baseline_264d_inter_cosine": 1.8655,
+    "baseline_264d_r5_ci95": [
+      0.7456,
+      0.7707
+    ],
+    "best_weighted_concat_fisher": 0.744,
+    "best_weighted_concat_intra_cosine": 0.9205,
+    "best_weighted_concat_inter_cosine": 0.8608,
+    "best_weighted_concat_r5_ci95": [
+      0.7731,
+      0.798
+    ]
+  },
+  "pairwise_comparisons": {
+    "best_learned_vs_raw_264d": {
+      "mean_diff": 0.02711111111111111,
+      "t_statistic": 5.877977831610062,
+      "p_value": 4.453221859560538e-09,
+      "cohen_d": 0.08762372001116288,
+      "ci95_lower": 0.018444444444444444,
+      "ci95_upper": 0.036222222222222225,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125
+    },
+    "best_learned_vs_pca": {
+      "mean_diff": 0.04511111111111111,
+      "t_statistic": 8.414824796525393,
+      "p_value": 5.2244545841919777e-17,
+      "cohen_d": 0.1254408017581953,
+      "ci95_lower": 0.034666666666666665,
+      "ci95_upper": 0.05622222222222222,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125
+    },
+    "best_learned_vs_cbramod": {
+      "mean_diff": 0.258,
+      "t_statistic": 30.61863129331979,
+      "p_value": 3.466721253271433e-187,
+      "cohen_d": 0.4564356063316282,
+      "ci95_lower": 0.24110555555555555,
+      "ci95_upper": 0.2746722222222222,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125
+    },
+    "best_learned_vs_v2": {
+      "mean_diff": 0.5697777777777778,
+      "t_statistic": 68.73725439306824,
+      "p_value": 0.0,
+      "cohen_d": 1.0246744893954682,
+      "ci95_lower": 0.5544388888888888,
+      "ci95_upper": 0.5868944444444444,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125
+    }
+  },
+  "block_weights_analysis": {
+    "cbramod": 0.6216307282447815,
+    "v2": 0.16190451383590698,
+    "pca": 0.21646469831466675
+  },
+  "decision": "Best learned embedding: weighted_concat (R@5=0.7856). Baseline 264-D raw: R@5=0.7584. Improvement: +2.71pp. Significant after Bonferroni: True (p=4.4532e-09, d=+0.0876).",
+  "contaminated": false,
+  "status": "COMPLETE",
+  "constraints_honored": {
+    "no_model_retraining": true,
+    "no_artifact_modification": true,
+    "no_onnx_modification": true,
+    "no_default_preferred_change": true,
+    "no_v2_or_pca_change": true,
+    "no_production_code_changes": true,
+    "loso_leakage_free": true,
+    "session_disjoint_evaluation": true,
+    "train_only_fitting": true,
+    "bonferroni_correction": true,
+    "seed_42_reproducible": true,
+    "prior_archive_records_byte_preserved": true
+  }
+}

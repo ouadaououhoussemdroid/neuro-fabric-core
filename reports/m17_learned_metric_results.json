@@ -1,0 +1,224 @@
+{
+  "experiment_id": "m17-learned-metric-projection",
+  "timestamp": "2026-08-15T23:40:57.874060+00:00",
+  "cache_source": "C:\\Users\\pc\\Documents\\GitHub\\neuro-fabric-core\\reports\\.cbramod_cross_session_cache.npz",
+  "seed": 42,
+  "protocol": {
+    "n_folds_loso": 50,
+    "session_disjoint_splits_per_fold": 6,
+    "total_splits": 300,
+    "query": "one run of held-out subject (15 trials)",
+    "pool": "all other trials (same subject diff runs + all other subjects' all runs)",
+    "train_w": "49 subjects (4410 trials)",
+    "no_test_subject_info_during_training": true
+  },
+  "baselines": {
+    "raw_cbramod_200_cosine": {
+      "R@1": {
+        "mean": 0.24266666666666667,
+        "std": 0.21428439064551996,
+        "ci95_lower": 0.2186666666666667,
+        "ci95_upper": 0.26689444444444443,
+        "n_splits": 300
+      },
+      "R@5": {
+        "mean": 0.5275555555555556,
+        "std": 0.2632937939825185,
+        "ci95_lower": 0.49799444444444446,
+        "ci95_upper": 0.5577777777777777,
+        "n_splits": 300
+      },
+      "R@10": {
+        "mean": 0.6586666666666667,
+        "std": 0.25014837663021533,
+        "ci95_lower": 0.6297777777777778,
+        "ci95_upper": 0.6871166666666666,
+        "n_splits": 300
+      },
+      "MRR": {
+        "mean": 0.3775736780156068,
+        "std": 0.21499264249867886,
+        "n_splits": 300
+      }
+    },
+    "centroid_cbramod_200": {
+      "R@1": {
+        "mean": 0.2906666666666667,
+        "std": 0.25260906133486327,
+        "n_queries": 50
+      },
+      "R@5": {
+        "mean": 0.596,
+        "std": 0.2761609179585514,
+        "n_queries": 50
+      },
+      "R@10": {
+        "mean": 0.7439999999999999,
+        "std": 0.24406236889225066,
+        "n_queries": 50
+      },
+      "MRR": {
+        "mean": 0.4320050792022251,
+        "n_queries": 750
+      }
+    },
+    "pca_32_bandpower_reference": {
+      "R@1": 0.44,
+      "R@5": 0.692,
+      "R@10": 0.7853,
+      "source": "Mission 13/14 (full 4500 dataset, 300 session-disjoint splits)"
+    },
+    "v2_32_cosine_reference": {
+      "R@1": 0.0687,
+      "R@5": 0.2158,
+      "R@10": 0.3364,
+      "source": "Mission 13/14 (full 4500 dataset, 300 session-disjoint splits)"
+    },
+    "v2_32_same_protocol": {
+      "R@1": {
+        "mean": 0.06866666666666665,
+        "std": 0.12073908406727575,
+        "ci95_lower": 0.05577777777777778,
+        "ci95_upper": 0.08244444444444445,
+        "n_splits": 300
+      },
+      "R@5": {
+        "mean": 0.21577777777777774,
+        "std": 0.17069585290200745,
+        "ci95_lower": 0.19844444444444445,
+        "ci95_upper": 0.2353333333333333,
+        "n_splits": 300
+      },
+      "R@10": {
+        "mean": 0.33644444444444443,
+        "std": 0.18105544098840967,
+        "ci95_lower": 0.3173333333333333,
+        "ci95_upper": 0.3560055555555555,
+        "n_splits": 300
+      },
+      "MRR": {
+        "mean": 0.1567726332104968,
+        "std": 0.12826478837213479,
+        "n_splits": 300
+      }
+    }
+  },
+  "methods": {
+    "lda_projection": {
+      "R@1": {
+        "mean": 0.29244444444444445,
+        "std": 0.2589504203571531,
+        "ci95_lower": 0.26355,
+        "ci95_upper": 0.3213333333333333,
+        "n_splits": 300
+      },
+      "R@5": {
+        "mean": 0.5735555555555556,
+        "std": 0.2892807278869745,
+        "ci95_lower": 0.5428833333333333,
+        "ci95_upper": 0.6062222222222222,
+        "n_splits": 300
+      },
+      "R@10": {
+        "mean": 0.6968888888888889,
+        "std": 0.26246258721312965,
+        "ci95_lower": 0.6682166666666666,
+        "ci95_upper": 0.7255555555555556,
+        "n_splits": 300
+      },
+      "MRR": {
+        "mean": 0.42496130062061316,
+        "std": 0.2513112230329674,
+        "n_splits": 300
+      },
+      "mean_training_time_ms": 170.23117542266846,
+      "projection_shape": [
+        200,
+        200
+      ]
+    },
+    "supcon_projection": {
+      "R@1": {
+        "mean": 0.20244444444444445,
+        "std": 0.19348729757865463,
+        "n_splits": 300
+      },
+      "R@5": {
+        "mean": 0.4651111111111112,
+        "std": 0.24911099210336177,
+        "n_splits": 300
+      },
+      "R@10": {
+        "mean": 0.5946666666666667,
+        "std": 0.2459053000115378,
+        "n_splits": 300
+      },
+      "MRR": {
+        "mean": 0.3279795628761321,
+        "n_splits": 300
+      },
+      "projection_shape": [
+        200,
+        200
+      ]
+    }
+  },
+  "pairwise_comparisons": {
+    "lda_vs_raw_cosine": {
+      "mean_diff": 0.046,
+      "t_statistic": 3.130352383806661,
+      "p_value": 0.001918533778327688,
+      "cohen_d": 0.18073097914491626,
+      "ci95_lower": 0.01708160562200404,
+      "ci95_upper": 0.07491839437799595,
+      "n_splits": 300
+    },
+    "lda_vs_centroid": {
+      "note": "Centroid uses run-5-only queries; LDA uses all 6 runs (session-disjoint). Comparing different protocols.",
+      "lda_r5": 0.5735555555555556,
+      "centroid_r5": 0.596,
+      "delta": -0.022444444444444378
+    },
+    "lda_vs_pca_reference": {
+      "note": "PCA results from Mission 13 reference (300 splits, different protocol)",
+      "lda_r5": 0.5735555555555556,
+      "pca_r5": 0.692,
+      "delta": -0.11844444444444435
+    },
+    "lda_vs_v2_same_protocol": {
+      "mean_diff": 0.35777777777777775,
+      "t_statistic": 22.385068486291633,
+      "p_value": 7.210691055635506e-66,
+      "cohen_d": 1.292402531638868,
+      "ci95_lower": 0.32632460155665316,
+      "ci95_upper": 0.38923095399890234,
+      "n_splits": 300
+    },
+    "supcon_vs_raw_cosine": {
+      "mean_diff": -0.06244444444444445,
+      "t_statistic": -5.964975814151985,
+      "p_value": 6.901070792183447e-09,
+      "cohen_d": -0.34438803920102556,
+      "ci95_lower": -0.08304574757110522,
+      "ci95_upper": -0.041843141317783675,
+      "n_splits": 300
+    },
+    "supcon_vs_lda": {
+      "mean_diff": -0.10844444444444447,
+      "t_statistic": -6.287350852632849,
+      "p_value": 1.1420520035124939e-09,
+      "cohen_d": -0.3630003707257199,
+      "ci95_lower": -0.14238736327777146,
+      "ci95_upper": -0.07450152561111749,
+      "n_splits": 300
+    }
+  },
+  "geometry_notes": {
+    "cbramod_anisotropy": 0.9621,
+    "cbramod_participation_ratio": 4.16,
+    "top_pc1_variance_ratio": 0.4683,
+    "whitening_hurts": true,
+    "centroid_beats_nn": true,
+    "centroid_r5_gain_over_nn": 0.115
+  }
+}

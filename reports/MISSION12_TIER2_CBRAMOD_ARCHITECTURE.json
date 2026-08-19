@@ -1,0 +1,133 @@
+{
+  "experiment_id": "mission12-tier2-cbramod-foundation-200d",
+  "experiment_name": "Mission 12 — Tier-2 server-native CBraMod 200-D foundation embedding architecture (additive, V2 byte-preserved)",
+  "mission": "Mission 12",
+  "tier": "Tier-2 (server-native; wasmCompatible:false)",
+  "date": "2026-08-14",
+  "author": "NeuroFabric team",
+  "status": "SUCCESS",
+  "summary": "Additive server-side CBraMod 200-D foundation embedding path implementing the Mission-11 validated representation, with a dedicated foundation_embeddings(vector(200)) namespace and NO V2/PCA fallback (424 on FoundationUnavailableError). Tier-1 V2 preserved byte-for-byte.",
+  "constraints_honored": {
+    "wbramod_opt_in_server_side_only": true,
+    "wasmCompatible_false": true,
+    "isolated_foundation_embeddings_vector200_namespace": true,
+    "no_V2_or_PCA_fallback": true,
+    "no_DEFAULT_PREFERRED_modification": true,
+    "no_embedEEG_modification": true,
+    "no_env_modification": true,
+    "no_rollout_modification": true,
+    "no_vector32_modification": true,
+    "no_V2_modification": true,
+    "no_PCA_modification": true,
+    "no_registry_modification": true,
+    "no_artifact_modification": true,
+    "no_manifest_modification": true,
+    "preserve_mission11_preprocessing_pooling_sha_provenance": true,
+    "exactly_one_archive_append": true,
+    "M6_M9_M10_M11_byte_untouched": true,
+    "no_mission13_started": true,
+    "no_retrain": true
+  },
+  "pipeline": {
+    "entry": "POST /api/eeg/embed/foundation",
+    "auth": true,
+    "rate_limit": true,
+    "cors": true,
+    "magic_token": true,
+    "parse": "CSV/JSON -> EEGSignal",
+    "channel_selection": "selectCbraModChannels -> 19-ch CBraMod 10-20 montage (no zeros/interpolation)",
+    "resample": "160 -> 250 Hz",
+    "preprocess": { "bandpass": [4, 38], "notch": false, "segment": { "window_seconds": 4, "overlap": 0.5 }, "zscore": "per channel" },
+    "runtime": "onnxruntime-node CPU EP (dynamic import in foundationRuntime, .server.ts)",
+    "onnx": "cbramod-encoder.onnx [1,19,1000] -> [1,19,5,200]",
+    "pooling": "mean-tokens over [1,19,5,200] -> [200]  (== Mission-11 r.mean(axis=(1,2)))",
+    "normalize": "L2 (unit sphere)",
+    "embedding_dim": 200,
+    "storage": "foundation_embeddings(vector(200) CHECK(vector_dims=200)) via match_foundation_embeddings RPC",
+    "fallback": "none — FoundationUnavailableError -> HTTP 424; per-window failure -> HTTP 500"
+  },
+  "artifacts": {
+    "cbramod-encoder.onnx": { "sha256": "c128ccfdee0690da090c7dfcb39af8a2b25f3e492288f9305c85b293eeda6f47", "size_bytes": 22018587, "input_shape": [1, 19, 1000], "output_shape": [1, 19, 5, 200], "wasmCompatible": false, "wasmBlockers": ["DFT", "ReduceL2"] },
+    "manifest_entry_source": "public/models/manifest.json (committed HEAD)",
+    "migration": "supabase/migrations/20260814000000_foundation_embeddings.sql"
+  },
+  "validation": {
+    "typecheck": { "mission12_files_errors": 0, "preexisting_baseline_errors_unmodified": 17, "baseline_files": ["src/lib/ai/inference/__tests__/engine-lifecycle.test.ts", "src/lib/evaluation/model-comparison.ts", "src/testing/harness.ts", "src/testing/staging-harness.ts", "vite-plugins/test-harness.ts"] },
+    "lint": { "mission12_files_errors": 0, "fixed": "13 prettier/prettier (auto-fixed via eslint --fix)" },
+    "tests": [
+      { "file": "src/lib/ai/inference/__tests__/foundation.server.test.ts", "type": "unit (mocked ort)", "passed": 5, "failed": 0 },
+      { "file": "src/routes/api/eeg/embed/__tests__/-foundation.test.ts", "type": "route contract", "passed": 6, "failed": 0, "assertions": ["200-D", "writes foundation_embeddings not embeddings", "never embedEEG", "424 not V2 fallback", "provenance"] },
+      { "file": "src/lib/ai/inference/__tests__/foundation-e2e.test.ts", "type": "Tier-2 real ONNX forward", "passed": 1, "failed": 0, "warm_latency_ms_range": [57.71, 114.15], "dims": 200, "l2_normalized": true, "sha256_verified": true, "fellBack": false }
+    ],
+    "v2_regression": { "file": "src/routes/api/eeg/__tests__/-upload.test.ts", "passed": 15, "failed": 0, "v2_dim": 32, "v2_namespace": "embeddings (vector(32))", "v2_model_observed": "pca-legacy-v1", "pca_fallback": "intact" },
+    "build": { "target": "Nitro / Cloudflare Workers (Node.js runtime T-003)", "exit_code": 0, "onnxruntime_node_externalized_from_worker_bundle": true, "onnxruntime_web_bundled": true },
+    "migration_lint": { "supabase_cli_available": false, "sqlfluff_available": false, "psql_available": false, "method": "static_review", "verdict": "standard idempotent Postgres + pgvector + plpgsql; SECURITY DEFINER + SET search_path=public; grants to authenticated+service_role" }
+  },
+  "v2_preservation_proof": {
+    "api_eeg_upload_32d": true,
+    "embeddings_table_vector32_untouched": true,
+    "DEFAULT_PREFERRED_unchanged": true,
+    "embedEEG_unchanged": true,
+    "PCA_fallback_intact": true,
+    "manifest_json_pristine_HEAD": true,
+    "integrity_json_pristine_HEAD": true,
+    "foundation_path_never_imports_V2": true
+  },
+  "retrieval_gate_cited_from_mission": 11,
+  "gate_decision": {
+    "verdict": "SUCCESS",
+    "cbramod_recall_at_5": 0.5273,
+    "v2_recall_at_5": 0.2158,
+    "delta_recall_at_5": 0.3116,
+    "p_bonferroni_vs_v2": 1.663e-59,
+    "recall_at_10_delta": 0.3222,
+    "p_bonferroni_at_10": 3.436e-61,
+    "recall_at_1_delta": 0.174,
+    "p_bonferroni_at_1": 5.612e-36,
+    "mi_accuracy_safety_floor": 0.2749,
+    "mi_chance": 0.25,
+    "decision_rule": "CBraMod >= PCA AND CBraMod >= V2, both p<0.05 Bonferroni",
+    "role_earned": "opt-in server-side specialist (Tier-2); NOT promoted into DEFAULT_PREFERRED/embedEEG"
+  },
+  "archive_append": {
+    "file": "reports/benchmark_archive.json",
+    "array": "experiments[]",
+    "new_index": 11,
+    "total_after": 12,
+    "id": "mission12-tier2-cbramod-foundation-200d",
+    "prior_experiments_byte_identical": true,
+    "sibling_top_level_keys_untouched": ["archive_created", "description", "fine_tuning_experiments", "bugs_and_corrections", "model_artifacts", "rollout_system", "preserved_artifacts"],
+    "appender_script": "scripts/tmp/append_mission12_archive.mjs",
+    "index_note": "Plan anticipated idx18, but live archive held only 11 pre-existing experiments (idx 0-10, all tier4/t030/t031; no M6/M9/M10/M11 records). Appended as idx11 to honor exactly-one-append + byte-untouched priority over a positional index that would require 7 phantom records."
+  },
+  "files": {
+    "created": [
+      "src/lib/eeg/channels.ts",
+      "src/lib/eeg/preprocessing/resample.ts",
+      "src/lib/ai/inference/foundation.server.ts",
+      "src/routes/api/eeg/embed/foundation.ts",
+      "supabase/migrations/20260814000000_foundation_embeddings.sql",
+      "src/lib/ai/inference/__tests__/foundation.server.test.ts",
+      "src/lib/ai/inference/__tests__/foundation-e2e.test.ts",
+      "src/routes/api/eeg/embed/__tests__/-foundation.test.ts",
+      "scripts/tmp/append_mission12_archive.mjs",
+      "reports/MISSION12_TIER2_CBRAMOD_ARCHITECTURE.md",
+      "reports/MISSION12_TIER2_CBRAMOD_ARCHITECTURE.json"
+    ],
+    "tracked_edits_reapplied": [
+      "package.json (optionalDependencies.onnxruntime-node)",
+      "src/integrations/supabase/types.ts (foundation_embeddings Row/Insert/Update)",
+      "src/lib/vector-search/neural-index.ts (parameterised tableName/matchRpc, defaults preserved)",
+      "src/lib/metrics/index.ts (foundation* counters, additive)",
+      "vite.config.ts (optimizeDeps.exclude onnxruntime-node, additive)",
+      "src/lib/ai/embeddings/index.ts (export finalize only)"
+    ],
+    "untouched_byteforce": ["public/models/manifest.json", "public/ort/integrity.json", "embedEEG", "DEFAULT_PREFERRED", "registry.ts", "vector(32)", "PCA", "V2 artifacts"]
+  },
+  "recovery": {
+    "stash_pop_conflict": true,
+    "tracked_edits_reapplied_count": 5,
+    "stale_stash_dropped": true,
+    "re_verified": ["tsc zero mission-12 errors", "lint clean", "E2E PASS", "manifest pristine"]
+  }
+}

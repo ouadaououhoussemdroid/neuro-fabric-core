@@ -34,7 +34,7 @@ import { getEEGConformerRolloutStage } from "../../../env.server";
 import type { ModelInput } from "../../types";
 
 const ORIGINAL_ENV = { ...process.env };
-const EEGCONFORMER_ID = "braindecode-eegconformer-prod";
+const EEGCONFORMER_ID = "braindecode-eegconformer-prod-v2";
 
 /** Build a deterministic sine-wave window (not all-zero, 22ch, 1000 samples). */
 function makeSineInput(channels = 22, samples = 1000, sr = 250): ModelInput {
@@ -81,7 +81,8 @@ describe("Mission 2 — EEGConformer Canary Staging Deployment", () => {
     vi.unstubAllGlobals();
     if (!hasModel(EEGCONFORMER_ID)) {
       registerBraindecodeEEGConformer({
-        artifact: "/models/eegconformer.onnx",
+        id: "braindecode-eegconformer-prod-v2",
+        artifact: "/models/eegconformer_finetuned.onnx",
         enableVerification: true,
       });
     }
@@ -93,7 +94,10 @@ describe("Mission 2 — EEGConformer Canary Staging Deployment", () => {
       setRolloutStage("canary");
       // EEGConformer must be registered for the gate to even consider it.
       if (!hasModel(EEGCONFORMER_ID)) {
-        registerBraindecodeEEGConformer({ artifact: "/models/eegconformer.onnx" });
+        registerBraindecodeEEGConformer({
+          id: "braindecode-eegconformer-prod-v2",
+          artifact: "/models/eegconformer_finetuned.onnx",
+        });
       }
 
       let cohortCount = 0;
@@ -141,7 +145,8 @@ describe("Mission 2 — EEGConformer Canary Staging Deployment", () => {
       // Register with a broken runtime so embedEEG falls back to PCA.
       if (hasModel(EEGCONFORMER_ID)) unregisterModel(EEGCONFORMER_ID);
       registerBraindecodeEEGConformer({
-        artifact: "/models/eegconformer.onnx",
+        id: "braindecode-eegconformer-prod-v2",
+        artifact: "/models/eegconformer_finetuned.onnx",
         enableVerification: false,
         runtime: async () => {
           throw new Error("no runtime in test env");
@@ -170,7 +175,8 @@ describe("Mission 2 — EEGConformer Canary Staging Deployment", () => {
       // Register with a broken runtime so the embedEEG facade records a fallback.
       if (hasModel(EEGCONFORMER_ID)) unregisterModel(EEGCONFORMER_ID);
       registerBraindecodeEEGConformer({
-        artifact: "/models/eegconformer.onnx",
+        id: "braindecode-eegconformer-prod-v2",
+        artifact: "/models/eegconformer_finetuned.onnx",
         enableVerification: false,
         runtime: async () => {
           throw new Error("no runtime in test env");
@@ -200,7 +206,10 @@ describe("Mission 2 — EEGConformer Canary Staging Deployment", () => {
       // and manually record the latency metric (as upload.ts does).
       setRolloutStage("canary");
       if (hasModel(EEGCONFORMER_ID)) unregisterModel(EEGCONFORMER_ID);
-      registerBraindecodeEEGConformer({ artifact: "/models/eegconformer.onnx" });
+      registerBraindecodeEEGConformer({
+        id: "braindecode-eegconformer-prod-v2",
+        artifact: "/models/eegconformer_finetuned.onnx",
+      });
 
       const t0 = Date.now();
       await embedEEG(makeSineInput(22, 1000, 250), {
@@ -224,7 +233,7 @@ describe("Mission 2 — EEGConformer Canary Staging Deployment", () => {
       const fakeManifest = {
         models: {
           eegconformer: {
-            url: "/models/eegconformer.onnx",
+            url: "/models/eegconformer_finetuned.onnx",
             sha256: "deadbeef",
             size: 999999, // intentionally wrong size
           },
@@ -249,7 +258,7 @@ describe("Mission 2 — EEGConformer Canary Staging Deployment", () => {
       );
 
       try {
-        await verifyRemoteArtifact("/models/eegconformer.onnx");
+        await verifyRemoteArtifact("/models/eegconformer_finetuned.onnx");
       } catch {
         // Expected — size mismatch throws.
       }

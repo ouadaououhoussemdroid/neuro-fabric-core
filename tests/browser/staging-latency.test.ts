@@ -5,7 +5,8 @@
  * run in actual Chromium and Firefox (NOT Node.js CPU EP).
  *
  * Does NOT change AI_EEGCONFORMER_ENABLED env var (uses in-memory setRolloutStage).
- * Does NOT modify production fallback behavior or the production default model.
+ * Does NOT modify the production default model (V2) — both V1 (rollback) and V2
+ * are tested via explicit preferredModelId, leaving DEFAULT_PREFERRED unchanged.
  */
 import { test, expect, type Page } from "@playwright/test";
 

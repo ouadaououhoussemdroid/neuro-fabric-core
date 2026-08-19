@@ -3,14 +3,18 @@ import { applyEEGConformerRollout } from "../rollout.server";
 import { hasModel, registerBraindecodeEEGConformer } from "../models/registry";
 
 const ORIGINAL_ENV = { ...process.env };
-const EEGCONFORMER_ID = "braindecode-eegconformer-prod";
+const EEGCONFORMER_ID = "braindecode-eegconformer-prod-v2";
 
 describe("applyEEGConformerRollout", () => {
   afterEach(() => {
     process.env = { ...ORIGINAL_ENV };
-    // Restore registration so other tests see the default state.
+    // Restore V2 registration so other tests see the default state.
     if (!hasModel(EEGCONFORMER_ID)) {
-      registerBraindecodeEEGConformer({ artifact: "/models/eegconformer.onnx" });
+      registerBraindecodeEEGConformer({
+        id: "braindecode-eegconformer-prod-v2",
+        artifact: "/models/eegconformer_finetuned.onnx",
+        enableVerification: true,
+      });
     }
   });
 

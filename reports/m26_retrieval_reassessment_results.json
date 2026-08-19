@@ -1,0 +1,370 @@
+{
+  "experiment_id": "m26-retrieval-reassessment",
+  "title": "M26 Reassessment: Fair Retrieval Evaluation of EEGPT-2048",
+  "date": "2026-08-13",
+  "objective": "Evaluate EEGPT-2048 on the session-disjoint retrieval protocol (M13/M18) used to validate all other backbone models, closing the methodological gap where EEGPT was only tested on MI classification.",
+  "methodology_note": "EEGPT was evaluated ONLY on MI classification in M26. All other models (CBraMod, V2, PCA, Joint-264) were validated primarily on session-disjoint retrieval. This reassessment extends M26 with the identical retrieval protocol for direct comparison.",
+  "protocol": {
+    "dataset": "PhysioNet EEGMMIDB S001-S010, runs {5,6,7,8,9,10}",
+    "subjects": 10,
+    "n_trials": 900,
+    "trials_per_subject": 90,
+    "splits": "session-disjoint: for each (subject, held-out-run), query = 15 trials from that subject's held-out run, pool = all other trials",
+    "n_splits": 60,
+    "metrics": [
+      "R@1",
+      "R@5",
+      "R@10",
+      "MRR"
+    ],
+    "similarity": "cosine (L2-normalized embeddings)",
+    "eegpt_preprocessing": "22-channel production subset + zero-fill, 250Hz, bandpass [1,40]Hz, 1000 samples, z-score, mean-token pooling",
+    "bonferroni_alpha": 0.0125,
+    "n_comparisons": 4
+  },
+  "eegpt_inference": {
+    "sha256": "a92daf44ab8cb10e4c258c853b2d4668232acc6e09606fa2e18d052c4b914f36",
+    "sha256_verified": true,
+    "model_path": "C:\\Users\\pc\\Documents\\GitHub\\neuro-fabric-core\\public\\models\\eegpt-encoder-int8.onnx",
+    "input_shape": [
+      1,
+      62,
+      1000
+    ],
+    "output_shape": [
+      1,
+      31,
+      2048
+    ],
+    "pooling": "mean-tokens (across 31 patch tokens -> 2048-D)",
+    "inference_time_sec": 895.3060559000005,
+    "per_trial_ms": 0.9947845065555561,
+    "channel_projection": "22-channel zero-fill (production montage)"
+  },
+  "cache_alignment": {
+    "cbramod_sha256": "c128ccfdee0690da090c7dfcb39af8a2b25f3e492288f9305c85b293eeda6f47",
+    "v2_sha256": "18644de187e984a667d78ca79b3f4c0d2c0ada252c7084f4107343f77168f931",
+    "alignment_verified": true,
+    "label_match_method": "MI labels from PhysioNet extraction match cache order exactly"
+  },
+  "retrieval_results": {
+    "eegpt_2048": {
+      "dim": 2048,
+      "n_splits": 60,
+      "recall_at_1": {
+        "mean": 0.7811111111111111,
+        "std": 0.2020951153689643,
+        "ci95": [
+          0.2633333333333333,
+          1.0
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.951111111111111,
+        "std": 0.10036968702787746,
+        "ci95": [
+          0.6983333333333333,
+          1.0
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.9722222222222222,
+        "std": 0.0718773454815315,
+        "ci95": [
+          0.765,
+          1.0
+        ]
+      },
+      "mrr": {
+        "mean": 0.8533640884409274,
+        "std": 0.15035388655725615,
+        "ci95": [
+          0.46105355731225295,
+          1.0
+        ]
+      }
+    },
+    "cbramod_200": {
+      "dim": 200,
+      "n_splits": 60,
+      "recall_at_1": {
+        "mean": 0.5522222222222222,
+        "std": 0.26866249360056027,
+        "ci95": [
+          0.13333333333333333,
+          0.9683333333333333
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.8466666666666666,
+        "std": 0.188281953893512,
+        "ci95": [
+          0.365,
+          1.0
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.9188888888888889,
+        "std": 0.13167995594333223,
+        "ci95": [
+          0.565,
+          1.0
+        ]
+      },
+      "mrr": {
+        "mean": 0.6790423263874915,
+        "std": 0.2154572362472245,
+        "ci95": [
+          0.3167282448559303,
+          0.9841666666666666
+        ]
+      }
+    },
+    "v2_32": {
+      "dim": 32,
+      "n_splits": 60,
+      "recall_at_1": {
+        "mean": 0.17222222222222225,
+        "std": 0.09290593559510071,
+        "ci95": [
+          0.06666666666666667,
+          0.40333333333333315
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.5044444444444445,
+        "std": 0.1433348661942298,
+        "ci95": [
+          0.26666666666666666,
+          0.7683333333333332
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.6966666666666665,
+        "std": 0.14545208438253507,
+        "ci95": [
+          0.4316666666666667,
+          0.9683333333333333
+        ]
+      },
+      "mrr": {
+        "mean": 0.33815471205516273,
+        "std": 0.08958277060700094,
+        "ci95": [
+          0.20130429699665994,
+          0.5317004493091448
+        ]
+      }
+    },
+    "pca_32": {
+      "dim": 32,
+      "n_splits": 60,
+      "recall_at_1": {
+        "mean": 0.7844444444444445,
+        "std": 0.20219759374870222,
+        "ci95": [
+          0.26666666666666666,
+          1.0
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.9188888888888889,
+        "std": 0.12218455163349505,
+        "ci95": [
+          0.565,
+          1.0
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.9544444444444444,
+        "std": 0.07515625071371893,
+        "ci95": [
+          0.765,
+          1.0
+        ]
+      },
+      "mrr": {
+        "mean": 0.844311804623728,
+        "std": 0.15775711474653914,
+        "ci95": [
+          0.4212804524942615,
+          1.0
+        ]
+      }
+    },
+    "joint_264": {
+      "dim": 264,
+      "n_splits": 60,
+      "recall_at_1": {
+        "mean": 0.798888888888889,
+        "std": 0.19503890834648693,
+        "ci95": [
+          0.4,
+          1.0
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.9466666666666667,
+        "std": 0.09412097036339401,
+        "ci95": [
+          0.7333333333333333,
+          1.0
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.9733333333333332,
+        "std": 0.06161663873899261,
+        "ci95": [
+          0.8,
+          1.0
+        ]
+      },
+      "mrr": {
+        "mean": 0.8632212274390213,
+        "std": 0.14167401031017038,
+        "ci95": [
+          0.5707136607182485,
+          1.0
+        ]
+      }
+    }
+  },
+  "statistical_comparisons": {
+    "eegpt_vs_cbramod_200_r5": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "cbramod_200",
+      "mean_diff": 0.10444444444444446,
+      "t_statistic": 5.504769549539416,
+      "p_value": 8.435241736903301e-07,
+      "cohen_d": 0.7106626929976934,
+      "ci95_diff": [
+        0.06777777777777778,
+        0.14113888888888873
+      ],
+      "n_splits": 60,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125
+    },
+    "eegpt_vs_v2_32_r5": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "v2_32",
+      "mean_diff": 0.4466666666666667,
+      "t_statistic": 19.916864155366554,
+      "p_value": 7.134353208576678e-28,
+      "cohen_d": 2.5712561060655355,
+      "ci95_diff": [
+        0.40444444444444444,
+        0.4877777777777778
+      ],
+      "n_splits": 60,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125
+    },
+    "eegpt_vs_pca_32_r5": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "pca_32",
+      "mean_diff": 0.03222222222222222,
+      "t_statistic": 2.018450895709954,
+      "p_value": 0.04809746870224335,
+      "cohen_d": 0.2605808901386291,
+      "ci95_diff": [
+        0.001111111111111111,
+        0.06222222222222223
+      ],
+      "n_splits": 60,
+      "significant_after_bonferroni": false,
+      "bonferroni_alpha": 0.0125
+    },
+    "eegpt_vs_joint_264_r5": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "joint_264",
+      "mean_diff": 0.004444444444444444,
+      "t_statistic": 0.36556166933683726,
+      "p_value": 0.7159995578053092,
+      "cohen_d": 0.047193808577943974,
+      "ci95_diff": [
+        -0.018888888888888893,
+        0.026666666666666672
+      ],
+      "n_splits": 60,
+      "significant_after_bonferroni": false,
+      "bonferroni_alpha": 0.0125
+    },
+    "eegpt_vs_cbramod_200_mrr": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "cbramod_200",
+      "mean_diff": 0.17432176205343605,
+      "t_statistic": 7.7815405382247835,
+      "p_value": 1.281936347607308e-10,
+      "cohen_d": 1.0045925637402935,
+      "ci95_diff": [
+        0.1322322741104686,
+        0.21889114863816025
+      ],
+      "n_splits": 60,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125
+    },
+    "eegpt_vs_v2_32_mrr": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "v2_32",
+      "mean_diff": 0.5152093763857648,
+      "t_statistic": 23.485549761524982,
+      "p_value": 1.249968738750127e-31,
+      "cohen_d": 3.0319714367458843,
+      "ci95_diff": [
+        0.47248170815277457,
+        0.5569517186620014
+      ],
+      "n_splits": 60,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125
+    },
+    "eegpt_vs_pca_32_mrr": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "pca_32",
+      "mean_diff": 0.009052283817199499,
+      "t_statistic": 0.48128673962982066,
+      "p_value": 0.6320929585020425,
+      "cohen_d": 0.06213385091079887,
+      "ci95_diff": [
+        -0.026369464188453765,
+        0.045480150676788345
+      ],
+      "n_splits": 60,
+      "significant_after_bonferroni": false,
+      "bonferroni_alpha": 0.0125
+    },
+    "eegpt_vs_joint_264_mrr": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "joint_264",
+      "mean_diff": -0.009857138998093777,
+      "t_statistic": -0.5617001559088436,
+      "p_value": 0.5764479287007925,
+      "cohen_d": -0.07251517831270189,
+      "ci95_diff": [
+        -0.04229905111689813,
+        0.025642727296323487
+      ],
+      "n_splits": 60,
+      "significant_after_bonferroni": false,
+      "bonferroni_alpha": 0.0125
+    }
+  },
+  "m18_baselines_full_50subj": {
+    "cbramod_200_r5": 0.5276,
+    "v2_32_r5": 0.2158,
+    "pca_32_r5": 0.692,
+    "joint_264_r5": 0.7856,
+    "joint_264_mrr": 0.6419,
+    "note": "M18/M13 results on full 50 subjects (for context; current eval is 10 subjects)"
+  },
+  "constraints_honored": {
+    "no_training": true,
+    "no_model_modification": true,
+    "no_onnx_modification": true,
+    "no_artifact_change": true,
+    "no_production_rollout_change": true,
+    "no_historical_benchmark_rewrite": true
+  }
+}

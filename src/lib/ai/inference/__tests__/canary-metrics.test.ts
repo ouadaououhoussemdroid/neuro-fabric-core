@@ -27,7 +27,7 @@ import {
 import { __resetManifestCache } from "../../artefacts/runtime-verifier";
 import { ONNXAdapter } from "../../adapters/onnx-adapter";
 
-const EEGCONFORMER_ID = "braindecode-eegconformer-prod";
+const EEGCONFORMER_ID = "braindecode-eegconformer-prod-v2";
 
 function makeWindowInput() {
   const C = 2;
@@ -59,10 +59,11 @@ describe("Canary observability metrics (T-016)", () => {
   afterEach(() => {
     setRolloutStage("off");
     vi.unstubAllGlobals();
-    // Restore EEGConformer registration so other test files see default state.
+    // Restore EEGConformer v2 registration so other test files see default state.
     if (!hasModel(EEGCONFORMER_ID)) {
       registerBraindecodeEEGConformer({
-        artifact: "/models/eegconformer.onnx",
+        id: "braindecode-eegconformer-prod-v2",
+        artifact: "/models/eegconformer_finetuned.onnx",
         enableVerification: true,
       });
     }
@@ -80,7 +81,7 @@ describe("Canary observability metrics (T-016)", () => {
 
   it("records cohort hit when EEGConformer is enabled (stage ga)", async () => {
     setRolloutStage("ga");
-    // Ensure the production EEGConformer model is NOT registered so we
+    // Ensure the production EEGConformer v2 model is NOT registered so we
     // don't accidentally load onnxruntime-web or make real network calls.
     // With stage ga, enabled=true, but hasModel=false → startId=chain[0]=PCA.
     const wasRegistered = hasModel(EEGCONFORMER_ID);

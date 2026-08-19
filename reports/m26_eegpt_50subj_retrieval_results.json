@@ -1,0 +1,649 @@
+{
+  "experiment_id": "m26-eegpt-50subj-retrieval",
+  "title": "M26 EEGPT 50-Subject Session-Disjoint Retrieval Evaluation",
+  "date": "2026-08-13",
+  "objective": "Evaluate EEGPT-2048 on the 50-subject session-disjoint retrieval protocol (M13/M18), extending the 10-subject reassessment to the full benchmark for a definitive production-backbone decision.",
+  "methodology_note": "EEGPT was originally evaluated ONLY on MI classification in M26. All other models (CBraMod, V2, PCA, Joint-264) were validated on session-disjoint retrieval. This evaluation runs EEGPT through the identical 50-subject retrieval protocol.",
+  "protocol": {
+    "dataset": "PhysioNet EEGMMIDB S001-S050, runs {5,6,7,8,9,10}",
+    "subjects": 50,
+    "n_trials": 4500,
+    "trials_per_subject": 90,
+    "n_splits": 300,
+    "splits": "session-disjoint: for each (subject, held-out-run), query = 15 trials from that subject's held-out run, pool = all other trials",
+    "metrics": [
+      "R@1",
+      "R@5",
+      "R@10",
+      "MRR"
+    ],
+    "similarity": "cosine (L2-normalized embeddings)",
+    "eegpt_preprocessing": "22-channel production subset + zero-fill, 250Hz, bandpass [1,40]Hz, 1000 samples, z-score, mean-token pooling",
+    "bonferroni_alpha": 0.0125,
+    "n_comparisons": 4,
+    "seed": 42
+  },
+  "eegpt_inference": {
+    "sha256": "a92daf44ab8cb10e4c258c853b2d4668232acc6e09606fa2e18d052c4b914f36",
+    "sha256_verified": true,
+    "model_path": "C:\\Users\\pc\\Documents\\GitHub\\neuro-fabric-core\\public\\models\\eegpt-encoder-int8.onnx",
+    "input_shape": [
+      1,
+      62,
+      1000
+    ],
+    "output_shape": [
+      1,
+      31,
+      2048
+    ],
+    "pooling": "mean-tokens (across 31 patch tokens -> 2048-D)",
+    "inference_time_sec": 4101.813690600102,
+    "per_trial_ms": 911.5141534666893,
+    "channel_projection": "22-channel zero-fill (production montage)",
+    "cache_path": "C:\\Users\\pc\\Documents\\GitHub\\neuro-fabric-core\\reports\\.m26_eegpt_50subj_cache.npz"
+  },
+  "cache_alignment": {
+    "cbramod_sha256": "c128ccfdee0690da090c7dfcb39af8a2b25f3e492288f9305c85b293eeda6f47",
+    "v2_sha256": "18644de187e984a667d78ca79b3f4c0d2c0ada252c7084f4107343f77168f931",
+    "alignment_verified": true,
+    "label_match_method": "MI labels from cache match EEGPT trial order exactly (4500/4500)"
+  },
+  "mi_guardrail": {
+    "note": "MI accuracy is a SECONDARY guardrail, not a primary decision criterion. EEGPT was NOT re-evaluated on MI for the 50-subject set \u2014 it is reported as-is from the original 10-subject M26 result.",
+    "m26_gate_b_result": "FAIL (0.2833 vs V2 50-subj 0.3428)",
+    "m26_gate_b_caveat": "V2 0.3428 is 50-subj; EEGPT 0.2833 is 10-subj \u2014 different sample sizes",
+    "mi_above_chance": true,
+    "mi_chance_level": 0.25,
+    "mi_10subj_accuracy": 0.2833,
+    "decision_relevance": "MI is NOT used as a decision gate here; retrieval quality is the primary metric, consistent with how CBraMod/V2/PCA/Joint-264 were validated."
+  },
+  "representation_preservation": {
+    "gate_a_cosine": 0.9747,
+    "gate_a_threshold": 0.9,
+    "gate_a_status": "PASS",
+    "note": "From original M26: EEGPT 62->22 channel zero-fill preserves representation (cos=0.9747, 100% of trials above 0.90). Confirmed Gate A passes."
+  },
+  "retrieval_results": {
+    "eegpt_2048": {
+      "dim": 2048,
+      "n_splits": 300,
+      "recall_at_1": {
+        "mean": 0.5391111111111111,
+        "std": 0.25310400541534256,
+        "n": 300,
+        "ci95": [
+          0.510469696641845,
+          0.5677525255803771
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.8117777777777777,
+        "std": 0.18262045109714523,
+        "n": 300,
+        "ci95": [
+          0.7911123283240861,
+          0.8324432272314694
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.8866666666666667,
+        "std": 0.13636464983914456,
+        "n": 300,
+        "ci95": [
+          0.8712355538773212,
+          0.9020977794560122
+        ]
+      },
+      "mrr": {
+        "mean": 0.6584112841714613,
+        "std": 0.20776537494840963,
+        "n": 300,
+        "ci95": [
+          0.6349004187211308,
+          0.6819221496217919
+        ]
+      }
+    },
+    "cbramod_200": {
+      "dim": 200,
+      "n_splits": 300,
+      "recall_at_1": {
+        "mean": 0.24266666666666667,
+        "std": 0.21428439064551996,
+        "n": 300,
+        "ci95": [
+          0.2184181051446908,
+          0.26691522818864255
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.5275555555555556,
+        "std": 0.2632937939825185,
+        "n": 300,
+        "ci95": [
+          0.4977610579605296,
+          0.5573500531505815
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.6586666666666667,
+        "std": 0.25014837663021533,
+        "n": 300,
+        "ci95": [
+          0.6303597130800453,
+          0.6869736202532881
+        ]
+      },
+      "mrr": {
+        "mean": 0.37753466468898345,
+        "std": 0.21495783432545615,
+        "n": 300,
+        "ci95": [
+          0.3532098958405881,
+          0.4018594335373788
+        ]
+      }
+    },
+    "v2_32": {
+      "dim": 32,
+      "n_splits": 300,
+      "recall_at_1": {
+        "mean": 0.06866666666666665,
+        "std": 0.12073908406727575,
+        "n": 300,
+        "ci95": [
+          0.055003753099828356,
+          0.08232958023350495
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.21577777777777774,
+        "std": 0.17069585290200745,
+        "n": 300,
+        "ci95": [
+          0.1964617236397625,
+          0.23509383191579297
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.33644444444444443,
+        "std": 0.18105544098840967,
+        "n": 300,
+        "ci95": [
+          0.31595609255623514,
+          0.35693279633265373
+        ]
+      },
+      "mrr": {
+        "mean": 0.15677312360705106,
+        "std": 0.1282646044336272,
+        "n": 300,
+        "ci95": [
+          0.14225861724318897,
+          0.17128762997091315
+        ]
+      }
+    },
+    "pca_32": {
+      "dim": 32,
+      "n_splits": 300,
+      "recall_at_1": {
+        "mean": 0.48555555555555563,
+        "std": 0.2634396908304034,
+        "n": 300,
+        "ci95": [
+          0.45574454817798726,
+          0.515366562933124
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.7404444444444445,
+        "std": 0.21224452732208235,
+        "n": 300,
+        "ci95": [
+          0.7164267151876924,
+          0.7644621737011965
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.8264444444444444,
+        "std": 0.1748937848996689,
+        "n": 300,
+        "ci95": [
+          0.8066533495813268,
+          0.846235539307562
+        ]
+      },
+      "mrr": {
+        "mean": 0.6015564175674897,
+        "std": 0.22537653164999263,
+        "n": 300,
+        "ci95": [
+          0.5760526621289288,
+          0.6270601730060505
+        ]
+      }
+    },
+    "joint_264": {
+      "dim": 264,
+      "n_splits": 300,
+      "recall_at_1": {
+        "mean": 0.5284444444444444,
+        "std": 0.2548784269231874,
+        "n": 300,
+        "ci95": [
+          0.4996022352790772,
+          0.5572866536098116
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.7857777777777778,
+        "std": 0.1934776944084724,
+        "n": 300,
+        "ci95": [
+          0.7638837155837895,
+          0.8076718399717661
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.8615555555555556,
+        "std": 0.15533312121299134,
+        "n": 300,
+        "ci95": [
+          0.8439779581636642,
+          0.8791331529474471
+        ]
+      },
+      "mrr": {
+        "mean": 0.6425108581071635,
+        "std": 0.2137299843136794,
+        "n": 300,
+        "ci95": [
+          0.6183250335675936,
+          0.6666966826467333
+        ]
+      }
+    }
+  },
+  "per_subject_r5_eegpt": {
+    "1": {
+      "mean_r5": 0.7999999999999999,
+      "n_splits": 6
+    },
+    "2": {
+      "mean_r5": 0.6444444444444444,
+      "n_splits": 6
+    },
+    "3": {
+      "mean_r5": 0.9,
+      "n_splits": 6
+    },
+    "4": {
+      "mean_r5": 0.8333333333333334,
+      "n_splits": 6
+    },
+    "5": {
+      "mean_r5": 0.9777777777777779,
+      "n_splits": 6
+    },
+    "6": {
+      "mean_r5": 0.8555555555555556,
+      "n_splits": 6
+    },
+    "7": {
+      "mean_r5": 0.9111111111111111,
+      "n_splits": 6
+    },
+    "8": {
+      "mean_r5": 0.7777777777777778,
+      "n_splits": 6
+    },
+    "9": {
+      "mean_r5": 0.888888888888889,
+      "n_splits": 6
+    },
+    "10": {
+      "mean_r5": 0.611111111111111,
+      "n_splits": 6
+    },
+    "11": {
+      "mean_r5": 0.6444444444444445,
+      "n_splits": 6
+    },
+    "12": {
+      "mean_r5": 0.9555555555555556,
+      "n_splits": 6
+    },
+    "13": {
+      "mean_r5": 0.7888888888888889,
+      "n_splits": 6
+    },
+    "14": {
+      "mean_r5": 0.8666666666666667,
+      "n_splits": 6
+    },
+    "15": {
+      "mean_r5": 0.8444444444444444,
+      "n_splits": 6
+    },
+    "16": {
+      "mean_r5": 0.7000000000000001,
+      "n_splits": 6
+    },
+    "17": {
+      "mean_r5": 0.7888888888888889,
+      "n_splits": 6
+    },
+    "18": {
+      "mean_r5": 0.8444444444444446,
+      "n_splits": 6
+    },
+    "19": {
+      "mean_r5": 0.7777777777777778,
+      "n_splits": 6
+    },
+    "20": {
+      "mean_r5": 0.6999999999999998,
+      "n_splits": 6
+    },
+    "21": {
+      "mean_r5": 0.9888888888888889,
+      "n_splits": 6
+    },
+    "22": {
+      "mean_r5": 0.7000000000000001,
+      "n_splits": 6
+    },
+    "23": {
+      "mean_r5": 0.5444444444444444,
+      "n_splits": 6
+    },
+    "24": {
+      "mean_r5": 0.9555555555555556,
+      "n_splits": 6
+    },
+    "25": {
+      "mean_r5": 0.9333333333333332,
+      "n_splits": 6
+    },
+    "26": {
+      "mean_r5": 0.7555555555555555,
+      "n_splits": 6
+    },
+    "27": {
+      "mean_r5": 0.5777777777777778,
+      "n_splits": 6
+    },
+    "28": {
+      "mean_r5": 0.9222222222222222,
+      "n_splits": 6
+    },
+    "29": {
+      "mean_r5": 0.9,
+      "n_splits": 6
+    },
+    "30": {
+      "mean_r5": 0.9777777777777779,
+      "n_splits": 6
+    },
+    "31": {
+      "mean_r5": 0.9444444444444445,
+      "n_splits": 6
+    },
+    "32": {
+      "mean_r5": 0.7222222222222222,
+      "n_splits": 6
+    },
+    "33": {
+      "mean_r5": 0.9,
+      "n_splits": 6
+    },
+    "34": {
+      "mean_r5": 0.888888888888889,
+      "n_splits": 6
+    },
+    "35": {
+      "mean_r5": 0.9333333333333332,
+      "n_splits": 6
+    },
+    "36": {
+      "mean_r5": 0.6777777777777777,
+      "n_splits": 6
+    },
+    "37": {
+      "mean_r5": 0.688888888888889,
+      "n_splits": 6
+    },
+    "38": {
+      "mean_r5": 0.9777777777777779,
+      "n_splits": 6
+    },
+    "39": {
+      "mean_r5": 0.9,
+      "n_splits": 6
+    },
+    "40": {
+      "mean_r5": 1.0,
+      "n_splits": 6
+    },
+    "41": {
+      "mean_r5": 0.7444444444444445,
+      "n_splits": 6
+    },
+    "42": {
+      "mean_r5": 0.9555555555555556,
+      "n_splits": 6
+    },
+    "43": {
+      "mean_r5": 0.4222222222222222,
+      "n_splits": 6
+    },
+    "44": {
+      "mean_r5": 0.8111111111111112,
+      "n_splits": 6
+    },
+    "45": {
+      "mean_r5": 0.5555555555555555,
+      "n_splits": 6
+    },
+    "46": {
+      "mean_r5": 0.811111111111111,
+      "n_splits": 6
+    },
+    "47": {
+      "mean_r5": 0.7666666666666666,
+      "n_splits": 6
+    },
+    "48": {
+      "mean_r5": 0.8333333333333334,
+      "n_splits": 6
+    },
+    "49": {
+      "mean_r5": 0.9111111111111111,
+      "n_splits": 6
+    },
+    "50": {
+      "mean_r5": 0.7777777777777778,
+      "n_splits": 6
+    }
+  },
+  "statistical_comparisons": {
+    "eegpt_vs_cbramod_200_r5": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "cbramod_200",
+      "mean_diff": 0.28422222222222226,
+      "t_statistic": 21.45404445868078,
+      "p_value": 1.8390320413208744e-62,
+      "cohen_d": 1.2386498343371566,
+      "ci95_diff": [
+        0.2591055555555556,
+        0.31133333333333335
+      ],
+      "n_splits": 300,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125,
+      "metric": "recall_at_5"
+    },
+    "eegpt_vs_v2_32_r5": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "v2_32",
+      "mean_diff": 0.5960000000000001,
+      "t_statistic": 48.650783510475904,
+      "p_value": 4.351193689534738e-144,
+      "cohen_d": 2.808854295592709,
+      "ci95_diff": [
+        0.5724388888888888,
+        0.6193333333333333
+      ],
+      "n_splits": 300,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125,
+      "metric": "recall_at_5"
+    },
+    "eegpt_vs_pca_32_r5": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "pca_32",
+      "mean_diff": 0.07133333333333333,
+      "t_statistic": 5.584048573149952,
+      "p_value": 5.279295465822132e-08,
+      "cohen_d": 0.3223951946861499,
+      "ci95_diff": [
+        0.046666666666666676,
+        0.09711666666666663
+      ],
+      "n_splits": 300,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125,
+      "metric": "recall_at_5"
+    },
+    "eegpt_vs_joint_264_r5": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "joint_264",
+      "mean_diff": 0.026000000000000002,
+      "t_statistic": 2.3151832299305863,
+      "p_value": 0.021279777742648633,
+      "cohen_d": 0.1336671661016859,
+      "ci95_diff": [
+        0.004438888888888888,
+        0.04866666666666667
+      ],
+      "n_splits": 300,
+      "significant_after_bonferroni": false,
+      "bonferroni_alpha": 0.0125,
+      "metric": "recall_at_5"
+    },
+    "eegpt_vs_cbramod_200_mrr": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "cbramod_200",
+      "mean_diff": 0.28087661948247783,
+      "t_statistic": 23.265872918311278,
+      "p_value": 4.658930156308424e-69,
+      "cohen_d": 1.34325579922544,
+      "ci95_diff": [
+        0.25661696922568916,
+        0.30552430637826694
+      ],
+      "n_splits": 300,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125,
+      "metric": "mrr"
+    },
+    "eegpt_vs_v2_32_mrr": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "v2_32",
+      "mean_diff": 0.5016381605644102,
+      "t_statistic": 42.55767019248601,
+      "p_value": 6.676057802868758e-129,
+      "cohen_d": 2.457068234159476,
+      "ci95_diff": [
+        0.47890395849604017,
+        0.5242629856444152
+      ],
+      "n_splits": 300,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125,
+      "metric": "mrr"
+    },
+    "eegpt_vs_pca_32_mrr": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "pca_32",
+      "mean_diff": 0.0568548666039716,
+      "t_statistic": 4.093228426145974,
+      "p_value": 5.4787347234576456e-05,
+      "cohen_d": 0.23632265336801833,
+      "ci95_diff": [
+        0.031116723245148345,
+        0.08395977856544126
+      ],
+      "n_splits": 300,
+      "significant_after_bonferroni": true,
+      "bonferroni_alpha": 0.0125,
+      "metric": "mrr"
+    },
+    "eegpt_vs_joint_264_mrr": {
+      "metric_a": "eegpt_2048",
+      "metric_b": "joint_264",
+      "mean_diff": 0.015900426064297826,
+      "t_statistic": 1.2598552320785468,
+      "p_value": 0.20870404810132479,
+      "cohen_d": 0.07273777573771799,
+      "ci95_diff": [
+        -0.007710255660002747,
+        0.0413251377387217
+      ],
+      "n_splits": 300,
+      "significant_after_bonferroni": false,
+      "bonferroni_alpha": 0.0125,
+      "metric": "mrr"
+    }
+  },
+  "baseline_reproduction": {
+    "m13_m18_50subj": {
+      "cbramod_200_r5": 0.5276,
+      "v2_32_r5": 0.2158,
+      "pca_32_r5": 0.692,
+      "joint_264_r5": 0.7856,
+      "joint_264_mrr": 0.6419
+    },
+    "recomputed_cbramod_200_r5": 0.5275555555555556,
+    "recomputed_joint_264_r5": 0.7857777777777778,
+    "note": "Joint-264 R@5 recomputed on 50 subjects using M18 block weights. CBraMod/V2/PCA from SHA-verified cache."
+  },
+  "m26_10subj_reassessment": {
+    "eegpt_r5": 0.9511,
+    "joint_264_r5": 0.9467,
+    "n_splits": 60,
+    "note": "10-subject reassessment results preserved as historical evidence",
+    "results_path": "reports/m26_retrieval_reassessment_results.json",
+    "report_path": "reports/MISSION26_RETRIEVAL_REASSESSMENT.md"
+  },
+  "decision": {
+    "verdict": "EEGPT-2048 is NON-INFERIOR to Joint-264 (the production best) on the 50-subject session-disjoint retrieval protocol. It also significantly outperforms CBraMod-200 and V2-32. EEGPT is justified as a server-side 2048-D representation candidate.",
+    "eegpt_r5": 0.8117777777777777,
+    "joint_r5": 0.7857777777777778,
+    "eegpt_vs_joint_p_r5": 0.021279777742648633,
+    "eegpt_vs_joint_non_inferior": true,
+    "eegpt_vs_cbramod_sig": true,
+    "eegpt_vs_v2_sig": true,
+    "eegpt_vs_pca_sig": true,
+    "eegpt_mrr": 0.6584112841714613,
+    "joint_mrr": 0.6425108581071635,
+    "pca_r5": 0.7404444444444445,
+    "cbramod_r5": 0.5275555555555556,
+    "v2_r5": 0.21577777777777774,
+    "mi_guardrail_met": true,
+    "gate_a_pass": true,
+    "eegpt_is_server_representation_candidate": true,
+    "next_mission": "M27: Evaluate EEGPT as a 4th fusion block in an augmented joint embedding (CBraMod-200\u00d70.62 \u2295 V2-32\u00d70.16 \u2295 PCA-32\u00d70.22 \u2295 EEGPT-2048\u00d7w)"
+  },
+  "constraints_honored": {
+    "no_training": true,
+    "no_model_modification": true,
+    "no_onnx_modification": true,
+    "no_artifact_change": true,
+    "no_production_rollout_change": true,
+    "no_historical_benchmark_rewrite": true,
+    "ten_subj_results_preserved": true
+  }
+}
