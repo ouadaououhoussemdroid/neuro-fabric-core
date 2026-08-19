@@ -10,7 +10,8 @@
  * All functions are the REAL production implementations — no stubs.
  */
 import { embedEEG, type EmbedEEGOptions } from "@/lib/ai/inference/embed-eeg";
-import { EmbedResult } from "@/lib/ai/embeddings";
+import { embed } from "@/lib/ai/embeddings";
+import type { EmbedResult } from "@/lib/ai/embeddings";
 import { setRolloutStage } from "@/lib/ai/rollout";
 import { resetMetrics, metrics } from "@/lib/metrics";
 import {
@@ -19,6 +20,7 @@ import {
   resolveVerification,
 } from "@/lib/ai/artefacts/runtime-verifier";
 import { hasModel, registerBraindecodeEEGConformer, unregisterModel } from "@/lib/ai/models/registry";
+import { inferenceEngine } from "@/lib/ai/inference/engine";
 import { renderPrometheusMetrics } from "@/lib/metrics";
 
 /**
@@ -233,6 +235,43 @@ export function collectMetricsSnapshot(): Record<string, any> {
   return snapshot;
 }
 
+/**
+ * P2 instrumentation: set the ORT-Web WASM thread count.
+ * This is test-code only — production embedEEG() keeps numThreads=1 (the ORT-Web
+ * default), which P1/P2 measured as optimal for this 3.3 MB model (thread-pool
+ * spin-up outweighs parallelism gains). Exposed here so the P2 ablation can
+ * sweep numThreads=1 vs hardwareConcurrency and record the difference.
+ */
+export async function setOrtWasmThreads(n: number): Promise<void> {
+  try {
+    const mod = await import("onnxruntime-web");
+    if (mod?.env?.wasm) {
+      mod.env.wasm.numThreads = n;
+    }
+  } catch (err) {
+    console.warn(`[staging-harness] setOrtWasmThreads: ${(err as Error).message}`);
+  }
+}
+
+/**
+ * P2 instrumentation: per-call embed facade (fresh session each call).
+ * Mirrors the pre-P3 production path: createAdapter → load → embed → unload,
+ * capturing the per-call session-create cost for A/B comparison against the
+ * persistent InferenceEngine. Routes through the real `embed()` facade.
+ */
+export async function embedFacade(
+  input: unknown,
+  opts?: EmbedEEGOptions,
+): Promise<EmbedResult> {
+  return embed(input as any, {
+    modelId: opts?.preferredModelId ?? "braindecode-eegconformer-prod-v2",
+    fallbackChain: ["pca-legacy-v1"],
+    fallbackToPCA: true,
+    normalize: opts?.normalize !== false,
+    expectedDim: opts?.expectedDim,
+  });
+}
+
 function makeSyntheticInput(channels: number, samples: number, sampleRate: number): unknown {
   const data = Array.from({ length: channels }, (_, c) =>
     Array.from({ length: samples }, (_, t) => Math.sin((2 * Math.PI * (10 + c) * t) / sampleRate) * 0.5),
@@ -245,7 +284,6 @@ function makeSyntheticInput(channels: number, samples: number, sampleRate: numbe
 
 declare global {
   interface Window {
-    __neuroTest: any;
     __stagingTest: {
       measureEmbedLatency: typeof measureEmbedLatency;
       runLatencyBenchmark: typeof runLatencyBenchmark;
@@ -265,6 +303,12 @@ declare global {
       makeSyntheticInput: typeof makeSyntheticInput;
       samples: LatencySample[];
       WARMUP_ITERATIONS: number;
+      /** P2/P3 instrumentation: ORT-Web thread count (test-only). */
+      setOrtWasmThreads: typeof setOrtWasmThreads;
+      /** P2 instrumentation: per-call embed facade for baseline measurement. */
+      embedFacade: typeof embedFacade;
+      /** P2/P3 instrumentation: cached InferenceEngine (production singleton). */
+      inferenceEngine: typeof inferenceEngine;
     };
   }
 }
@@ -289,5 +333,8 @@ if (typeof window !== "undefined") {
     makeSyntheticInput,
     samples,
     WARMUP_ITERATIONS,
+    setOrtWasmThreads,
+    embedFacade,
+    inferenceEngine,
   };
 }

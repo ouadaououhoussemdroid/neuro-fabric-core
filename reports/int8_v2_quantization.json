@@ -1,0 +1,71 @@
+{
+  "experiment": "P1-TRACK-A: INT8-QDQ quantization of EEGConformer V2 FP32",
+  "timestamp": "2026-08-17T01:37:53.021996+00:00",
+  "mission": "Next Mission \u2014 V2 Firefox Latency Optimization: INT8 + Persistent Session Investigation",
+  "source_artifact": {
+    "path": "public\\models\\eegconformer_finetuned.onnx",
+    "sha256": "18644de187e984a667d78ca79b3f4c0d2c0ada252c7084f4107343f77168f931",
+    "size_bytes": 3359557
+  },
+  "quantized_artifact": {
+    "path": "public\\models\\_bench\\eegconformer_finetuned_int8.onnx",
+    "sha256": "59e9555a18536a716e7c1bdf9bba46bca5b0ad3b753529e9b871d272ae45e880",
+    "size_bytes": 1138901,
+    "compression_pct": 66.1
+  },
+  "quantization_params": {
+    "weight_type": "QInt8",
+    "per_channel": false,
+    "method": "quantize_dynamic"
+  },
+  "ops_source": [
+    "Add",
+    "AveragePool",
+    "Cast",
+    "Concat",
+    "Constant",
+    "Conv",
+    "Div",
+    "Elu",
+    "Erf",
+    "Gather",
+    "Gemm",
+    "LayerNormalization",
+    "MatMul",
+    "Mul",
+    "Reshape",
+    "Shape",
+    "Softmax",
+    "Transpose",
+    "Unsqueeze"
+  ],
+  "ops_quantized": [
+    "ConvInteger",
+    "DynamicQuantizeLinear",
+    "MatMulInteger"
+  ],
+  "quantizable_targets_present": [
+    "Conv",
+    "Gemm",
+    "MatMul"
+  ],
+  "einsum_present_passthrough": false,
+  "wasm_compatible": true,
+  "parity": {
+    "mean_embedding_cosine": 0.9985034739971161,
+    "min_embedding_cosine": 0.9970406293869019,
+    "mean_logits_cosine": 0.9992634850740433,
+    "mean_max_abs_diff_embedding": 0.1751634559035301,
+    "max_abs_diff_embedding_worst": 0.27475982904434204,
+    "num_inputs": 200,
+    "parity_ok": true
+  },
+  "accuracy_baseline_fp32_v2_mean_accuracy": 0.3428,
+  "constraint_compliance": {
+    "canonical_fp32_unchanged": true,
+    "manifest_not_modified": true,
+    "integrity_not_modified": true,
+    "no_retrain": true
+  },
+  "conclusion": "INT8 QDQ candidate produced and numerically parity-verified (embedding cosine > 0.99). Candidate is ~smaller than FP32 and serves from /models/_bench/ for browser WASM latency measurement. Does NOT replace canonical artifact."
+}

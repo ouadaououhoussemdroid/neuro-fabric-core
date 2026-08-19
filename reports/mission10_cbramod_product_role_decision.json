@@ -1,0 +1,74 @@
+{
+  "mission": "Mission 10 — CBraMod Product-Role Decision & Gate Re-evaluation",
+  "type": "read-only-analysis",
+  "decision": "CONDITIONAL — RUN ONE TARGETED VALIDATION",
+  "decision_rationale": "Mission 9 proved a strong within-session subject-identity / geometry advantage but failed the MI-accuracy guardrail. The MI gate was role-mismatched (CBraMod was never a MI-classification play). The subject-identity server role is credible but not yet demonstrated (cross-session generalization unproven). Do not promote yet; do not drop (advantage too large). Run one focused cross-session experiment before building infrastructure.",
+  "date": "2026-08-13",
+  "git_head": "b9164a664fce039df24c23656427a30c3a966926",
+  "source_of_evidence": "reports/cbramod_server_representation_50subj_results.json (mission9-cbramod-server-rep-50subj)",
+  "evidence": {
+    "dataset": "PhysioNet EEGMMIDB S001-S050, runs 5&6 only, 4-class MI, 1493 trials, 50-fold LOSO",
+    "cbramod_artifact": {"sha256": "c128ccfdee0690da090c7dfcb39af8a2b25f3e492288f9305c85b293eeda6f47", "dims": 200, "wasm_compatible": false, "latency_ms_cpu": 55.15},
+    "v2_artifact": {"sha256": "18644de187e984a667d78ca79b3f4c0d2c0ada252c7084f4107343f77168f931", "dims": 32, "wasm_compatible": true, "latency_ms_cpu": 6.23},
+    "primary_metrics": {
+      "silhouette_cosine": {"cbramod": -0.0439, "v2": -0.1768, "delta": 0.1329, "p_bonferroni": 2.01e-16, "cohens_d": 1.81, "significant": true},
+      "fisher_score": {"delta": 0.0145, "p_bonferroni": 1.0, "significant": false},
+      "separation_margin": {"delta": -0.0025, "p_bonferroni": 1.0, "significant": false},
+      "subject_recall_at_1": {"cbramod": 0.2732, "v2": 0.0689, "delta": 0.2043, "p_bonferroni": 8.74e-09, "cohens_d": 1.05, "significant": true},
+      "subject_recall_at_5": {"cbramod": 0.5770, "v2": 0.2463, "delta": 0.3307, "p_bonferroni": 1.73e-12, "cohens_d": 1.40, "significant": true},
+      "subject_recall_at_10": {"cbramod": 0.7110, "v2": 0.3945, "delta": 0.3165, "p_bonferroni": 5.84e-14, "cohens_d": 1.55, "significant": true}
+    },
+    "mi_accuracy_guardrail": {"cbramod": 0.3043, "v2": 0.3250, "delta": -0.0206, "p_two_sided": 0.118, "cbramod_ge_v2_folds": "23/50", "passes": false},
+    "full_dataset_geometry": {
+      "onnx-cbramod_200d": {"intra_class_cosine_mean": 0.9647, "inter_class_cosine_mean": 0.9644, "subject_recall_loo": {"recall_at_1": 0.2726, "recall_at_5": 0.5767, "recall_at_10": 0.7106}},
+      "eegconformer_v2_32d": {"intra_class_cosine_mean": 0.9072, "inter_class_cosine_mean": 0.9037, "subject_recall_loo": {"recall_at_1": 0.0690, "recall_at_5": 0.2465, "recall_at_10": 0.3945}}
+    },
+    "key_limitation": "runs 5&6 are a single session per subject; subject-Recall measured same-session (within-session identity), NOT cross-session generalization."
+  },
+  "constraints_honored": {
+    "no_new_schema": true,
+    "no_foundation_embeddings": true,
+    "no_vector_200": true,
+    "no_api_route": true,
+    "no_embed_eeg_modification": true,
+    "no_default_preferred_change": true,
+    "no_v2_modification": true,
+    "no_cbramod_modification": true,
+    "no_registry_change": true,
+    "no_env_change": true,
+    "no_deploy": true,
+    "no_retrain": true,
+    "no_generic_mi_benchmark": true,
+    "no_promotion": true,
+    "vector_32_contract_untouched": true
+  },
+  "roles_ranked": [
+    {"role": "D_subject_identity_cross_session", "verdict": "plausible_conditional", "reason": "subject-Recall@5 +0.331 significant; cross-session unproven"},
+    {"role": "C_server_similarity_retrieval", "verdict": "plausible_conditional", "reason": "representation advantage significant; product retrieval task unproven"},
+    {"role": "F_offline_foundation_backbone", "verdict": "promising_conditional", "reason": "richer geometry; no downstream lift shown"},
+    {"role": "E_offline_cohort_phenotyping", "verdict": "promising_conditional"},
+    {"role": "G_research_only", "verdict": "floor_accepted", "reason": "valid embedding, MI>>chance"},
+    {"role": "A_browser_replacement", "verdict": "no", "reason": "not WASM, 9x slower"},
+    {"role": "B_mi_classification_specialist", "verdict": "no", "reason": "0.304 < 0.325 vs V2"},
+    {"role": "H_no_useful_role", "verdict": "no"}
+  ],
+  "mi_guardrail_assessment": {"classification": "incorrect_gate_for_represention_role", "rationale": "MI accuracy is the wrong promotion gate for a subject-identity/retrieval specialist; correct only as a MI-classification gate (which CBraMod also fails)"},
+  "recommended_next_experiment": {
+    "name": "Mission 11 — cross-session (session-disjoint) subject retrieval",
+    "dataset": "PhysioNet EEGMMIDB S001-S050, runs 5,6,7,8,9,10",
+    "split": "for each (subject, held-out-run): queries = held-out run trials; pool = all trials from all other runs x all subjects (held-out run excluded entirely)",
+    "leakage_prevention": "session-disjoint + subject-disjoint on the held-out run",
+    "task": "subject-Recall@1/5/10 with CBraMod-native-200 vs V2-32 vs PCA-32",
+    "primary_metric": "subject-Recall@K (session-disjoint)",
+    "secondary_metric": "subject silhouette (cosine)",
+    "safety_guardrail": "CBraMod MI acc >= chance (0.25)",
+    "statistical_test": "paired t-test CBraMod vs V2; Bonferroni over 3 Recall metrics (alpha=0.0167)",
+    "effect_size_requirement": "delta >= 0.05 AND Bonferroni p < 0.05",
+    "latency_requirement": "offline/batch SLO (55ms/trial CPU acceptable for Tier-2 server path)",
+    "native_dims_preserved": true,
+    "success_gate": "promote Tier-2 subject-identity/similarity specialist -> authorize foundation_embeddings/vector(200)/api route design",
+    "failure_gate": "CBraMod -> research-only; no two-tier architecture"
+  },
+  "architecture_decision": "two-tier architecture is the target IF Mission 11 succeeds; Tier 2 (CBraMod 200-D server/foundation) is NOT approved until then. Tier 1 (V2 32-D browser) ships.",
+  "next_mission": "Mission 11 — cross-session subject-retrieval validation of the CBraMod server role (first mission in which Tier-2 infrastructure design is in scope, and only if success gate is met)"
+}

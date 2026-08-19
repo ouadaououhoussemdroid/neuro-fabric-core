@@ -148,7 +148,7 @@ async function runFallbackChain(
   throw new Error(`embed: all adapters failed (${reasons.join(" → ")})`);
 }
 
-function finalize(
+export function finalize(
   out: EmbeddingOutput,
   fellBack: boolean,
   reason: string | undefined,

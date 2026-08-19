@@ -31,7 +31,8 @@ interface HistogramValue {
 }
 
 const HISTOGRAM_BUCKETS = [
-  1, 2, 5, 10, 25, 50, 100, 250, 400, 425, 450, 475, 500, 525, 550, 575, 600, 625, 650, 675, 700, 750, 800, 850, 900, 950, 1000, 2500, 5000, 10000, 30000, 60000, 120000,
+  1, 2, 5, 10, 25, 50, 100, 250, 400, 425, 450, 475, 500, 525, 550, 575, 600, 625, 650, 675, 700,
+  750, 800, 850, 900, 950, 1000, 2500, 5000, 10000, 30000, 60000, 120000,
 ];
 
 interface Registry {
@@ -292,6 +293,24 @@ export const metrics = {
   ),
   embedLatencyMs: new Histogram("neuro_fabric_embed_latency_ms", "Embedding generation latency"),
 
+  // T-036 — Tier-2 CBraMod foundation embed path (server-native, opt-in).
+  foundationRequestsTotal: new Counter(
+    "neuro_fabric_foundation_requests_total",
+    "Total CBraMod foundation embed requests",
+  ),
+  foundationErrorsTotal: new Counter(
+    "neuro_fabric_foundation_errors_total",
+    "Failed CBraMod foundation requests (runtime/artifact/parse)",
+  ),
+  foundationBytesTotal: new Counter(
+    "neuro_fabric_foundation_bytes_total",
+    "Total EEG bytes submitted to the CBraMod foundation endpoint",
+  ),
+  foundationEmbedMs: new Histogram(
+    "neuro_fabric_foundation_embed_ms",
+    "CBraMod foundation embedding latency per window",
+  ),
+
   // T-016 — EEGConformer rollout observability (canary metrics)
   cohortChecksTotal: new Counter(
     "neuro_fabric_eegconformer_cohort_checks_total",
@@ -344,6 +363,52 @@ export const metrics = {
   inFlightUploads: new Gauge(
     "neuro_fabric_inflight_uploads",
     "Currently in-flight upload requests",
+  ),
+
+  // ─── M32 — Tier-1 downstream service layer metrics ──────────────────────
+
+  // Subject Identity & Cohort Similarity
+  subjectIdentityRequestsTotal: new Counter(
+    "neuro_fabric_subject_identity_requests_total",
+    "Total subject-identity similarity search requests",
+  ),
+  subjectIdentityErrorsTotal: new Counter(
+    "neuro_fabric_subject_identity_errors_total",
+    "Failed subject-identity similarity search requests",
+  ),
+  subjectIdentitySearchLatencyMs: new Histogram(
+    "neuro_fabric_subject_identity_search_latency_ms",
+    "Subject-identity search latency (ANN RPC + result formatting)",
+  ),
+  subjectIdentityResultsTotal: new Counter(
+    "neuro_fabric_subject_identity_results_total",
+    "Total similarity results returned across all subject-identity searches",
+  ),
+  subjectIdentityEmbeddingReusedTotal: new Counter(
+    "neuro_fabric_subject_identity_embedding_reused_total",
+    "Subject-identity searches that reused an existing Joint-2312 embedding (no re-embed)",
+  ),
+  subjectIdentityEmbeddingReembeddedTotal: new Counter(
+    "neuro_fabric_subject_identity_embedding_reembedded_total",
+    "Subject-identity searches that re-computed Joint-2312 (no existing embedding)",
+  ),
+
+  // Shared Tier-1 service layer
+  tier1ServiceRequestsTotal: new Counter(
+    "neuro_fabric_tier1_service_requests_total",
+    "Total Tier-1 downstream service requests (all services)",
+  ),
+  tier1ServiceErrorsTotal: new Counter(
+    "neuro_fabric_tier1_service_errors_total",
+    "Total failed Tier-1 downstream service requests",
+  ),
+  tier1ServiceLatencyMs: new Histogram(
+    "neuro_fabric_tier1_service_latency_ms",
+    "Total Tier-1 service request processing latency",
+  ),
+  tier1AuditLogInsertsTotal: new Counter(
+    "neuro_fabric_tier1_audit_log_inserts_total",
+    "Total audit-log rows inserted by Tier-1 services",
   ),
 };
 

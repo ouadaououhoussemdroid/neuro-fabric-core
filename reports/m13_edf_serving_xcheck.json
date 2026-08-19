@@ -1,0 +1,143 @@
+{
+  "script": "scripts/tmp/m13_edf_serving_xcheck.py",
+  "purpose": "Document the subset-level bridge (cached real embeddings) + reference the committed TS real-EDF serving test (S001R05 -> 22MB ONNX forward -> 200-D -> manifold landing). Does NOT retrain or re-embed.",
+  "ts_real_edf_serving_test": "src/lib/ai/inference/__tests__/foundation-serving-m13.test.ts",
+  "ts_real_edf_result": {
+    "edf": "S001R05.edf (PhysioNet EEGMMIDB, ~2.6MB, HTTP 200)",
+    "pipeline": "parseEDF -> selectCbraModChannels(19) -> resampleSignal(250) -> preprocess(bandpass[4,38],segment{4,0.5}) -> embedFoundationWindows (onnxruntime-node CPU EP, cbramod-encoder.onnx)",
+    "sha256_verified": "c128ccfdee0690da090c7dfcb39af8a2b25f3e492288f9305c85b293eeda6f47",
+    "artifact_bytes": 22018587,
+    "query_vector_dim": 200,
+    "query_L2_norm": 1.0,
+    "max_sim_to_subset": 0.9922281170875898,
+    "mean_cosine_to_subject_1_vectors": 0.9867780556646127,
+    "interpretation": "The real-EDF 200-D query lands in the learned CBraMod manifold (maxSim 0.9922, consistent with the ~0.99 subset cluster band)."
+  },
+  "subset": {
+    "n_vectors": 400,
+    "dim": 200,
+    "note": "Real CBraMod 200-D vectors dumped from .cbramod_cross_session_cache.npz",
+    "leave_one_out_recall": {
+      "recall_at_1": 0.185,
+      "recall_at_5": 0.4575,
+      "recall_at_10": 0.61
+    },
+    "nn_gap": {
+      "same_subject_nn_cosine": 0.9917761945136597,
+      "diff_subject_nn_cosine": 0.9913673067503654,
+      "gap": 0.00040888776329428556,
+      "note": "Positive gap => same-subject NN is more similar (CBraMod separates subjects)."
+    }
+  },
+  "validated_retrieval_results": {
+    "recall_at_5": {
+      "cbramod_200": {
+        "mean": 0.5275555555555556,
+        "std": 0.2632937939825185,
+        "n": 300,
+        "ci95": [
+          0.4977610579605296,
+          0.5573500531505815
+        ]
+      },
+      "v2_32": {
+        "mean": 0.21577777777777774,
+        "std": 0.17069585290200745,
+        "n": 300,
+        "ci95": [
+          0.1964617236397625,
+          0.23509383191579297
+        ]
+      },
+      "pca_32": {
+        "mean": 0.6920000000000001,
+        "std": 0.2183918113794379,
+        "n": 300,
+        "ci95": [
+          0.6672866400666093,
+          0.7167133599333908
+        ]
+      }
+    },
+    "nn_gap": {
+      "cbramod_200": {
+        "same_subject_nn_cosine": 0.9933354197514929,
+        "diff_subject_nn_cosine": 0.9930836834459406,
+        "gap": 0.0002517363055523081
+      },
+      "v2_32": {
+        "same_subject_nn_cosine": 0.995062920815522,
+        "diff_subject_nn_cosine": 0.9976142624758699,
+        "gap": -0.0025513416603479833
+      }
+    },
+    "statistical_comparisons": {
+      "note": "paired t across session-disjoint splits; Bonferroni across 3 pairwise comparisons x 3 metrics (9 comparisons) -> corrected alpha = 0.05/9",
+      "bonferroni_n_pairwise": 3,
+      "bonferroni_n_metrics": 3,
+      "alpha_corrected": 0.005555555555555556,
+      "cbramod_vs_v2_recall_at_5": {
+        "n": 300,
+        "delta": 0.3117777777777778,
+        "t": 20.793029923606177,
+        "p_two": 5.046626504455387e-60,
+        "p_one_v2_gt": 1.0,
+        "cohens_d": 1.2004860961420265,
+        "bootstrap_ci_95": [
+          0.28200000000000014,
+          0.3413333333333334
+        ]
+      },
+      "cbramod_vs_pca_recall_at_5": {
+        "n": 300,
+        "delta": -0.1644444444444445,
+        "t": -10.997400947332752,
+        "p_two": 7.52422474361717e-24,
+        "p_one_v2_gt": 3.762112371808585e-24,
+        "cohens_d": -0.6349352152174439,
+        "bootstrap_ci_95": [
+          -0.19399999999999995,
+          -0.1346666666666667
+        ]
+      },
+      "v2_vs_pca_recall_at_5": {
+        "n": 300,
+        "delta": -0.4762222222222223,
+        "t": -36.0046276451216,
+        "p_two": 9.886303702132636e-111,
+        "p_one_v2_gt": 4.943151851066318e-111,
+        "cohens_d": -2.078728055561048,
+        "bootstrap_ci_95": [
+          -0.502,
+          -0.45022222222222236
+        ]
+      }
+    },
+    "retrieval_quality_gate": {
+      "official_gate_rule": "CBraMod > V2 (delta>=0.05, p<0.05) AND MI accuracy >= chance(0.25)",
+      "cbramod_recall_at_5": 0.5275555555555556,
+      "v2_recall_at_5": 0.21577777777777774,
+      "pca_recall_at_5": 0.6920000000000001,
+      "pca_vs": {
+        "pca_beats_cbramod": true,
+        "pca_recall_at_5": 0.6920000000000001,
+        "honest_note": "PCA-32 bandpower baseline is the STRONGEST simple baseline (0.692 > CBraMod 0.527 > V2 0.216). CBraMod's value is beating the deployed learned V2, not PCA. This is reported honestly, not manufactured."
+      },
+      "p_cbramod_vs_v2": 5.046626504455387e-60,
+      "p_cbramod_vs_pca": 7.52422474361717e-24,
+      "cbramod_beats_v2": true,
+      "cbramod_beats_pca": false,
+      "mi_floor_met": true,
+      "mi_floor_value": 0.2748888888888889,
+      "verdict": "SUCCESS (retrieval-quality leg)",
+      "caveat": "CBraMod-200 beats V2-32 on subject-Recall@5 (Mission-11/12 official gate: CBraMod>V2, delta>=0.05, p<0.05, MI>=chance) -> retrieval-quality gate PASSED."
+    },
+    "source": "scripts/tmp/m13_tier2_retrieval_benchmark.py (reran Mission-11 harness on cached embeddings)"
+  },
+  "pgvector_rpc_leg": {
+    "exercised": false,
+    "verdict": "INCONCLUSIVE",
+    "blocker": "Docker daemon unavailable (npipe:////./pipe/dockerDesktopLinuxEngine) -> `npx supabase start` cannot run a real pgvector; no psql/postgres binary. The match_foundation_embeddings RPC could NOT be executed against a live database.",
+    "compensating_control": "The identical cosine metric is validated via the NeuralVectorIndex in-memory fallback (this script + foundation-retrieval.m13.test.ts), and the RPC name is asserted wired to the foundation namespace in the route test."
+  }
+}

@@ -37,7 +37,7 @@ import { runRecallSLO } from "../../../vector-search/recall-slo";
 import type { ModelInput } from "../../types";
 
 const ORIGINAL_ENV = { ...process.env };
-const EEGCONFORMER_ID = "braindecode-eegconformer-prod";
+const EEGCONFORMER_ID = "braindecode-eegconformer-prod-v2";
 
 /** Build a deterministic sine-wave window (not all-zero, 22ch, 1000 samples). */
 function makeSineInput(channels = 22, samples = 1000, sr = 250): ModelInput {
@@ -78,7 +78,8 @@ describe("Mission 3 — EEGConformer Beta → GA Promotion Readiness", () => {
     vi.unstubAllGlobals();
     if (!hasModel(EEGCONFORMER_ID)) {
       registerBraindecodeEEGConformer({
-        artifact: "/models/eegconformer.onnx",
+        id: "braindecode-eegconformer-prod-v2",
+        artifact: "/models/eegconformer_finetuned.onnx",
         enableVerification: true,
       });
     }
@@ -89,7 +90,10 @@ describe("Mission 3 — EEGConformer Beta → GA Promotion Readiness", () => {
     it("routes approximately 50% of users to EEGConformer at beta stage", () => {
       setRolloutStage("beta");
       if (!hasModel(EEGCONFORMER_ID)) {
-        registerBraindecodeEEGConformer({ artifact: "/models/eegconformer.onnx" });
+        registerBraindecodeEEGConformer({
+          id: "braindecode-eegconformer-prod-v2",
+          artifact: "/models/eegconformer_finetuned.onnx",
+        });
       }
 
       let cohortCount = 0;
@@ -139,7 +143,8 @@ describe("Mission 3 — EEGConformer Beta → GA Promotion Readiness", () => {
       setRolloutStage("beta");
       if (hasModel(EEGCONFORMER_ID)) unregisterModel(EEGCONFORMER_ID);
       registerBraindecodeEEGConformer({
-        artifact: "/models/eegconformer.onnx",
+        id: "braindecode-eegconformer-prod-v2",
+        artifact: "/models/eegconformer_finetuned.onnx",
         enableVerification: false,
         runtime: async () => {
           throw new Error("no runtime in test env");
@@ -174,7 +179,10 @@ describe("Mission 3 — EEGConformer Beta → GA Promotion Readiness", () => {
     it("records uploadEmbedMs histogram during beta-stage embedding", async () => {
       setRolloutStage("beta");
       if (!hasModel(EEGCONFORMER_ID)) {
-        registerBraindecodeEEGConformer({ artifact: "/models/eegconformer.onnx" });
+        registerBraindecodeEEGConformer({
+          id: "braindecode-eegconformer-prod-v2",
+          artifact: "/models/eegconformer_finetuned.onnx",
+        });
       }
 
       const t0 = Date.now();
@@ -194,7 +202,7 @@ describe("Mission 3 — EEGConformer Beta → GA Promotion Readiness", () => {
       const fakeManifest = {
         models: {
           eegconformer: {
-            url: "/models/eegconformer.onnx",
+            url: "/models/eegconformer_finetuned.onnx",
             sha256: "deadbeef",
             size: 999999,
           },
@@ -211,7 +219,7 @@ describe("Mission 3 — EEGConformer Beta → GA Promotion Readiness", () => {
       );
 
       try {
-        await verifyRemoteArtifact("/models/eegconformer.onnx");
+        await verifyRemoteArtifact("/models/eegconformer_finetuned.onnx");
       } catch {
         // Expected — size mismatch.
       }
@@ -228,7 +236,10 @@ describe("Mission 3 — EEGConformer Beta → GA Promotion Readiness", () => {
     it("ga stage routes 100% of users to EEGConformer", () => {
       setRolloutStage("ga");
       if (!hasModel(EEGCONFORMER_ID)) {
-        registerBraindecodeEEGConformer({ artifact: "/models/eegconformer.onnx" });
+        registerBraindecodeEEGConformer({
+          id: "braindecode-eegconformer-prod-v2",
+          artifact: "/models/eegconformer_finetuned.onnx",
+        });
       }
 
       // At GA, 100% of users (even without userId) should be eligible.
@@ -310,7 +321,8 @@ describe("Mission 3 — EEGConformer Beta → GA Promotion Readiness", () => {
       setRolloutStage("beta");
       if (hasModel(EEGCONFORMER_ID)) unregisterModel(EEGCONFORMER_ID);
       registerBraindecodeEEGConformer({
-        artifact: "/models/eegconformer.onnx",
+        id: "braindecode-eegconformer-prod-v2",
+        artifact: "/models/eegconformer_finetuned.onnx",
         enableVerification: false,
         runtime: async () => {
           throw new Error("no runtime in test env");
@@ -375,7 +387,8 @@ describe("Mission 3 — EEGConformer Beta → GA Promotion Readiness", () => {
       // Register EEGConformer with broken runtime — all attempts fall back to PCA.
       if (hasModel(EEGCONFORMER_ID)) unregisterModel(EEGCONFORMER_ID);
       registerBraindecodeEEGConformer({
-        artifact: "/models/eegconformer.onnx",
+        id: "braindecode-eegconformer-prod-v2",
+        artifact: "/models/eegconformer_finetuned.onnx",
         enableVerification: false,
         runtime: async () => {
           throw new Error("no runtime in test env");

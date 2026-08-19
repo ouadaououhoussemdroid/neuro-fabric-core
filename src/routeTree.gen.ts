@@ -44,6 +44,9 @@ import { Route as ApiEegUploadRouteImport } from './routes/api/eeg/upload'
 import { Route as ApiEvaluateCrossSubjectRouteImport } from './routes/api/evaluate/cross-subject'
 import { Route as ApiPublicMetricsRouteImport } from './routes/api/public/metrics'
 import { Route as ApiPublicNotebooksRouteImport } from './routes/api/public/notebooks'
+import { Route as ApiEegEmbedFoundationRouteImport } from './routes/api/eeg/embed/foundation'
+import { Route as ApiEegEmbedFoundationSearchRouteImport } from './routes/api/eeg/embed/foundation-search'
+import { Route as ApiJoint2312SimilaritySearchRouteImport } from './routes/api/joint2312/similarity/search'
 import { Route as ApiPublicCronRecallRouteImport } from './routes/api/public/cron/recall'
 import { Route as ApiPublicStagingMetricsRouteImport } from './routes/api/public/staging/metrics'
 
@@ -227,6 +230,23 @@ const ApiPublicNotebooksRoute = ApiPublicNotebooksRouteImport.update({
   path: '/api/public/notebooks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiEegEmbedFoundationRoute = ApiEegEmbedFoundationRouteImport.update({
+  id: '/api/eeg/embed/foundation',
+  path: '/api/eeg/embed/foundation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEegEmbedFoundationSearchRoute =
+  ApiEegEmbedFoundationSearchRouteImport.update({
+    id: '/api/eeg/embed/foundation-search',
+    path: '/api/eeg/embed/foundation-search',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiJoint2312SimilaritySearchRoute =
+  ApiJoint2312SimilaritySearchRouteImport.update({
+    id: '/api/joint2312/similarity/search',
+    path: '/api/joint2312/similarity/search',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicCronRecallRoute = ApiPublicCronRecallRouteImport.update({
   id: '/api/public/cron/recall',
   path: '/api/public/cron/recall',
@@ -273,6 +293,9 @@ export interface FileRoutesByFullPath {
   '/api/public/notebooks': typeof ApiPublicNotebooksRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/api/annotations/': typeof ApiAnnotationsIndexRoute
+  '/api/eeg/embed/foundation': typeof ApiEegEmbedFoundationRoute
+  '/api/eeg/embed/foundation-search': typeof ApiEegEmbedFoundationSearchRoute
+  '/api/joint2312/similarity/search': typeof ApiJoint2312SimilaritySearchRoute
   '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
   '/api/public/staging/metrics': typeof ApiPublicStagingMetricsRoute
 }
@@ -310,6 +333,9 @@ export interface FileRoutesByTo {
   '/api/public/notebooks': typeof ApiPublicNotebooksRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/api/annotations': typeof ApiAnnotationsIndexRoute
+  '/api/eeg/embed/foundation': typeof ApiEegEmbedFoundationRoute
+  '/api/eeg/embed/foundation-search': typeof ApiEegEmbedFoundationSearchRoute
+  '/api/joint2312/similarity/search': typeof ApiJoint2312SimilaritySearchRoute
   '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
   '/api/public/staging/metrics': typeof ApiPublicStagingMetricsRoute
 }
@@ -350,6 +376,9 @@ export interface FileRoutesById {
   '/api/public/notebooks': typeof ApiPublicNotebooksRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/api/annotations/': typeof ApiAnnotationsIndexRoute
+  '/api/eeg/embed/foundation': typeof ApiEegEmbedFoundationRoute
+  '/api/eeg/embed/foundation-search': typeof ApiEegEmbedFoundationSearchRoute
+  '/api/joint2312/similarity/search': typeof ApiJoint2312SimilaritySearchRoute
   '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
   '/api/public/staging/metrics': typeof ApiPublicStagingMetricsRoute
 }
@@ -390,6 +419,9 @@ export interface FileRouteTypes {
     | '/api/public/notebooks'
     | '/dashboard/'
     | '/api/annotations/'
+    | '/api/eeg/embed/foundation'
+    | '/api/eeg/embed/foundation-search'
+    | '/api/joint2312/similarity/search'
     | '/api/public/cron/recall'
     | '/api/public/staging/metrics'
   fileRoutesByTo: FileRoutesByTo
@@ -427,6 +459,9 @@ export interface FileRouteTypes {
     | '/api/public/notebooks'
     | '/dashboard'
     | '/api/annotations'
+    | '/api/eeg/embed/foundation'
+    | '/api/eeg/embed/foundation-search'
+    | '/api/joint2312/similarity/search'
     | '/api/public/cron/recall'
     | '/api/public/staging/metrics'
   id:
@@ -466,6 +501,9 @@ export interface FileRouteTypes {
     | '/api/public/notebooks'
     | '/_authenticated/dashboard/'
     | '/api/annotations/'
+    | '/api/eeg/embed/foundation'
+    | '/api/eeg/embed/foundation-search'
+    | '/api/joint2312/similarity/search'
     | '/api/public/cron/recall'
     | '/api/public/staging/metrics'
   fileRoutesById: FileRoutesById
@@ -493,6 +531,9 @@ export interface RootRouteChildren {
   ApiPublicMetricsRoute: typeof ApiPublicMetricsRoute
   ApiPublicNotebooksRoute: typeof ApiPublicNotebooksRoute
   ApiAnnotationsIndexRoute: typeof ApiAnnotationsIndexRoute
+  ApiEegEmbedFoundationRoute: typeof ApiEegEmbedFoundationRoute
+  ApiEegEmbedFoundationSearchRoute: typeof ApiEegEmbedFoundationSearchRoute
+  ApiJoint2312SimilaritySearchRoute: typeof ApiJoint2312SimilaritySearchRoute
   ApiPublicCronRecallRoute: typeof ApiPublicCronRecallRoute
   ApiPublicStagingMetricsRoute: typeof ApiPublicStagingMetricsRoute
 }
@@ -744,6 +785,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicNotebooksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/eeg/embed/foundation': {
+      id: '/api/eeg/embed/foundation'
+      path: '/api/eeg/embed/foundation'
+      fullPath: '/api/eeg/embed/foundation'
+      preLoaderRoute: typeof ApiEegEmbedFoundationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/eeg/embed/foundation-search': {
+      id: '/api/eeg/embed/foundation-search'
+      path: '/api/eeg/embed/foundation-search'
+      fullPath: '/api/eeg/embed/foundation-search'
+      preLoaderRoute: typeof ApiEegEmbedFoundationSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/joint2312/similarity/search': {
+      id: '/api/joint2312/similarity/search'
+      path: '/api/joint2312/similarity/search'
+      fullPath: '/api/joint2312/similarity/search'
+      preLoaderRoute: typeof ApiJoint2312SimilaritySearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/cron/recall': {
       id: '/api/public/cron/recall'
       path: '/api/public/cron/recall'
@@ -834,6 +896,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicMetricsRoute: ApiPublicMetricsRoute,
   ApiPublicNotebooksRoute: ApiPublicNotebooksRoute,
   ApiAnnotationsIndexRoute: ApiAnnotationsIndexRoute,
+  ApiEegEmbedFoundationRoute: ApiEegEmbedFoundationRoute,
+  ApiEegEmbedFoundationSearchRoute: ApiEegEmbedFoundationSearchRoute,
+  ApiJoint2312SimilaritySearchRoute: ApiJoint2312SimilaritySearchRoute,
   ApiPublicCronRecallRoute: ApiPublicCronRecallRoute,
   ApiPublicStagingMetricsRoute: ApiPublicStagingMetricsRoute,
 }

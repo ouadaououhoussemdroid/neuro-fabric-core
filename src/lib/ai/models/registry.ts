@@ -67,16 +67,21 @@ registerModel(
     }),
 );
 
-// Production EEGConformer — ONNX artefact served from /models/
+// Rollback EEGConformer v1 — ONNX artefact served from /models/.
+// Retained as the rollback-only model after V2 GA promotion (Mission 5).
+// NOT the production default; V2 (braindecode-eegconformer-prod-v2) is.
+// V1 uses external data (eegconformer.onnx + .onnx.data) and should NOT be
+// re-registered by applyEEGConformerRollout() — it is always available here.
 registerBraindecodeEEGConformer({
   artifact: "/models/eegconformer.onnx",
   enableVerification: true,
 });
 
 // T-031 — EEGConformer v2 (fine-tuned on PhysioNet EEGMMIDB, 20 subjects).
-// Registered but NOT promoted to default yet — embedEEG() still defaults to
-// braindecode-eegconformer-prod (v1) per the rollout gate. V2 is available
-// for explicit selection via preferredModelId.
+// GA default model (Mission 5): DEFAULT_PREFERRED points here, and
+// applyEEGConformerRollout() registers/unregisters this id. SHA 18644de1…
+// is the canonical FP32 WASM-compatible artifact (32-D, 22ch, 250Hz,
+// 1000 samples, opset 17, self-contained).
 registerBraindecodeEEGConformer({
   id: "braindecode-eegconformer-prod-v2",
   artifact: "/models/eegconformer_finetuned.onnx",

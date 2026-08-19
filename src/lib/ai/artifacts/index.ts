@@ -98,10 +98,12 @@ registerArtifact({
 });
 
 /**
- * Selected production EEG foundation model: Braindecode EEGConformer
- * exported to ONNX. See docs/audits/2026-06-17_braindecode-model-selection.md
- * for the selection rationale and docs/braindecode-deployment-guide.md for
- * the artefact preparation workflow.
+ * Rollback EEGConformer v1 (Braindecode EEGConformer exported to ONNX).
+ * V2 (braindecode-eegconformer-prod-v2) is the GA default since Mission 5;
+ * V1 is retained for rollback as the external-data variant.
+ * See docs/audits/2026-06-17_braindecode-model-selection.md for the selection
+ * rationale and docs/braindecode-deployment-guide.md for the artefact
+ * preparation workflow.
  */
 registerArtifact({
   id: "braindecode-eegconformer-prod",

@@ -1,0 +1,117 @@
+{
+  "experiment": "P1: V2 Firefox WASM Latency Fix — COOP/COEP runtime fix (numThreads tuning trialled + reverted)",
+  "timestamp": "2026-08-13T15:02:00Z",
+  "mission": "Next Mission — Productionize the V2 Firefox WASM Fix",
+  "artifact": {
+    "model": "eegconformer_finetuned.onnx",
+    "sha256": "18644de187e984a667d78ca79b3f4c0d2c0ada252c7084f4107343f77168f931",
+    "size_bytes": 3359557,
+    "wasm_compatible": true,
+    "registry_id": "braindecode-eegconformer-prod-v2",
+    "status": "FP32 canonical — UNCHANGED. INT8 candidate NOT applied (out of scope; original preserved byte-for-byte).",
+    "onnx_opset": 17,
+    "output_dim": 32
+  },
+  "environment": {
+    "browsers": ["chromium 151", "firefox 153"],
+    "execution_provider": "wasm",
+    "wasm_path": "/ort/ort-wasm-simd-threaded.wasm",
+    "ort_web_version": "1.27.0",
+    "iterations": 20,
+    "warmup_iterations": 3,
+    "warmup_discarded": true,
+    "methodology": "real production path via /staging-harness.html → window.__stagingTest.runLatencyBenchmark → embedEEG() → ONNXAdapter → defaultRuntime() → verifyRemoteArtifact (crypto.subtle.digest) → InferenceSession.create + run + unload. per-call session (matches T-035 + production embedEEG).",
+    "input": "sine_wave_22ch_1000samples_250hz"
+  },
+  "fix": {
+    "coop": "Cross-Origin-Opener-Policy: same-origin",
+    "coep": "Cross-Origin-Embedder-Policy: require-corp",
+    "corp": "Cross-Origin-Resource-Policy: same-origin",
+    "dev_layers": [
+      "vite.config.ts → vite.server.headers (covers /, Vite-served /models, /src, 404s)",
+      "vite-plugins/test-harness.ts → setCoopHeaders() at harness-HTML + /ort/*.wasm + /ort/*.mjs?import res.end sites (these bypass Vite's headers middleware via prepended res.end)"
+    ],
+    "prod_layer": "src/server.ts → withCrossOriginIsolationHeaders() on every SSR/static Response",
+    "numThreads_tuning": "TRIALLED then REVERTED (negative result — see experiments[].id=p1-numThreads-12-realapp)"
+  },
+  "experiments": [
+    {
+      "id": "p1-coop-coep-realapp-chromium",
+      "configuration": "COOP+COEP+CORP on; numThreads=default(1) (reverted)",
+      "browser": "chromium 151",
+      "metrics": {
+        "crossOriginIsolated": true,
+        "sharedArrayBuffer": "function",
+        "fallbackCount": 0,
+        "fallbackRate": 0,
+        "dim": 32,
+        "sha256_verified_in_browser": true,
+        "p50_ms": 289.3,
+        "p95_ms": 530.0,
+        "mean_ms": 306.9,
+        "min_ms": 206.1,
+        "max_ms": 611.3,
+        "p99_ms": 611.3
+      },
+      "gate": "PASS (P95<600, P50<400)",
+      "conclusion": "Gate cleared on Chromium."
+    },
+    {
+      "id": "p1-coop-coep-realapp-firefox",
+      "configuration": "COOP+COEP+CORP on; numThreads=default(1) (reverted)",
+      "browser": "firefox 153",
+      "metrics": {
+        "crossOriginIsolated": true,
+        "sharedArrayBuffer": "function",
+        "fallbackCount": 0,
+        "fallbackRate": 0,
+        "dim": 32,
+        "sha256_verified_in_browser": true,
+        "p50_ms": 1393.3,
+        "p95_ms": 1586.9,
+        "mean_ms": 1417.6,
+        "min_ms": 1345.3,
+        "max_ms": 1629.9,
+        "p99_ms": 1630.0
+      },
+      "gate": "FAIL (P95<600 NOT met). Deferred to INT8-QDQ ablation (P2, out of scope this mission). Regression floor <2500 enforced in test.",
+      "conclusion": "Cross-origin isolation + SAB verified; latency remains single-threaded ORT WASM (~1.6s). Not a COOP/COEP problem — ORT-Web defaults numThreads=1; threading per-session was negative."
+    },
+    {
+      "id": "p1-numThreads-12-realapp-firefox",
+      "configuration": "numThreads=navigator.hardwareConcurrency (12) + COOP+COEP; set in defaultRuntime()",
+      "browser": "firefox 153",
+      "metrics": { "p50_ms": 1973.1, "p95_ms": 2657.9, "mean_ms": 2109.4, "fallbackCount": 0 },
+      "gate": "NEVER SHIPPED",
+      "conclusion": "NEGATIVE result (recorded, not committed as a fix). embedEEG() creates a fresh InferenceSession per call (embed() → createAdapter → load → unload in finally), so numThreads>1 forces a new Web Worker thread-pool to spin up AND tear down on every call; worker spin-up dominates the tiny V2 compute → Firefox P95 1742→2658ms. Threading only helps with a REUSED session/thread-pool, which the per-request embedEEG() path does not provide. Setting reverted; onnx-adapter.ts restored to original (numThreads left at ORT-Web default 1).",
+      "action_taken": "Reverted defaultRuntime() numThreads change (onnx-adapter.ts back to wasmPaths-only)."
+    }
+  ],
+  "parity": {
+    "sha256_verified_in_browser": true,
+    "web_crypto_api_used": true,
+    "determinism_cosine_chrono_v_firefox": 1.0,
+    "determinism_cosine_run_a_vs_b": 1.0,
+    "embedding_dim": 32,
+    "fallback_rate": 0,
+    "pca_fallback_intact": true
+  },
+  "gate_checklist": {
+    "chromium_p95_lt_600ms": true,
+    "chromium_p50_lt_400ms": true,
+    "firefox_p95_lt_600ms": false,
+    "firefox_p50_lt_400ms": false,
+    "crossOriginIsolated_true_both_browsers": true,
+    "sharedArrayBuffer_available_both_browsers": true,
+    "sha256_parity_retained": true,
+    "determinism_cosine_1_0": true,
+    "pca_fallback_intact": true,
+    "registry_semantics_unchanged": true,
+    "rollout_stage_unchanged": true,
+    "DEFAULT_PREFERRED_unchanged": true,
+    "v2_FP32_canonical_artifact_unchanged": true
+  },
+  "decision": "PARTIAL / CONDITIONAL PASS",
+  "decision_detail": "The permanent COOP/COEP runtime fix is implemented and verified in the real application (crossOriginIsolated===true, SharedArrayBuffer available, on both Chromium and Firefox). Correctness gates (real V2 inference, 0 fallbacks, dim=32, SHA-256 verified, determinism cos=1.0) and the Chromium latency gate (P95 530ms) PASS. The Firefox latency gate (<600ms) is NOT cleared by COOP/COEP + numThreads tuning: ORT-Web defaults numThreads=1, and per-session thread-pool spin-up (required because embedEEG() creates a fresh session per call) is a negative lever. Clearing the Firefox gate requires the INT8-QDQ ablation (smaller model + INT8 kernels), which is explicitly out of scope for this mission ('do not replace V2 with INT8 yet').",
+  "next_mission_recommendation": "INT8-QDQ V2 ablation (offline CPU parity + size via onnxruntime.quantization, then browser latency/accuracy on Chromium+Firefox, preserving the FP32 canonical artifact) AND evaluate persistent InferenceSession + thread-pool reuse across embedEEG() calls to amortise worker spin-up."
+}

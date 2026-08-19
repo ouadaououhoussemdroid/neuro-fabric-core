@@ -25,13 +25,34 @@
  */
 import { test, expect, type Page } from "@playwright/test";
 
+// Release the cached InferenceEngine (persistent ONNX sessions / ORT-WASM worker)
+// after each test so the browser context closes cleanly. P3 added the persistent
+// session cache; without teardown Firefox hangs on the EEGConformer v1 model (the
+// only model backed by external data) waiting for the live WASM worker.
+test.afterEach(async ({ page }) => {
+  try {
+    void (await page.evaluate(() => {
+      (window as any).__neuroTest?.inferenceEngine?.dispose?.();
+    }));
+  } catch {
+    /* ignore — page may have navigated/closed */
+  }
+});
+
 // ---------------------------------------------------------------------------
 // Model descriptors — mirror the production registry (src/lib/ai/models/registry.ts).
 // Each entry's input contract matches the ONNX model's expected [C, T] shape.
 // No real EEG data — these are deterministic mathematical signals.
 // ---------------------------------------------------------------------------
 const MODELS = [
-  { name: "EEGConformer", id: "braindecode-eegconformer-prod", ch: 22, sr: 250, samples: 1000, dim: 32 },
+  {
+    name: "EEGConformer",
+    id: "braindecode-eegconformer-prod",
+    ch: 22,
+    sr: 250,
+    samples: 1000,
+    dim: 32,
+  },
   { name: "EEGPT", id: "onnx-eegpt", ch: 62, sr: 250, samples: 1000, dim: 2048 },
   { name: "FEMBA-tiny", id: "onnx-femba-tiny", ch: 22, sr: 200, samples: 1280, dim: 30800 },
   { name: "LaBraM", id: "onnx-labram", ch: 16, sr: 250, samples: 1600, dim: 200 },
@@ -139,8 +160,7 @@ test.describe("Group 1: Real browser inference — synthetic → embedEEG() → 
         r.url().includes("ort-wasm") &&
         r.url().endsWith(".wasm") &&
         r.request().resourceType() === "fetch";
-      const modelMatcher = (r: any) =>
-        r.url().includes(`/models/`) && r.url().endsWith(".onnx");
+      const modelMatcher = (r: any) => r.url().includes(`/models/`) && r.url().endsWith(".onnx");
 
       const [result, wasmResponse, modelResponse] = await Promise.all([
         page.evaluate(
@@ -167,7 +187,9 @@ test.describe("Group 1: Real browser inference — synthetic → embedEEG() → 
       // Assert: the /ort/ WASM binary was fetched with a 200 response
       // and the correct Content-Type.
       expect(wasmResponse.status()).toBe(200);
-      expect(wasmResponse.headers()["content-type"]).toMatch(/application\/wasm|application\/octet-stream/);
+      expect(wasmResponse.headers()["content-type"]).toMatch(
+        /application\/wasm|application\/octet-stream/,
+      );
 
       // Assert: the ONNX model artifact was fetched from /models/ with a 200.
       expect(modelResponse.status()).toBe(200);
@@ -185,7 +207,7 @@ test.describe("Group 1: Real browser inference — synthetic → embedEEG() → 
     });
   }
 
-  test("EEGConformer only — canary metrics recorded (cohort hit + model selected + verification pass)", async ({
+  test("EEGConformer v2 — canary metrics recorded (cohort hit + model selected + verification pass)", async ({
     page,
   }) => {
     await loadHarness(page);
@@ -203,7 +225,7 @@ test.describe("Group 1: Real browser inference — synthetic → embedEEG() → 
       ),
       modelSelected: (window as any).__neuroTest.metricValue(
         (window as any).__neuroTest.metrics.modelSelectedTotal,
-        { model: "braindecode-eegconformer-prod", fell_back: "false" },
+        { model: "braindecode-eegconformer-prod-v2", fell_back: "false" },
       ),
       artifactPass: (window as any).__neuroTest.metricValue(
         (window as any).__neuroTest.metrics.artifactVerificationTotal,
@@ -211,16 +233,16 @@ test.describe("Group 1: Real browser inference — synthetic → embedEEG() → 
       ),
     }));
 
-    // Run inference with EEGConformer (rollout stage is "ga" → 100% cohort).
-    const result = await page.evaluate(
-      () =>
-        (window as any).__neuroTest.embedEEG(
-          (window as any).__neuroTest.makeSyntheticInput(22, 1000, 250),
-          { preferredModelId: "braindecode-eegconformer-prod", normalize: false },
-        ),
+    // Run inference with EEGConformer v2 (rollout stage is "ga" → 100% cohort).
+    // Uses V2 (the GA default) so isEEGConformer=true → cohort check fires.
+    const result = await page.evaluate(() =>
+      (window as any).__neuroTest.embedEEG(
+        (window as any).__neuroTest.makeSyntheticInput(22, 1000, 250),
+        { preferredModelId: "braindecode-eegconformer-prod-v2", normalize: false },
+      ),
     );
 
-    assertValidEmbedding(result, "braindecode-eegconformer-prod", 32);
+    assertValidEmbedding(result, "braindecode-eegconformer-prod-v2", 32);
 
     // Assert: canary metrics incremented correctly.
     const after = await page.evaluate(() => ({
@@ -230,7 +252,7 @@ test.describe("Group 1: Real browser inference — synthetic → embedEEG() → 
       ),
       modelSelected: (window as any).__neuroTest.metricValue(
         (window as any).__neuroTest.metrics.modelSelectedTotal,
-        { model: "braindecode-eegconformer-prod", fell_back: "false" },
+        { model: "braindecode-eegconformer-prod-v2", fell_back: "false" },
       ),
       artifactPass: (window as any).__neuroTest.metricValue(
         (window as any).__neuroTest.metrics.artifactVerificationTotal,
@@ -271,7 +293,7 @@ test.describe("Group 2: SHA-256 tamper → verification fail → PCA fallback", 
     // Capture the verification-failure counter before tampering.
     const beforeFail = await page.evaluate(() =>
       (window as any).__neuroTest.metricValue(
-      (window as any).__neuroTest.metrics.artifactVerificationTotal,
+        (window as any).__neuroTest.metrics.artifactVerificationTotal,
         { result: "fail" },
       ),
     );
@@ -305,12 +327,11 @@ test.describe("Group 2: SHA-256 tamper → verification fail → PCA fallback", 
     // Only the ONNX model artifact is corrupted. This proves the SHA-256
     // verification layer (not the WASM runtime) is what catches the tamper.
 
-    const result = await page.evaluate(
-      () =>
-        (window as any).__neuroTest.embedEEG(
-          (window as any).__neuroTest.makeSyntheticInput(22, 1000, 250),
-          { preferredModelId: "braindecode-eegconformer-prod", normalize: false },
-        ),
+    const result = await page.evaluate(() =>
+      (window as any).__neuroTest.embedEEG(
+        (window as any).__neuroTest.makeSyntheticInput(22, 1000, 250),
+        { preferredModelId: "braindecode-eegconformer-prod", normalize: false },
+      ),
     );
 
     // Assert: PCA fallback was triggered by the verification failure.
@@ -364,23 +385,19 @@ test.describe("Group 2: SHA-256 tamper → verification fail → PCA fallback", 
 // ---------------------------------------------------------------------------
 
 test.describe("Group 3: CBraMod — ORT-WASM 1.27.0 now supports DFT + ReduceL2", () => {
-  test("CBraMod (DFT+ReduceL2) runs real ONNX inference in browser WASM", async ({
-    page,
-  }) => {
+  test("CBraMod (DFT+ReduceL2) runs real ONNX inference in browser WASM", async ({ page }) => {
     await loadHarness(page);
     await resetState(page);
 
     // Assert CBraMod is registered (it's in registry.ts at module load).
-    const registered = await page.evaluate(
-      () => (window as any).__neuroTest.hasModel("onnx-cbramod"),
+    const registered = await page.evaluate(() =>
+      (window as any).__neuroTest.hasModel("onnx-cbramod"),
     );
     expect(registered).toBe(true);
 
     // Intercept the WASM binary fetch to prove the /ort/ backend initializes.
     const wasmPromise = page.waitForResponse(
-      (r) =>
-        r.url().includes("ort-wasm") &&
-        r.url().endsWith(".wasm"),
+      (r) => r.url().includes("ort-wasm") && r.url().endsWith(".wasm"),
       { timeout: 60_000 },
     );
 
@@ -395,12 +412,11 @@ test.describe("Group 3: CBraMod — ORT-WASM 1.27.0 now supports DFT + ReduceL2"
     // 1. Import onnxruntime-web (fetches WASM from /ort/)
     // 2. verifyRemoteArtifact() (fetches cbramod-encoder.onnx, SHA-256 check)
     // 3. InferenceSession.create + session.run() (DFT + ReduceL2 resolved)
-    const result = await page.evaluate(
-      () =>
-        (window as any).__neuroTest.embedEEG(
-          (window as any).__neuroTest.makeSyntheticInput(19, 1000, 250),
-          { preferredModelId: "onnx-cbramod", normalize: false },
-        ),
+    const result = await page.evaluate(() =>
+      (window as any).__neuroTest.embedEEG(
+        (window as any).__neuroTest.makeSyntheticInput(19, 1000, 250),
+        { preferredModelId: "onnx-cbramod", normalize: false },
+      ),
     );
 
     // Assert: real inference succeeded — CBraMod model was used, NOT PCA fallback.
@@ -422,7 +438,9 @@ test.describe("Group 3: CBraMod — ORT-WASM 1.27.0 now supports DFT + ReduceL2"
     // Assert: the /ort/ WASM binary was fetched with a 200 response.
     const wasmResponse = await wasmPromise;
     expect(wasmResponse.status()).toBe(200);
-    expect(wasmResponse.headers()["content-type"]).toMatch(/application\/wasm|application\/octet-stream/);
+    expect(wasmResponse.headers()["content-type"]).toMatch(
+      /application\/wasm|application\/octet-stream/,
+    );
 
     // Assert: the ONNX model artifact was fetched with a 200 response.
     const modelResponse = await modelPromise;

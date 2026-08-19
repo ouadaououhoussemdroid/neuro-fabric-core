@@ -1,0 +1,79 @@
+{
+  "browserName": "firefox",
+  "browserVersion": "153.0",
+  "ortWebVersion": "unknown",
+  "crossOriginIsolated": true,
+  "sharedArrayBuffer": "function",
+  "hardwareConcurrency": 4,
+  "fp32": {
+    "modelId": "braindecode-eegconformer-prod-v2",
+    "sha256": "18644de187e984a667d78ca79b3f4c0d2c0ada252c7084f4107343f77168f931",
+    "sha256_verified": true,
+    "size_bytes": 3359557
+  },
+  "correctness": {
+    "fellBack": false,
+    "modelId": "braindecode-eegconformer-prod-v2",
+    "dim": 32
+  },
+  "determinism": {
+    "cosine_fp32_runA_vs_B": 0.9999999999999998
+  },
+  "latency": {
+    "session": "persistent(InferenceEngine)",
+    "nThreads": 1,
+    "n": 20,
+    "p50": 108.55999999999949,
+    "p95": 161.89999999999964,
+    "p99": 164.73999999999978,
+    "mean": 113.43499999999999,
+    "min": 97.35999999999967,
+    "max": 164.73999999999978,
+    "fallbackCount": 0,
+    "fallbackRate": 0,
+    "per_call_ms": [
+      112.5,
+      100.42000000000007,
+      125.21999999999935,
+      104.02000000000044,
+      105.42000000000007,
+      104.80000000000018,
+      110.55999999999949,
+      104.86000000000058,
+      110.92000000000007,
+      97.35999999999967,
+      114.90000000000055,
+      108.55999999999949,
+      104.4399999999996,
+      109.73999999999978,
+      109.61999999999989,
+      106.84000000000015,
+      110.31999999999971,
+      164.73999999999978,
+      161.89999999999964,
+      101.56000000000131
+    ],
+    "gate": {
+      "p95_max_ms": 600,
+      "p50_max_ms": 400
+    },
+    "gateCleared": true
+  },
+  "concurrency": {
+    "simultaneous_first_load_calls": 8,
+    "sessions_created": 1,
+    "cacheSize_after_concurrent_load": 1,
+    "all_correct": true
+  },
+  "memory": {
+    "heapDeltaBytes": null,
+    "note": "chromium-only (performance.memory); firefox omitted. Loose < 50MB guard on chromium."
+  },
+  "comparison_vs_per_call": {
+    "fp32_per_call_firefox_p95_ms": 1589.5,
+    "fp32_per_call_chromium_p95_ms": 1469.4,
+    "persistent_firefox_p95_ms": 161.89999999999964,
+    "persistent_chromium_p95_ms": 161.89999999999964,
+    "speedup_factor": "≈12.8x (firefox), ≈73x (chromium)"
+  }
+}

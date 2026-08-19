@@ -1,0 +1,574 @@
+{
+  "timestamp": "2026-08-15T22:46:07.216402+00:00",
+  "cache_source": "C:\\Users\\pc\\Documents\\GitHub\\neuro-fabric-core\\reports\\.cbramod_cross_session_cache.npz",
+  "data_summary": {
+    "cb_emb_shape": [
+      4500,
+      200
+    ],
+    "v2_emb_shape": [
+      4500,
+      32
+    ],
+    "bandpower_shape": [
+      4500,
+      110
+    ],
+    "n_subjects": 50,
+    "runs": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "mi_labels": [
+      1122,
+      1128,
+      1133,
+      1117
+    ],
+    "task_mapping": {
+      "0": "left hand (runs 5,7,9)",
+      "1": "right hand (runs 5,7,9)",
+      "2": "feet (runs 6,8,10)",
+      "3": "tongue (runs 6,8,10)"
+    }
+  },
+  "geometry_analysis": {
+    "cbramod_200": {
+      "model": "CBraMod-200",
+      "n_samples": 4500,
+      "n_dimensions": 200,
+      "anisotropy": {
+        "mean_pairwise_cosine": 0.9620946049690247,
+        "std_pairwise_cosine": 0.04189569875597954,
+        "sample_size": 500,
+        "interpretation": "High positive mean indicates embedding anisotropy (all vectors point in similar direction)"
+      },
+      "variance_distribution": {
+        "variance_explained_ratio_top1": 0.46829161047935486,
+        "variance_explained_ratio_top5": 0.6944506764411926,
+        "variance_explained_ratio_top10": 0.7918093800544739,
+        "variance_explained_ratio_top50": 0.9753351807594299,
+        "n_dims_for_90pct_variance": 22,
+        "n_dims_for_95pct_variance": 34,
+        "n_dims_for_99pct_variance": 71,
+        "participation_ratio": 4.155269622802734,
+        "interpretation": "Effective dimensionality ~4.2 (of 200 total)"
+      },
+      "embedding_concentration": {
+        "mean": 1.0,
+        "std": 3.723782882047999e-08,
+        "median": 1.0,
+        "min": 0.9999998807907104,
+        "max": 1.0000001192092896,
+        "q05": 0.9999999403953552,
+        "q95": 1.0,
+        "count": 4500
+      },
+      "pairwise_cosine_distribution": {
+        "same_subject": {
+          "mean": 0.983528060408739,
+          "std": 0.007729014664471287,
+          "median": 0.9850772023200989,
+          "min": 0.9507529139518738,
+          "max": 0.9938482046127319,
+          "q05": 0.9684791982173919,
+          "q95": 0.9927865773439407,
+          "count": 104
+        },
+        "diff_subject": {
+          "mean": 0.9619463923709844,
+          "std": 0.034605658519805654,
+          "median": 0.9719349145889282,
+          "min": 0.5656306743621826,
+          "max": 0.9943642020225525,
+          "q05": 0.9097012877464294,
+          "q95": 0.9875417202711105,
+          "count": 4896
+        },
+        "same_session": {
+          "mean": 0.9874830762545268,
+          "std": 0.005617836047720226,
+          "median": 0.98667311668396,
+          "min": 0.9747524261474609,
+          "max": 0.993689775466919,
+          "q05": 0.9787241458892822,
+          "q95": 0.9935335636138916,
+          "count": 15
+        },
+        "diff_session": {
+          "mean": 0.9828614847043927,
+          "std": 0.007860257924421594,
+          "median": 0.9849963188171387,
+          "min": 0.9507529139518738,
+          "max": 0.9938482046127319,
+          "q05": 0.9682281255722046,
+          "q95": 0.9918673157691955,
+          "count": 89
+        },
+        "same_task": {
+          "mean": 0.9625761026132083,
+          "std": 0.03546739264834739,
+          "median": 0.9722765684127808,
+          "min": 0.5656306743621826,
+          "max": 0.9943642020225525,
+          "q05": 0.9120473742485047,
+          "q95": 0.988168478012085,
+          "count": 2495
+        },
+        "diff_task": {
+          "mean": 0.9622152013217142,
+          "std": 0.033308902422552446,
+          "median": 0.9723750948905945,
+          "min": 0.6109689474105835,
+          "max": 0.9938482046127319,
+          "q05": 0.9084533810615539,
+          "q95": 0.9875138521194458,
+          "count": 2505
+        },
+        "same_label": {
+          "mean": 0.9627364599270377,
+          "std": 0.03703540719591611,
+          "median": 0.9725197553634644,
+          "min": 0.5656306743621826,
+          "max": 0.9943642020225525,
+          "q05": 0.9145258128643036,
+          "q95": 0.9886152923107148,
+          "count": 1235
+        },
+        "diff_label": {
+          "mean": 0.9622833804305331,
+          "std": 0.03349476436880487,
+          "median": 0.9722404479980469,
+          "min": 0.6109689474105835,
+          "max": 0.9938482046127319,
+          "q05": 0.9088777542114258,
+          "q95": 0.9875221967697143,
+          "count": 3765
+        }
+      },
+      "nn_analysis": {
+        "mean_nn_cos_same_subject": 0.9933378781280379,
+        "mean_nn_cos_diff_subject": 0.9930956178131839,
+        "nn_gap": 0.00024226031485397037,
+        "n_same_subject_nn": 274,
+        "n_diff_subject_nn": 726,
+        "n_same_session_nn": 67,
+        "fraction_same_subject_nn": 0.274,
+        "fraction_same_session_nn": 0.067
+      },
+      "dimension_analysis": {
+        "dead_dimensions": 0,
+        "near_dead_dimensions": 0,
+        "dim_mean_range": [
+          -0.11511924862861633,
+          0.22093011438846588
+        ]
+      }
+    },
+    "v2_32": {
+      "model": "V2-32",
+      "n_samples": 4500,
+      "n_dimensions": 32,
+      "anisotropy": {
+        "mean_pairwise_cosine": 0.909692645072937,
+        "std_pairwise_cosine": 0.1225108653306961,
+        "sample_size": 500,
+        "interpretation": "High positive mean indicates embedding anisotropy (all vectors point in similar direction)"
+      },
+      "variance_distribution": {
+        "variance_explained_ratio_top1": 0.48872849345207214,
+        "variance_explained_ratio_top5": 0.9008564949035645,
+        "variance_explained_ratio_top10": 0.9752558469772339,
+        "variance_explained_ratio_top50": 1.0,
+        "n_dims_for_90pct_variance": 5,
+        "n_dims_for_95pct_variance": 8,
+        "n_dims_for_99pct_variance": 14,
+        "participation_ratio": 3.321573495864868,
+        "interpretation": "Effective dimensionality ~3.3 (of 32 total)"
+      },
+      "embedding_concentration": {
+        "mean": 1.0,
+        "std": 3.4861127318208673e-08,
+        "median": 1.0,
+        "min": 0.9999998807907104,
+        "max": 1.0000001192092896,
+        "q05": 0.9999999403953552,
+        "q95": 1.0,
+        "count": 4500
+      },
+      "pairwise_cosine_distribution": {
+        "same_subject": {
+          "mean": 0.9271709907513398,
+          "std": 0.09145219675232875,
+          "median": 0.9569003283977509,
+          "min": 0.4033464193344116,
+          "max": 0.9986647963523865,
+          "q05": 0.7764026015996933,
+          "q95": 0.9933764696121216,
+          "count": 104
+        },
+        "diff_subject": {
+          "mean": 0.9038293003926382,
+          "std": 0.12741102946537247,
+          "median": 0.948434978723526,
+          "min": -0.15520994365215302,
+          "max": 0.9998239278793335,
+          "q05": 0.6552152186632156,
+          "q95": 0.9940267950296402,
+          "count": 4896
+        },
+        "same_session": {
+          "mean": 0.941525403658549,
+          "std": 0.05999446477595256,
+          "median": 0.9638391137123108,
+          "min": 0.8046771883964539,
+          "max": 0.994379997253418,
+          "q05": 0.8201539695262909,
+          "q95": 0.9909091651439667,
+          "count": 15
+        },
+        "diff_session": {
+          "mean": 0.9247517076770911,
+          "std": 0.09578850948426666,
+          "median": 0.9564163088798523,
+          "min": 0.4033464193344116,
+          "max": 0.9986647963523865,
+          "q05": 0.7491336107254029,
+          "q95": 0.9933225870132446,
+          "count": 89
+        },
+        "same_task": {
+          "mean": 0.9077684961990985,
+          "std": 0.11982585335100283,
+          "median": 0.9488127827644348,
+          "min": -0.15520994365215302,
+          "max": 0.9998239278793335,
+          "q05": 0.6677905142307281,
+          "q95": 0.9940274238586426,
+          "count": 2495
+        },
+        "diff_task": {
+          "mean": 0.9008749060853275,
+          "std": 0.13332712813804398,
+          "median": 0.9485548734664917,
+          "min": -0.11687645316123962,
+          "max": 0.9997342824935913,
+          "q05": 0.6361260652542114,
+          "q95": 0.9940168976783752,
+          "count": 2505
+        },
+        "same_label": {
+          "mean": 0.9101239737228826,
+          "std": 0.11688746878644969,
+          "median": 0.9490358829498291,
+          "min": -0.01958613656461239,
+          "max": 0.9998239278793335,
+          "q05": 0.6718030333518982,
+          "q95": 0.9939525961875916,
+          "count": 1235
+        },
+        "diff_label": {
+          "mean": 0.9024092776129445,
+          "std": 0.12985027461889687,
+          "median": 0.9485318660736084,
+          "min": -0.15520994365215302,
+          "max": 0.9997342824935913,
+          "q05": 0.6514012694358826,
+          "q95": 0.9940272212028504,
+          "count": 3765
+        }
+      },
+      "nn_analysis": {
+        "mean_nn_cos_same_subject": 0.9957431908263716,
+        "mean_nn_cos_diff_subject": 0.9975074199018124,
+        "nn_gap": -0.0017642290754407153,
+        "n_same_subject_nn": 86,
+        "n_diff_subject_nn": 914,
+        "n_same_session_nn": 22,
+        "fraction_same_subject_nn": 0.086,
+        "fraction_same_session_nn": 0.022
+      },
+      "dimension_analysis": {
+        "dead_dimensions": 0,
+        "near_dead_dimensions": 0,
+        "dim_mean_range": [
+          -0.18759450316429138,
+          0.0343189537525177
+        ]
+      }
+    },
+    "pca_32": {
+      "model": "PCA-32-bandpower",
+      "n_samples": 4500,
+      "n_dimensions": 32,
+      "anisotropy": {
+        "mean_pairwise_cosine": 0.7849687933921814,
+        "std_pairwise_cosine": 0.15823613107204437,
+        "sample_size": 500,
+        "interpretation": "High positive mean indicates embedding anisotropy (all vectors point in similar direction)"
+      },
+      "variance_distribution": {
+        "variance_explained_ratio_top1": 0.6146625876426697,
+        "variance_explained_ratio_top5": 0.9276213645935059,
+        "variance_explained_ratio_top10": 0.969021201133728,
+        "variance_explained_ratio_top50": 0.9999999403953552,
+        "n_dims_for_90pct_variance": 4,
+        "n_dims_for_95pct_variance": 8,
+        "n_dims_for_99pct_variance": 16,
+        "participation_ratio": 2.421130418777466,
+        "interpretation": "Effective dimensionality ~2.4 (of 32 total)"
+      },
+      "embedding_concentration": {
+        "mean": 0.2969052195549011,
+        "std": 0.09269239008426666,
+        "median": 0.2804356515407562,
+        "min": 0.0757039338350296,
+        "max": 0.8903803825378418,
+        "q05": 0.17677471041679382,
+        "q95": 0.475799560546875,
+        "count": 4500
+      },
+      "pairwise_cosine_distribution": {
+        "same_subject": {
+          "mean": 0.8870088996795508,
+          "std": 0.10017341565505769,
+          "median": 0.9160735607147217,
+          "min": 0.5576852560043335,
+          "max": 0.9942061901092529,
+          "q05": 0.6783694475889206,
+          "q95": 0.9841713637113572,
+          "count": 104
+        },
+        "diff_subject": {
+          "mean": 0.7731776331137452,
+          "std": 0.16724112439771666,
+          "median": 0.8204784691333771,
+          "min": 0.11167183518409729,
+          "max": 0.9939397573471069,
+          "q05": 0.4335198178887367,
+          "q95": 0.9620037227869034,
+          "count": 4896
+        },
+        "same_session": {
+          "mean": 0.932770824432373,
+          "std": 0.04541737239066844,
+          "median": 0.9498438239097595,
+          "min": 0.8662607073783875,
+          "max": 0.9939345717430115,
+          "q05": 0.8688405394554138,
+          "q95": 0.9862955451011658,
+          "count": 15
+        },
+        "diff_session": {
+          "mean": 0.8792962157324459,
+          "std": 0.10488037648539446,
+          "median": 0.9155611991882324,
+          "min": 0.5576852560043335,
+          "max": 0.9942061901092529,
+          "q05": 0.6483769416809082,
+          "q95": 0.9840592622756958,
+          "count": 89
+        },
+        "same_task": {
+          "mean": 0.7810502193494885,
+          "std": 0.1621247907504489,
+          "median": 0.8265685439109802,
+          "min": 0.12071181833744049,
+          "max": 0.9942061901092529,
+          "q05": 0.45827225148677825,
+          "q95": 0.9655916929244995,
+          "count": 2495
+        },
+        "diff_task": {
+          "mean": 0.7700624031994395,
+          "std": 0.17139714994887437,
+          "median": 0.8203873634338379,
+          "min": 0.11167183518409729,
+          "max": 0.9933357238769531,
+          "q05": 0.4184840679168701,
+          "q95": 0.960742175579071,
+          "count": 2505
+        },
+        "same_label": {
+          "mean": 0.7806113318513762,
+          "std": 0.1623321228608782,
+          "median": 0.8222546577453613,
+          "min": 0.16071471571922302,
+          "max": 0.9942061901092529,
+          "q05": 0.45823212563991544,
+          "q95": 0.9654356837272644,
+          "count": 1235
+        },
+        "diff_label": {
+          "mean": 0.7738835650611209,
+          "std": 0.16837046422827412,
+          "median": 0.823860764503479,
+          "min": 0.11167183518409729,
+          "max": 0.9939397573471069,
+          "q05": 0.4287800192832947,
+          "q95": 0.9625770449638366,
+          "count": 3765
+        }
+      },
+      "nn_analysis": {
+        "mean_nn_cos_same_subject": 0.9892223565370445,
+        "mean_nn_cos_diff_subject": 0.988666622375709,
+        "nn_gap": 0.0005557341613354749,
+        "n_same_subject_nn": 447,
+        "n_diff_subject_nn": 553,
+        "n_same_session_nn": 140,
+        "fraction_same_subject_nn": 0.447,
+        "fraction_same_session_nn": 0.14
+      },
+      "dimension_analysis": {
+        "dead_dimensions": 0,
+        "near_dead_dimensions": 0,
+        "dim_mean_range": [
+          0.0027926138136535883,
+          0.08217403292655945
+        ]
+      }
+    }
+  },
+  "retrieval_decomposition": {
+    "cbramod_200": {
+      "total_queries": 500,
+      "nn_composition": {
+        "same_subject_same_run": {
+          "count": 16,
+          "fraction": 0.032
+        },
+        "same_subject_same_task_diff_run": {
+          "count": 48,
+          "fraction": 0.096
+        },
+        "same_subject_diff_task": {
+          "count": 55,
+          "fraction": 0.11
+        },
+        "diff_subject_same_task": {
+          "count": 206,
+          "fraction": 0.412
+        },
+        "diff_subject_diff_task": {
+          "count": 175,
+          "fraction": 0.35
+        }
+      },
+      "nn_label_composition": {
+        "same_mi_label": {
+          "count": 127,
+          "fraction": 0.254
+        },
+        "diff_mi_label": {
+          "count": 373,
+          "fraction": 0.746
+        }
+      },
+      "nn_cosine_stats": {
+        "mean": 0.9931352227926254,
+        "std": 0.001821028570450364,
+        "median": 0.9933807551860809,
+        "min": 0.9806292653083801,
+        "max": 0.9967188835144043,
+        "q05": 0.9900288462638855,
+        "q95": 0.9955347567796707,
+        "count": 500
+      }
+    },
+    "v2_32": {
+      "total_queries": 500,
+      "nn_composition": {
+        "same_subject_same_run": {
+          "count": 8,
+          "fraction": 0.016
+        },
+        "same_subject_same_task_diff_run": {
+          "count": 13,
+          "fraction": 0.026
+        },
+        "same_subject_diff_task": {
+          "count": 20,
+          "fraction": 0.04
+        },
+        "diff_subject_same_task": {
+          "count": 235,
+          "fraction": 0.47
+        },
+        "diff_subject_diff_task": {
+          "count": 224,
+          "fraction": 0.448
+        }
+      },
+      "nn_label_composition": {
+        "same_mi_label": {
+          "count": 140,
+          "fraction": 0.28
+        },
+        "diff_mi_label": {
+          "count": 360,
+          "fraction": 0.72
+        }
+      },
+      "nn_cosine_stats": {
+        "mean": 0.9973859955072403,
+        "std": 0.010869744404433916,
+        "median": 0.9991012811660767,
+        "min": 0.7773183584213257,
+        "max": 0.9999386072158813,
+        "q05": 0.9922610282897949,
+        "q95": 0.9997649550437927,
+        "count": 500
+      }
+    },
+    "pca_32": {
+      "total_queries": 500,
+      "nn_composition": {
+        "same_subject_same_run": {
+          "count": 76,
+          "fraction": 0.152
+        },
+        "same_subject_same_task_diff_run": {
+          "count": 68,
+          "fraction": 0.136
+        },
+        "same_subject_diff_task": {
+          "count": 56,
+          "fraction": 0.112
+        },
+        "diff_subject_same_task": {
+          "count": 173,
+          "fraction": 0.346
+        },
+        "diff_subject_diff_task": {
+          "count": 127,
+          "fraction": 0.254
+        }
+      },
+      "nn_label_composition": {
+        "same_mi_label": {
+          "count": 146,
+          "fraction": 0.292
+        },
+        "diff_mi_label": {
+          "count": 354,
+          "fraction": 0.708
+        }
+      },
+      "nn_cosine_stats": {
+        "mean": 0.9884864648580551,
+        "std": 0.007328010641361402,
+        "median": 0.9897742569446564,
+        "min": 0.9489482641220093,
+        "max": 0.9996416568756104,
+        "q05": 0.9753913253545761,
+        "q95": 0.9973419547080994,
+        "count": 500
+      }
+    }
+  }
+}

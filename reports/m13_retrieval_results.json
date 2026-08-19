@@ -1,0 +1,247 @@
+{
+  "experiment_id": "mission13-cbramod-tier2-utility-validation",
+  "verdict": null,
+  "dataset": {
+    "source": "PhysioNet EEGMMIDB S001-S050, runs {5,6,7,8,9,10} (cached by Mission 11)",
+    "subjects": 50,
+    "runs": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "n_trials": 4500,
+    "splits_session_disjoint": 300,
+    "leakage_prevention": "held-out (subject,run) queries vs ALL other runs x subjects pool; query run excluded from its own pool"
+  },
+  "models": {
+    "cbramod_200": {
+      "sha256": "c128ccfdee0690da090c7dfcb39af8a2b25f3e492288f9305c85b293eeda6f47",
+      "dim": 200,
+      "embed_latency_ms_cached": 64.14440133337241,
+      "runtime": "onnxruntime CPU EP"
+    },
+    "v2_32": {
+      "sha256": "18644de187e984a667d78ca79b3f4c0d2c0ada252c7084f4107343f77168f931",
+      "dim": 32,
+      "embed_latency_ms_cached": 6.729570000024978,
+      "runtime": "onnxruntime CPU EP (Mission 11 used ORT CPU for V2)"
+    },
+    "pca_32": {
+      "dim": 32,
+      "method": "bandpower(110)->PCA(32), train-only per split, seed 42"
+    }
+  },
+  "recall_at_k": {
+    "cbramod_200": {
+      "recall_at_1": {
+        "mean": 0.24266666666666667,
+        "std": 0.21428439064551996,
+        "n": 300,
+        "ci95": [
+          0.2184181051446908,
+          0.26691522818864255
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.5275555555555556,
+        "std": 0.2632937939825185,
+        "n": 300,
+        "ci95": [
+          0.4977610579605296,
+          0.5573500531505815
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.6586666666666667,
+        "std": 0.25014837663021533,
+        "n": 300,
+        "ci95": [
+          0.6303597130800453,
+          0.6869736202532881
+        ]
+      }
+    },
+    "v2_32": {
+      "recall_at_1": {
+        "mean": 0.06866666666666665,
+        "std": 0.12073908406727575,
+        "n": 300,
+        "ci95": [
+          0.055003753099828356,
+          0.08232958023350495
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.21577777777777774,
+        "std": 0.17069585290200745,
+        "n": 300,
+        "ci95": [
+          0.1964617236397625,
+          0.23509383191579297
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.33644444444444443,
+        "std": 0.18105544098840967,
+        "n": 300,
+        "ci95": [
+          0.31595609255623514,
+          0.35693279633265373
+        ]
+      }
+    },
+    "pca_32": {
+      "recall_at_1": {
+        "mean": 0.44,
+        "std": 0.2623394733104072,
+        "n": 300,
+        "ci95": [
+          0.4103134939551737,
+          0.4696865060448263
+        ]
+      },
+      "recall_at_5": {
+        "mean": 0.6920000000000001,
+        "std": 0.2183918113794379,
+        "n": 300,
+        "ci95": [
+          0.6672866400666093,
+          0.7167133599333908
+        ]
+      },
+      "recall_at_10": {
+        "mean": 0.7853333333333333,
+        "std": 0.18471829164615333,
+        "n": 300,
+        "ci95": [
+          0.764430490873727,
+          0.8062361757929396
+        ]
+      }
+    }
+  },
+  "cosine_descriptors": {
+    "cbramod_200": {
+      "same_subject_nn_cosine": 0.9933354197514929,
+      "diff_subject_nn_cosine": 0.9930836834459406,
+      "gap": 0.0002517363055523081
+    },
+    "v2_32": {
+      "same_subject_nn_cosine": 0.995062920815522,
+      "diff_subject_nn_cosine": 0.9976142624758699,
+      "gap": -0.0025513416603479833
+    }
+  },
+  "mi_accuracy_safety_floor": {
+    "cbramod_200": {
+      "mean": 0.2748888888888889,
+      "std": 0.21216922726538287,
+      "n": 300,
+      "ci95": [
+        0.25087968063570587,
+        0.29889809714207194
+      ]
+    },
+    "v2_32": {
+      "mean": 0.302,
+      "std": 0.14644200894686066,
+      "n": 300,
+      "ci95": [
+        0.2854285266759166,
+        0.31857147332408337
+      ]
+    },
+    "pca_32": {
+      "mean": 0.30177777777777776,
+      "std": 0.18819831356125613,
+      "n": 300,
+      "ci95": [
+        0.2804811337666353,
+        0.3230744217889202
+      ]
+    },
+    "chance": 0.25
+  },
+  "retrieval_latency_ms_per_query_bruteforce_cosine_proxy": {
+    "cbramod_200": {
+      "per_query_ms": 0.15097149997018278,
+      "total_200q_ms": 30.194299994036555,
+      "pool_size": 4300
+    },
+    "v2_32": {
+      "per_query_ms": 0.09306549996836111,
+      "total_200q_ms": 18.613099993672222,
+      "pool_size": 4300
+    }
+  },
+  "statistical_comparisons": {
+    "note": "paired t across session-disjoint splits; Bonferroni across 3 pairwise comparisons x 3 metrics (9 comparisons) -> corrected alpha = 0.05/9",
+    "bonferroni_n_pairwise": 3,
+    "bonferroni_n_metrics": 3,
+    "alpha_corrected": 0.005555555555555556,
+    "cbramod_vs_v2_recall_at_5": {
+      "n": 300,
+      "delta": 0.3117777777777778,
+      "t": 20.793029923606177,
+      "p_two": 5.046626504455387e-60,
+      "p_one_v2_gt": 1.0,
+      "cohens_d": 1.2004860961420265,
+      "bootstrap_ci_95": [
+        0.28200000000000014,
+        0.3413333333333334
+      ]
+    },
+    "cbramod_vs_pca_recall_at_5": {
+      "n": 300,
+      "delta": -0.1644444444444445,
+      "t": -10.997400947332752,
+      "p_two": 7.52422474361717e-24,
+      "p_one_v2_gt": 3.762112371808585e-24,
+      "cohens_d": -0.6349352152174439,
+      "bootstrap_ci_95": [
+        -0.19399999999999995,
+        -0.1346666666666667
+      ]
+    },
+    "v2_vs_pca_recall_at_5": {
+      "n": 300,
+      "delta": -0.4762222222222223,
+      "t": -36.0046276451216,
+      "p_two": 9.886303702132636e-111,
+      "p_one_v2_gt": 4.943151851066318e-111,
+      "cohens_d": -2.078728055561048,
+      "bootstrap_ci_95": [
+        -0.502,
+        -0.45022222222222236
+      ]
+    }
+  },
+  "method_notes": {
+    "recall_semantics": "subject_recall_loo_pool: held-out-run query vs cross-run pool; success if >=1 same-subject neighbor in top-K cosine NN. Faithful to match_fundation_embeddings (1 - cosine).",
+    "platform_retrieval_code": "NeuralVectorIndex (src/lib/vector-search/neural-index.ts) validated separately in TS; in-memory fallback = brute-force cosine == this numpy computation.",
+    "pgvector_rpc_exercised": false,
+    "pgvector_rpc_reason": "Docker daemon not running; Supabase CLI local requires Docker; no postgres+pgvector binary. match_foundation_embeddings defined in migration 20260814000000_foundation_embeddings.sql but NOT executed against a real store."
+  },
+  "retrieval_quality_gate": {
+    "official_gate_rule": "CBraMod > V2 (delta>=0.05, p<0.05) AND MI accuracy >= chance(0.25)",
+    "cbramod_recall_at_5": 0.5275555555555556,
+    "v2_recall_at_5": 0.21577777777777774,
+    "pca_recall_at_5": 0.6920000000000001,
+    "pca_vs": {
+      "pca_beats_cbramod": true,
+      "pca_recall_at_5": 0.6920000000000001,
+      "honest_note": "PCA-32 bandpower baseline is the STRONGEST simple baseline (0.692 > CBraMod 0.527 > V2 0.216). CBraMod's value is beating the deployed learned V2, not PCA. This is reported honestly, not manufactured."
+    },
+    "p_cbramod_vs_v2": 5.046626504455387e-60,
+    "p_cbramod_vs_pca": 7.52422474361717e-24,
+    "cbramod_beats_v2": true,
+    "cbramod_beats_pca": false,
+    "mi_floor_met": true,
+    "mi_floor_value": 0.2748888888888889,
+    "verdict": "SUCCESS (retrieval-quality leg)",
+    "caveat": "CBraMod-200 beats V2-32 on subject-Recall@5 (Mission-11/12 official gate: CBraMod>V2, delta>=0.05, p<0.05, MI>=chance) -> retrieval-quality gate PASSED."
+  }
+}
