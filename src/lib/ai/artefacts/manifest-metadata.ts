@@ -50,4 +50,24 @@ export const TIER4_MANIFEST_METADATA: ManifestMetadata = {
     wasmCompatible: false,
     wasmBlockers: ["DFT", "ReduceL2"],
   },
+  // M43 trained sleep staging probe (2312→5)
+  "staging-probe-joint2312-v1": {
+    registryId: "sleep-staging-v1",
+    wasmCompatible: true,
+    trained: true,
+  },
+  // M43 trained sleep quality probe (2312→1)
+  "quality-probe-joint2312-v1": {
+    registryId: "sleep-quality-v1",
+    wasmCompatible: true,
+    trained: true,
+  },
+  // M44 trained sleep staging V2-32 browser probe (32→5)
+  "staging-probe-v2-32d-v1": {
+    wasmCompatible: true,
+  },
+  // M44 trained sleep quality V2-32 browser probe (32→1)
+  "quality-probe-v2-32d-v1": {
+    wasmCompatible: true,
+  },
 };

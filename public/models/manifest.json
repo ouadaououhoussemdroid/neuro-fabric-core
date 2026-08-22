@@ -1,6 +1,13 @@
 {
-  "generated": "2026-08-18T19:54:54.992Z",
+  "generated": "2026-08-22T16:14:21.260Z",
   "models": {
+    "mahalanobis-probe-joint2312-v1": {
+      "id": "mahalanobis-probe-joint2312-v1",
+      "url": "/models/anomaly/mahalanobis-probe-joint2312-v1.onnx",
+      "sha256": "b72373576376f7c8ec2209cfe7c640033ddf13378646f01741cdd1a6c8bb9f59",
+      "size": 9486,
+      "wasmCompatible": true
+    },
     "cbramod-encoder": {
       "id": "cbramod-encoder",
       "registryId": "onnx-cbramod",
@@ -12,6 +19,13 @@
         "DFT",
         "ReduceL2"
       ]
+    },
+    "cognitive-probe-joint2312-v1": {
+      "id": "cognitive-probe-joint2312-v1",
+      "url": "/models/cognitive/cognitive-probe-joint2312-v1.onnx",
+      "sha256": "ab8bc6389d98a9461fc7f0f4fea47c3cd9860595c305879351ad0cf6592a6b32",
+      "size": 9488,
+      "wasmCompatible": true
     },
     "cognitive-decoder-v0": {
       "id": "cognitive-decoder-v0",
@@ -91,6 +105,31 @@
       "url": "/models/labram-encoder.onnx",
       "sha256": "61f28d1295ab85759b62e808d020d6baae83e037683482dac427c6968033558e",
       "size": 23314232,
+      "wasmCompatible": true
+    },
+    "quality-probe-joint2312-v1": {
+      "id": "quality-probe-joint2312-v1",
+      "registryId": "sleep-quality-v1",
+      "url": "/models/sleep/quality-probe-joint2312-v1.onnx",
+      "sha256": "e41ed5282d77aa3b401b587aa3fdbb375ed46b480a71e6f8d9a471efe82ccdfd",
+      "size": 9492,
+      "wasmCompatible": true,
+      "trained": true
+    },
+    "staging-probe-joint2312-v1": {
+      "id": "staging-probe-joint2312-v1",
+      "registryId": "sleep-staging-v1",
+      "url": "/models/sleep/staging-probe-joint2312-v1.onnx",
+      "sha256": "33dde2d3801e74cce6ed33e0e83ec072df62ede9e3ca9c0187ba39f0d7673cff",
+      "size": 46624,
+      "wasmCompatible": true,
+      "trained": true
+    },
+    "eegconformer_finetuned_int8": {
+      "id": "eegconformer_finetuned_int8",
+      "url": "/models/_bench/eegconformer_finetuned_int8.onnx",
+      "sha256": "59e9555a18536a716e7c1bdf9bba46bca5b0ad3b753529e9b871d272ae45e880",
+      "size": 1138901,
       "wasmCompatible": true
     }
   }

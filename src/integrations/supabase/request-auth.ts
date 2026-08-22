@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { requireServerEnv } from "@/lib/env.server";
 import type { Database } from "./types";
+import { getSessionFromCookie } from "./cookie-auth.server";
 
 /**
  * Bearer-token verification for TanStack Start file-route HTTP handlers
@@ -31,13 +32,26 @@ export async function authenticateRequest(
     throw new AuthError((e as Error).message, 500);
   }
 
+  // T-005: Check both Bearer header (from auth-attacher) and HttpOnly cookie
+  // (for browser navigations or when the middleware hasn't run).
   const authHeader = request.headers.get("authorization") ?? "";
-  if (!authHeader.startsWith("Bearer ")) {
-    throw new AuthError("Unauthorized: missing Bearer token", 401);
+  let token: string | null = null;
+
+  if (authHeader.startsWith("Bearer ")) {
+    token = authHeader.slice("Bearer ".length).trim();
+    if (!token) token = null;
   }
-  const token = authHeader.slice("Bearer ".length).trim();
+
+  // Fallback: check the session cookie
   if (!token) {
-    throw new AuthError("Unauthorized: empty token", 401);
+    const session = getSessionFromCookie(request);
+    if (session && session.access_token) {
+      token = session.access_token;
+    }
+  }
+
+  if (!token) {
+    throw new AuthError("Unauthorized: missing Bearer token", 401);
   }
 
   const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {

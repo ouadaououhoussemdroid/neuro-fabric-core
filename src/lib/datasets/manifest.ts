@@ -57,6 +57,39 @@ export const KNOWN_DATASETS = [
     nClasses: 4,
     metadata: { paradigm: "motor_imagery" },
   },
+  // M33 — SEED for Cognitive State Intelligence
+  {
+    name: "SEED",
+    license: "CC-BY-NC-SA-4.0",
+    sourceUrl: "https://seed-dataset-2013.se.ee.tsinghua.edu.cn/",
+    nSubjects: 15,
+    nChannels: 62,
+    sampleRate: 200,
+    nClasses: 9,
+    metadata: {
+      paradigm: "emotional_stimuli",
+      sessions: 3,
+      trials: 15,
+      labels: ["valence", "arousal", "dominance"],
+    },
+  },
+  // M38 — Sleep-EDF for Sleep Staging
+  {
+    name: "Sleep-EDF",
+    license: "BSD-3-Clause",
+    sourceUrl: "https://physionet.org/content/sleep-edf/1.0.0/",
+    nSubjects: 99,
+    nChannels: 7,
+    sampleRate: 100,
+    nClasses: 5,
+    metadata: {
+      paradigm: "sleep_staging",
+      sessions: 2,
+      epochs: "30-minute",
+      stages: ["W", "N1", "N2", "N3", "REM"],
+      channel_montage: ["Fpz-Cz", "Pz-Oz", "EOG"],
+    },
+  },
 ] as const;
 
 /** Minimal Supabase client shape for dataset queries. */

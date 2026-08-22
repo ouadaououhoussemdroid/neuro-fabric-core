@@ -17,7 +17,7 @@
  */
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { join, resolve, basename } from "node:path";
+import { join, resolve, basename, dirname } from "node:path";
 
 export interface ArtefactManifestEntry {
   /** Artefact id (filename without extension). */
@@ -40,6 +40,8 @@ export interface ArtefactManifestEntry {
   sha256ExternalData?: string;
   /** External data file size in bytes. */
   sizeExternalData?: number;
+  /** Whether this artifact was trained (vs. random-init seed). */
+  trained?: boolean;
 }
 
 export interface ArtefactManifest {
@@ -137,17 +139,39 @@ export type ManifestMetadata = Record<
     registryId?: string;
     wasmCompatible?: boolean;
     wasmBlockers?: string[];
+    trained?: boolean;
   }
 >;
 
 /**
- * Build-time: scan a directory for `.onnx` files and write a manifest.
+ * Recursively scan a directory for `.onnx` files and return their paths.
+ */
+function findOnnxFiles(dir: string, baseDir: string): { relPath: string; fullPath: string }[] {
+  const results: { relPath: string; fullPath: string }[] = [];
+  if (!existsSync(dir)) return results;
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = join(dir, entry.name);
+    const relPath = join(baseDir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...findOnnxFiles(fullPath, relPath));
+    } else if (entry.isFile() && entry.name.endsWith(".onnx")) {
+      results.push({ relPath: relPath.replace(/\\/g, "/"), fullPath });
+    }
+  }
+  return results;
+}
+
+/**
+ * Build-time: scan a directory (recursively) for `.onnx` files and write a manifest.
  *
  * Each file becomes a manifest entry with:
- *   - id: the filename without extension (e.g. "eegconformer" → "eegconformer")
+ *   - id: the filename without extension (e.g. "staging-probe-joint2312-v1" → id)
  *   - url: `/<dir>/<filename>` (same-origin)
  *   - sha256: hex digest of the file bytes
  *   - size: byte length
+ *
+ * Subdirectories are supported: a file at `public/models/sleep/foo.onnx`
+ * will get `url: "/models/sleep/foo.onnx"` and `id: "foo"`.
  *
  * Pass `metadata` to enrich entries with registry IDs, WASM compatibility
  * flags, and WASM blocker op lists.
@@ -160,28 +184,30 @@ export function generateArtefactManifest(
   const entries: Record<string, ArtefactManifestEntry> = {};
 
   if (existsSync(abs)) {
-    for (const file of readdirSync(abs)) {
-      if (!file.endsWith(".onnx")) continue;
-      const fullPath = join(abs, file);
+    const dirName = basename(abs);
+    for (const { relPath, fullPath } of findOnnxFiles(abs, dirName)) {
+      const file = basename(fullPath);
       const bytes = readFileSync(fullPath);
       const id = basename(file, ".onnx");
-      const relativePath = `/${basename(abs)}/${file}`;
+      const url = `/${relPath}`;
       const meta = metadata?.[id];
       const entry: ArtefactManifestEntry = {
         id,
         registryId: meta?.registryId,
-        url: relativePath,
+        url,
         sha256: sha256Hex(new Uint8Array(bytes)),
         size: bytes.byteLength,
         wasmCompatible: meta?.wasmCompatible ?? true,
         wasmBlockers: meta?.wasmBlockers,
+        trained: meta?.trained,
       };
       // Detect + hash external data file (<model>.onnx.data)
       const dataFile = `${file}.data`;
-      const dataPath = join(abs, dataFile);
-      if (existsSync(dataPath)) {
-        const dataBytes = readFileSync(dataPath);
-        entry.externalData = `/${basename(abs)}/${dataFile}`;
+      const dataPath = join(fullPath, ".data"); // wrong, should be next to file
+      const dataPathCorrect = join(dirname(fullPath), dataFile);
+      if (existsSync(dataPathCorrect)) {
+        const dataBytes = readFileSync(dataPathCorrect);
+        entry.externalData = `/${relPath}.data`;
         entry.sha256ExternalData = sha256Hex(new Uint8Array(dataBytes));
         entry.sizeExternalData = dataBytes.byteLength;
       }

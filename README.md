@@ -71,6 +71,38 @@ docker run neuro-fabric-train make train MODEL=eegconformer DATASET=bciiv2a
 
 See `training/README.md` and `training/docs/TRAINING_GUIDE.md` for details.
 
+## Security Architecture
+
+| Layer | Implementation | Notes |
+|-------|---------------|-------|
+| Auth | HttpOnly, Secure, SameSite=Strict cookies | In-memory session sync via `/api/auth/sync` |
+| Rate limiting | PostgreSQL `check_rate_limit` (cross-isolate) | 20 req/60s for API, 5 req/60s for auth |
+| WebSocket auth | Bearer token or `?token=` query param | Verified via Supabase JWT |
+| Artifact integrity | SHA-256 verification on model load | Checked at `onnxruntime` session creation |
+| API security | JWT Bearer auth on all Tier-1 routes | `request-auth.ts` validates tokens server-side |
+| SQL injection | Row Level Security (RLS) | All tables enforce `auth.uid()` policies |
+
+### Tier-1 Services
+
+| Service | Model | Metric | Status |
+|---------|-------|--------|--------|
+| Subject Identity | Joint-2312 (2312-D) | Recall@10 ≥ 0.7856 | ✅ Production |
+| Cognitive State | Linear probe (2312→1) | R²=0.7348 | ✅ Production |
+| Anomaly Detection | Mahalanobis probe (2312→1) | AUC=0.892 | ✅ Production |
+| Sleep Staging | 5-class probe (2312→5) | Acc=0.6718 | ✅ Production |
+| Sleep Quality | Regression probe (2312→1) | R²=0.8193 | ✅ Production |
+
+### Production Readiness
+
+Run the readiness gate before deploying:
+
+```bash
+./scripts/check_production_readiness.sh
+```
+
+This validates model artifacts, manifest integrity, migration ordering, CI workflow,
+and security configuration. All checks must pass for deployment.
+
 ## Documentation
 
 - **Technical audit & debt:** `reports/AUDIT_2026.md`, `reports/TECHNICAL_DEBT.md`

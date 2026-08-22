@@ -14,7 +14,7 @@ import type { EEGModelAdapter } from "./types";
 import type { EmbeddingOutput, ModelDescriptor, ModelInput, PredictionOutput } from "../types";
 import { bandPowerFeatures } from "../../embeddings/features";
 import { segment } from "../../eeg/preprocessing/segment";
-import { getExecutionProviders } from "./webgpu-flag";
+import { getExecutionProviders } from "./brain-flag";
 import { log } from "../../logging";
 
 // Minimal structural typing of the ort surface we depend on. Keeps tests
@@ -78,7 +78,7 @@ export interface ONNXAdapterOptions {
   /** Pluggable runtime — defaults to dynamic import of onnxruntime-web. */
   runtime?: () => Promise<OrtRuntime>;
   /** Execution providers passed to InferenceSession.create. */
-  executionProviders?: Array<"wasm" | "webgpu" | "webgl" | "cpu">;
+  executionProviders?: Array<"wasm" | "webgpu" | "webnn" | "webgl" | "cpu">;
   /**
    * T-016 — When true and `artifact` is a same-origin URL string, the adapter
    * fetches the artifact, verifies its byte-length and SHA-256 against the

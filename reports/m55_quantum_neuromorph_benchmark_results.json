@@ -1,0 +1,110 @@
+{
+  "timestamp": "2026-08-21T22:24:37.477647+00:00",
+  "config": {
+    "max_num_qubits": 16,
+    "default_shots": 1024,
+    "default_layers": 4,
+    "iterations": 30
+  },
+  "benchmarks": {
+    "state_preparation": {
+      "latency_ms": {
+        "mean": 0.0761,
+        "p50": 0.0748,
+        "p95": 0.0894,
+        "p99": 0.0939
+      },
+      "all_passed": true,
+      "iterations": 30,
+      "result_sample": {
+        "duration_ms": 0.07470001582987607,
+        "all_passed": true
+      }
+    },
+    "circuit_execution": {
+      "latency_ms": {
+        "mean": 0.083,
+        "p50": 0.0771,
+        "p95": 0.1231,
+        "p99": 0.1253
+      },
+      "all_passed": true,
+      "iterations": 30,
+      "result_sample": {
+        "duration_ms": 0.0771000050008297,
+        "all_passed": true
+      }
+    },
+    "measurement_sampling": {
+      "latency_ms": {
+        "mean": 0.8172,
+        "p50": 0.6819,
+        "p95": 1.5133,
+        "p99": 1.627
+      },
+      "all_passed": true,
+      "iterations": 30,
+      "result_sample": {
+        "duration_ms": 0.6575000006705523,
+        "all_passed": true
+      }
+    },
+    "state_fidelity": {
+      "latency_ms": {
+        "mean": 0.057,
+        "p50": 0.0555,
+        "p95": 0.0574,
+        "p99": 0.0938
+      },
+      "all_passed": true,
+      "iterations": 30,
+      "result_sample": {
+        "duration_ms": 0.055599986808374524,
+        "all_passed": true
+      }
+    },
+    "quantum_inference": {
+      "latency_ms": {
+        "mean": 0.757,
+        "p50": 0.7843,
+        "p95": 1.1211,
+        "p99": 1.1638
+      },
+      "all_passed": true,
+      "iterations": 30,
+      "result_sample": {
+        "duration_ms": 0.7585999846924096,
+        "all_passed": true,
+        "output": 0.5223958333333333
+      }
+    }
+  },
+  "summary": {
+    "state_preparation": {
+      "status": "pass",
+      "mean_latency_ms": 0.0761,
+      "p95_latency_ms": 0.0894
+    },
+    "circuit_execution": {
+      "status": "pass",
+      "mean_latency_ms": 0.083,
+      "p95_latency_ms": 0.1231
+    },
+    "measurement_sampling": {
+      "status": "pass",
+      "mean_latency_ms": 0.8172,
+      "p95_latency_ms": 1.5133
+    },
+    "state_fidelity": {
+      "status": "pass",
+      "mean_latency_ms": 0.057,
+      "p95_latency_ms": 0.0574
+    },
+    "quantum_inference": {
+      "status": "pass",
+      "mean_latency_ms": 0.757,
+      "p95_latency_ms": 1.1211
+    }
+  },
+  "all_passed": true
+}

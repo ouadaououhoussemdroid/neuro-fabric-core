@@ -51,6 +51,8 @@ export interface TaskHeadDescriptor {
   };
   /** Optional evaluation/validation results. */
   validation?: Record<string, unknown>;
+  /** Optional experiment ID for traceability (e.g. "m33-cognitive-workload-probe"). */
+  experimentId?: string;
 }
 
 /**

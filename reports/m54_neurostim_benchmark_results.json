@@ -1,0 +1,92 @@
+{
+  "timestamp": "2026-08-21T20:54:10.205364+00:00",
+  "config": {
+    "max_current_ma": 2.0,
+    "session_timeout_ms": 1800000,
+    "max_impedance_kohm": 50.0,
+    "artifact_window_samples": 1000,
+    "iterations": 50
+  },
+  "benchmarks": {
+    "adaptive_decision": {
+      "latency_ms": {
+        "mean": 0.0025,
+        "p50": 0.0023,
+        "p95": 0.0056,
+        "p99": 0.0077
+      },
+      "all_passed": true,
+      "iterations": 50,
+      "result_sample": {
+        "duration_ms": 0.0040000013541430235,
+        "all_passed": true
+      }
+    },
+    "artifact_detection": {
+      "latency_ms": {
+        "mean": 19.8843,
+        "p50": 17.6995,
+        "p95": 37.0753,
+        "p99": 41.103
+      },
+      "all_passed": true,
+      "iterations": 50,
+      "result_sample": {
+        "duration_ms": 16.10969999455847,
+        "all_passed": true
+      }
+    },
+    "safety_checks": {
+      "latency_ms": {
+        "mean": 0.0005,
+        "p50": 0.0005,
+        "p95": 0.0007,
+        "p99": 0.0007
+      },
+      "all_passed": true,
+      "iterations": 50,
+      "result_sample": {
+        "duration_ms": 0.000700005330145359,
+        "all_passed": true
+      }
+    },
+    "full_session": {
+      "latency_ms": {
+        "mean": 23.9653,
+        "p50": 21.7461,
+        "p95": 36.1798,
+        "p99": 37.4114
+      },
+      "all_passed": true,
+      "iterations": 50,
+      "result_sample": {
+        "duration_ms": 28.884300001664087,
+        "all_passed": true,
+        "should_stimulate": true
+      }
+    }
+  },
+  "summary": {
+    "adaptive_decision": {
+      "status": "pass",
+      "mean_latency_ms": 0.0025,
+      "p95_latency_ms": 0.0056
+    },
+    "artifact_detection": {
+      "status": "pass",
+      "mean_latency_ms": 19.8843,
+      "p95_latency_ms": 37.0753
+    },
+    "safety_checks": {
+      "status": "pass",
+      "mean_latency_ms": 0.0005,
+      "p95_latency_ms": 0.0007
+    },
+    "full_session": {
+      "status": "pass",
+      "mean_latency_ms": 23.9653,
+      "p95_latency_ms": 36.1798
+    }
+  },
+  "all_passed": true
+}

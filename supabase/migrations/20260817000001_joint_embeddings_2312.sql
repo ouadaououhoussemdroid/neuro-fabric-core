@@ -43,10 +43,11 @@ CREATE TABLE IF NOT EXISTS public.joint_embeddings_2312 (
   CONSTRAINT joint_embeddings_2312_dims CHECK (vector_dims(embedding) = 2312)
 );
 
--- IVFFlat index for approximate nearest-neighbour cosine search (2312-D).
-CREATE INDEX IF NOT EXISTS idx_joint_embedding_2312_ivfflat
-  ON public.joint_embeddings_2312
-  USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+-- ANN index for 2312-D vectors: pgvector IVFFlat and HNSW both have a
+-- 2000-dimension ceiling. We skip the ANN index here and rely on exact (brute-force)
+-- search via match_joint_embeddings_2312_exact. An ANN index can be added later
+-- if dim-reduction for search is introduced (M29+).
+-- DO NOT create ivfflat/hnsw index on vector(2312) — exceeds 2000-dim limit.
 
 -- Supporting indexes for filtered / model-versioned search.
 CREATE INDEX IF NOT EXISTS idx_joint_embeddings_2312_model_id  ON public.joint_embeddings_2312 (model_id);

@@ -1,0 +1,108 @@
+{
+  "timestamp": "2026-08-21T17:21:58.192891+00:00",
+  "config": {
+    "eeg_channels": 22,
+    "eeg_samples": 1000,
+    "sample_rate": 250,
+    "snn_hidden_neurons": 64,
+    "snn_timesteps": 64,
+    "attention_heads": 4,
+    "transformer_dim": 64,
+    "iterations": 100,
+    "warmup": 5
+  },
+  "benchmarks": {
+    "snn_inference": {
+      "latency_ms": {
+        "mean": 2.2218,
+        "p50": 1.777,
+        "p95": 4.2586,
+        "p99": 14.8631
+      },
+      "all_passed": true,
+      "iterations": 100,
+      "result_sample": {
+        "0": 0,
+        "energy": 0.0,
+        "duration_ms": 2.6596000243443996
+      }
+    },
+    "temporal_attention": {
+      "latency_ms": {
+        "mean": 12.7331,
+        "p50": 10.8158,
+        "p95": 27.9882,
+        "p99": 70.7954
+      },
+      "all_passed": true,
+      "iterations": 100,
+      "result_sample": {
+        "attention_matrix_size": 484,
+        "duration_ms": 12.085099995601922
+      }
+    },
+    "consciousness_pci": {
+      "latency_ms": {
+        "mean": 11.7082,
+        "p50": 10.5841,
+        "p95": 17.0099,
+        "p99": 61.835
+      },
+      "all_passed": true,
+      "iterations": 100,
+      "result_sample": {
+        "pci": 0.0,
+        "phi": 0.00048354604630860794,
+        "entropy": 4.455188159965342,
+        "compression_ratio": 0.0,
+        "state": "unconscious",
+        "duration_ms": 13.682899996638298
+      }
+    },
+    "predictive_coding_v2": {
+      "latency_ms": {
+        "mean": 34.934,
+        "p50": 33.3559,
+        "p95": 51.1471,
+        "p99": 58.0708
+      },
+      "all_passed": true,
+      "iterations": 100,
+      "result_sample": {
+        "overall_surprise": 0.2757367214528608,
+        "is_anomalous": false,
+        "snn_energy": 0.0,
+        "attention_matrix_size": 484,
+        "pci": 0.0,
+        "consciousness_state": "unconscious",
+        "duration_ms": 51.147099991794676,
+        "used_snn": true,
+        "used_attention": true,
+        "used_pci": true
+      }
+    }
+  },
+  "summary": {
+    "snn_inference": {
+      "status": "pass",
+      "mean_latency_ms": 2.2218,
+      "p95_latency_ms": 4.2586
+    },
+    "temporal_attention": {
+      "status": "pass",
+      "mean_latency_ms": 12.7331,
+      "p95_latency_ms": 27.9882
+    },
+    "consciousness_pci": {
+      "status": "pass",
+      "mean_latency_ms": 11.7082,
+      "p95_latency_ms": 17.0099
+    },
+    "predictive_coding_v2": {
+      "status": "pass",
+      "mean_latency_ms": 34.934,
+      "p95_latency_ms": 51.1471
+    }
+  },
+  "all_passed": true
+}

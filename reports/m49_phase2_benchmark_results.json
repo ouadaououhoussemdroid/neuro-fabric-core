@@ -1,0 +1,82 @@
+{
+  "timestamp": "2026-08-21T17:52:06.846372+00:00",
+  "config": {
+    "num_peers": 10,
+    "num_rounds": 5,
+    "v2_input_dim": 32,
+    "dp_noise_multiplier": 0.1,
+    "max_federation_peers": 16
+  },
+  "benchmarks": {
+    "peer_handshake": {
+      "latency_ms": {
+        "mean": 0.0005,
+        "p50": 0.0005,
+        "p95": 0.0007,
+        "p99": 0.0009
+      },
+      "all_passed": true,
+      "iterations": 100,
+      "result_sample": {
+        "duration_ms": 0.0004999747034162283,
+        "connected": true
+      }
+    },
+    "secure_aggregation": {
+      "latency_ms": {
+        "mean": 0.5829,
+        "p50": 0.5006,
+        "p95": 0.9291,
+        "p99": 6.7866
+      },
+      "all_passed": true,
+      "iterations": 100,
+      "result_sample": {
+        "duration_ms": 0.4361999745015055
+      }
+    },
+    "federated_round": {
+      "latency_ms": {
+        "mean": 6.0671,
+        "p50": "N/A",
+        "p95": "N/A",
+        "p99": "N/A"
+      },
+      "all_passed": true,
+      "iterations": 5,
+      "result_sample": {
+        "total_duration_ms": 30.7517,
+        "peers_count": 10,
+        "round_summary": {
+          "round_start": 239018.4640407,
+          "peer_updates": 10,
+          "message_size_bytes": 3748,
+          "aggregation_ms": 0.6739999807905406,
+          "convergence": 0.4788113208690833,
+          "mean_loss": 0.42882999999999993,
+          "mean_accuracy": 0.8450599999999999,
+          "round_duration_ms": 5.063999997219071,
+          "round": 5
+        }
+      }
+    }
+  },
+  "summary": {
+    "peer_handshake": {
+      "status": "pass",
+      "mean_latency_ms": 0.0005,
+      "p95_latency_ms": 0.0007
+    },
+    "secure_aggregation": {
+      "status": "pass",
+      "mean_latency_ms": 0.5829,
+      "p95_latency_ms": 0.9291
+    },
+    "federated_round": {
+      "status": "pass",
+      "mean_latency_ms": 6.0671,
+      "p95_latency_ms": "N/A"
+    }
+  },
+  "all_passed": true
+}

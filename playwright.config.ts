@@ -15,7 +15,7 @@ export default defineConfig({
   testDir: "tests/browser",
   // Vite dev server serves smoke-harness.html at /
   webServer: {
-    command: "vite dev",
+    command: "vite dev --port 5173",
     url: "http://localhost:5173/smoke-harness.html",
     timeout: 60_000,
     reuseExistingServer: !process.env.CI,

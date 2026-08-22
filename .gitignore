@@ -34,6 +34,10 @@ pnpm-lock.yaml
 # Supabase CLI cache (environment-specific, never commit)
 supabase/.temp/
 
+# Secrets scanning: Supabase keys
+sb_secret_*
+sb_publicable_*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -64,3 +68,11 @@ __pycache__/
 
 # Training outputs
 training/artefacts/
+
+# Backup files (never commit — they pollute the model manifest and SHA verification)
+*.bak
+*.backup
+
+# Security: SSH keys must never be committed
+/ENTER
+/ENTER.pub

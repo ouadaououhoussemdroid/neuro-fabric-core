@@ -6,6 +6,8 @@ import { rejectArtifacts } from "./artifact-rejection";
 import type { ArtifactThresholds, ArtifactReport } from "./artifact-rejection";
 
 export { bandpass, notch, zscore, segment, rejectArtifacts };
+export { bandpassGPU, bandPowerGPU, preprocessGPU, isGPUSupported, getGPUInfo, initGPU } from "./gpu-filters";
+export type { WTFrameHeader } from "../../eeg/eeg-webtransport"; // re-export for convenience
 export type { ArtifactThresholds, ArtifactReport };
 
 export interface PreprocessOptions {

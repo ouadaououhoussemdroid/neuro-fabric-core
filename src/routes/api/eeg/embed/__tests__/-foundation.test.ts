@@ -70,6 +70,7 @@ vi.mock("@/lib/ai/inference/embed-eeg", () => ({
 // --- EEG pipeline stubs (channel select / resample / preprocess). The route
 // mirrors upload.ts's structure; we only need the window contract here. ---
 vi.mock("@/lib/eeg/channels", () => ({
+  PROD_CHANNEL_COUNT: 22,
   CBRAMOD_CHANNELS_19: [
     "FP1",
     "FP2",

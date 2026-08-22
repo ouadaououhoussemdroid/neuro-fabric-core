@@ -331,6 +331,16 @@ export const metrics = {
     "Time spent on artifact SHA-256 verification (fetch + hash)",
   ),
 
+  // T-025 — GPU preprocessing observability
+  gpuPreprocessingMs: new Histogram(
+    "neuro_fabric_gpu_preprocessing_ms",
+    "GPU preprocessing latency (bandpass, FFT, band-power)",
+  ),
+  gpuFallbackTotal: new Counter(
+    "neuro_fabric_gpu_fallback_total",
+    "Total fallback events from GPU to CPU preprocessing",
+  ),
+
   // Vector search
   vectorSearchTotal: new Counter(
     "neuro_fabric_vector_search_total",
@@ -410,6 +420,246 @@ export const metrics = {
     "neuro_fabric_tier1_audit_log_inserts_total",
     "Total audit-log rows inserted by Tier-1 services",
   ),
+
+  // ─── M33 — Cognitive State Intelligence service metrics ────────────────────
+
+  cognitiveDecodeRequestsTotal: new Counter(
+    "neuro_fabric_cognitive_decode_requests_total",
+    "Total cognitive decode requests (workload/attention/arousal)",
+  ),
+  cognitiveDecodeErrorsTotal: new Counter(
+    "neuro_fabric_cognitive_decode_errors_total",
+    "Failed cognitive decode requests",
+  ),
+  cognitiveDecodeLatencyMs: new Histogram(
+    "neuro_fabric_cognitive_decode_latency_ms",
+    "Cognitive decode inference latency (ONNX probe forward pass)",
+  ),
+  cognitiveWorkloadPredictionsTotal: new Counter(
+    "neuro_fabric_cognitive_workload_predictions_total",
+    "Total workload predictions returned across all decode calls",
+  ),
+  cognitiveConfidenceDistribution: new Histogram(
+    "neuro_fabric_cognitive_confidence_distribution",
+    "Confidence score distribution for cognitive predictions",
+  ),
+  cognitiveEmbeddingReusedTotal: new Counter(
+    "neuro_fabric_cognitive_embedding_reused_total",
+    "Cognitive decode calls that reused an existing Joint-2312 embedding",
+  ),
+  cognitiveEmbeddingReembeddedTotal: new Counter(
+    "neuro_fabric_cognitive_embedding_reembedded_total",
+    "Cognitive decode calls that re-computed Joint-2312 (no existing embedding)",
+  ),
+
+  // ─── M34 — Anomaly Detection service metrics ──────────────────────────────
+
+  anomalyDetectRequestsTotal: new Counter(
+    "neuro_fabric_anomaly_detect_requests_total",
+    "Total anomaly detection requests",
+  ),
+  anomalyDetectErrorsTotal: new Counter(
+    "neuro_fabric_anomaly_detect_errors_total",
+    "Failed anomaly detection requests",
+  ),
+  anomalyDetectLatencyMs: new Histogram(
+    "neuro_fabric_anomaly_detect_latency_ms",
+    "Anomaly detection inference latency (Mahalanobis distance computation)",
+  ),
+  anomalyScoresTotal: new Counter(
+    "neuro_fabric_anomaly_scores_total",
+    "Total anomaly scores returned across all detect calls",
+  ),
+  anomalyConfidenceDistribution: new Histogram(
+    "neuro_fabric_anomaly_confidence_distribution",
+    "Confidence score distribution for anomaly predictions",
+  ),
+  anomalyEmbeddingReusedTotal: new Counter(
+    "neuro_fabric_anomaly_embedding_reused_total",
+    "Anomaly detect calls that reused an existing Joint-2312 embedding",
+  ),
+  anomalyEmbeddingReembeddedTotal: new Counter(
+    "neuro_fabric_anomaly_embedding_reembedded_total",
+    "Anomaly detect calls that re-computed Joint-2312 (no existing embedding)",
+  ),
+  // ─── M39 — Sleep Staging service metrics ──────────────────────────────────────
+
+  sleepDecodeRequestsTotal: new Counter(
+    "neuro_fabric_sleep_decode_requests_total",
+    "Total sleep staging decode requests",
+  ),
+  sleepDecodeErrorsTotal: new Counter(
+    "neuro_fabric_sleep_decode_errors_total",
+    "Failed sleep staging decode requests",
+  ),
+  sleepDecodeLatencyMs: new Histogram(
+    "neuro_fabric_sleep_decode_latency_ms",
+    "Sleep staging decode inference latency (ONNX probe forward pass)",
+  ),
+  sleepStagePredictionsTotal: new Counter(
+    "neuro_fabric_sleep_stage_predictions_total",
+    "Total sleep stage predictions returned across all decode calls",
+  ),
+  sleepConfidenceDistribution: new Histogram(
+    "neuro_fabric_sleep_confidence_distribution",
+    "Confidence score distribution for sleep predictions",
+  ),
+  sleepEmbeddingReusedTotal: new Counter(
+    "neuro_fabric_sleep_embedding_reused_total",
+    "Sleep decode calls that reused an existing Joint-2312 embedding",
+  ),
+  sleepEmbeddingReembeddedTotal: new Counter(
+    "neuro_fabric_sleep_embedding_reembedded_total",
+    "Sleep decode calls that re-computed Joint-2312 (no existing embedding)",
+  ),
+
+  // M48 — Predictive Neural Coding Engine metrics
+  predictiveCodingRequestsTotal: new Counter(
+    "neuro_fabric_predictive_coding_requests_total",
+    "Total predictive coding inference requests (M48)",
+  ),
+  predictiveCodingErrorsTotal: new Counter(
+    "neuro_fabric_predictive_coding_errors_total",
+    "Failed predictive coding inference requests",
+  ),
+  predictiveCodingLatencyMs: new Histogram(
+    "neuro_fabric_predictive_coding_latency_ms",
+    "Predictive coding inference latency (prediction + surprise scoring)",
+  ),
+  predictiveCodingForecastHorizonTotal: new Counter(
+    "neuro_fabric_predictive_coding_forecast_horizon_total",
+    "Total prediction horizon steps used across all predictive coding calls",
+    ["horizon"],
+  ),
+  predictiveCodingSurpriseScore: new Histogram(
+    "neuro_fabric_predictive_coding_surprise_score",
+    "Prediction error (surprise) score distribution per channel",
+    ["band"],
+  ),
+
+  // M49 — Federated Brain Learning metrics
+  federatedRoundRequestsTotal: new Counter(
+    "neuro_fabric_federated_round_requests_total",
+    "Total federated learning round requests (M49)",
+  ),
+  federatedRoundErrorsTotal: new Counter(
+    "neuro_fabric_federated_round_errors_total",
+    "Failed federated learning round coordination",
+  ),
+  federatedRoundLatencyMs: new Histogram(
+    "neuro_fabric_federated_round_latency_ms",
+    "Federated round coordination latency (server-side aggregation)",
+  ),
+  federatedClientsParticipatedTotal: new Counter(
+    "neuro_fabric_federated_clients_participated_total",
+    "Active client participation count per federated round",
+    ["client_id"],
+  ),
+  federatedClientUpdatesTotal: new Counter(
+    "neuro_fabric_federated_client_updates_total",
+    "Received client model updates (delta weights)",
+    ["client_id"],
+  ),
+  federatedAggregationConvergence: new Histogram(
+    "neuro_fabric_federated_aggregation_convergence",
+    "Global model convergence metric (weight delta L2 norm) per round",
+  ),
+
+  // M53 — Cross-Modal Neural Synchrony metrics
+  multimodalRequestsTotal: new Counter(
+    "neuro_fabric_multimodal_requests_total",
+    "Total cross-modal fusion requests (M53)",
+  ),
+  multimodalModalityProcessedTotal: new Counter(
+    "neuro_fabric_multimodal_modality_processed_total",
+    "Per-modality embedding computations",
+    ["modality"],
+  ),
+  multimodalFusionLatencyMs: new Histogram(
+    "neuro_fabric_multimodal_fusion_latency_ms",
+    "Cross-modal fusion latency (feature extraction + attention + synchrony)",
+  ),
+  multimodalSynchronyScore: new Histogram(
+    "neuro_fabric_multimodal_synchrony_score",
+    "Global synchrony score distribution (mean pairwise correlation)",
+  ),
+
+  // M54 — Adaptive Neurostimulation metrics
+  neuroStimulationRequestsTotal: new Counter(
+    "neuro_fabric_neurostimulation_requests_total",
+    "Total neurostimulation session requests (M54)",
+  ),
+  neuroStimulationErrorsTotal: new Counter(
+    "neuro_fabric_neurostimulation_errors_total",
+    "Failed neurostimulation sessions (safety interlock, device error)",
+  ),
+  neuroStimulationLatencyMs: new Histogram(
+    "neuro_fabric_neurostimulation_latency_ms",
+    "Neurostimulation session setup + device command latency",
+  ),
+  neuroStimulationArtifactsTotal: new Counter(
+    "neuro_fabric_neurostimulation_artifacts_total",
+    "Total artifact detections during stimulation sessions",
+    ["type"],
+  ),
+  neuroStimulationImpedanceGauge: new Gauge(
+    "neuro_fabric_neurostimulation_impedance_kohm",
+    "Most recent impedance reading (kΩ)",
+  ),
+  neuroStimulationSessionsActive: new Gauge(
+    "neuro_fabric_neurostimulation_active",
+    "Currently active neurostimulation sessions",
+  ),
+
+  // M55 — Quantum-Neuromorphic Computing metrics
+  quantumCircuitExecutionsTotal: new Counter(
+    "neuro_fabric_quantum_circuit_executions_total",
+    "Total quantum circuit executions (M55)",
+  ),
+  quantumCircuitErrorsTotal: new Counter(
+    "neuro_fabric_quantum_circuit_errors_total",
+    "Failed quantum circuit executions",
+  ),
+  quantumCircuitLatencyMs: new Histogram(
+    "neuro_fabric_quantum_circuit_latency_ms",
+    "Quantum circuit execution latency (state prep + gates + sampling)",
+  ),
+  quantumVQEOptimizationLatencyMs: new Histogram(
+    "neuro_fabric_quantum_vqe_optimization_latency_ms",
+    "VQE parameter optimization latency (gradient-free search)",
+  ),
+  quantumStateDimensionGauge: new Gauge(
+    "neuro_fabric_quantum_state_dimension",
+    "Active quantum state vector dimension (2^numQubits)",
+  ),
+  quantumQubitsGauge: new Gauge(
+    "neuro_fabric_quantum_qubits",
+    "Number of qubits in the simulated quantum processor",
+  ),
+  quantumInferenceFidelityScore: new Histogram(
+    "neuro_fabric_quantum_inference_fidelity",
+    "Fidelity of quantum-neuromorphic hybrid inference output",
+  ),
+
+  // M37 — Alert threshold gauges (for production readiness monitoring)
+  tier1AlertThresholds: {
+    p95LatencyMs: new Gauge(
+      "neuro_fabric_tier1_alert_p95_latency_ms_threshold",
+      "Alert threshold: Tier-1 P95 latency in ms (default 2000)",
+    ),
+    p50LatencyMs: new Gauge(
+      "neuro_fabric_tier1_alert_p50_latency_ms_threshold",
+      "Alert threshold: Tier-1 P50 latency in ms (default 400)",
+    ),
+    errorRate: new Gauge(
+      "neuro_fabric_tier1_alert_error_rate_threshold",
+      "Alert threshold: Tier-1 error rate as fraction (default 0.05 = 5%)",
+    ),
+    fallbackRate: new Gauge(
+      "neuro_fabric_tier1_alert_fallback_rate_threshold",
+      "Alert threshold: Tier-1 fallback rate as fraction (default 0.005 = 0.5%)",
+    ),
+  },
 };
 
 // T-008: export a function to reset all metrics (for testing).

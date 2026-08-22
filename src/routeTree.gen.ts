@@ -40,13 +40,20 @@ import { Route as AuthenticatedDashboardEnterpriseRouteImport } from './routes/_
 import { Route as AuthenticatedDashboardIndividualRouteImport } from './routes/_authenticated/dashboard.individual'
 import { Route as AuthenticatedDashboardResearcherRouteImport } from './routes/_authenticated/dashboard.researcher'
 import { Route as ApiAnnotationsIndexRouteImport } from './routes/api/annotations/index'
+import { Route as ApiEegFederatedRouteImport } from './routes/api/eeg/federated'
+import { Route as ApiEegPredictRouteImport } from './routes/api/eeg/predict'
 import { Route as ApiEegUploadRouteImport } from './routes/api/eeg/upload'
 import { Route as ApiEvaluateCrossSubjectRouteImport } from './routes/api/evaluate/cross-subject'
+import { Route as ApiJoint2312FusionRouteImport } from './routes/api/joint2312/fusion'
 import { Route as ApiPublicMetricsRouteImport } from './routes/api/public/metrics'
 import { Route as ApiPublicNotebooksRouteImport } from './routes/api/public/notebooks'
 import { Route as ApiEegEmbedFoundationRouteImport } from './routes/api/eeg/embed/foundation'
 import { Route as ApiEegEmbedFoundationSearchRouteImport } from './routes/api/eeg/embed/foundation-search'
+import { Route as ApiJoint2312AnomalyDetectRouteImport } from './routes/api/joint2312/anomaly/detect'
+import { Route as ApiJoint2312CognitiveDecodeRouteImport } from './routes/api/joint2312/cognitive/decode'
 import { Route as ApiJoint2312SimilaritySearchRouteImport } from './routes/api/joint2312/similarity/search'
+import { Route as ApiJoint2312SleepDecodeRouteImport } from './routes/api/joint2312/sleep/decode'
+import { Route as ApiJoint2312SleepQualityRouteImport } from './routes/api/joint2312/sleep/quality'
 import { Route as ApiPublicCronRecallRouteImport } from './routes/api/public/cron/recall'
 import { Route as ApiPublicStagingMetricsRouteImport } from './routes/api/public/staging/metrics'
 
@@ -210,6 +217,16 @@ const ApiAnnotationsIndexRoute = ApiAnnotationsIndexRouteImport.update({
   path: '/api/annotations/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiEegFederatedRoute = ApiEegFederatedRouteImport.update({
+  id: '/api/eeg/federated',
+  path: '/api/eeg/federated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEegPredictRoute = ApiEegPredictRouteImport.update({
+  id: '/api/eeg/predict',
+  path: '/api/eeg/predict',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiEegUploadRoute = ApiEegUploadRouteImport.update({
   id: '/api/eeg/upload',
   path: '/api/eeg/upload',
@@ -218,6 +235,11 @@ const ApiEegUploadRoute = ApiEegUploadRouteImport.update({
 const ApiEvaluateCrossSubjectRoute = ApiEvaluateCrossSubjectRouteImport.update({
   id: '/api/evaluate/cross-subject',
   path: '/api/evaluate/cross-subject',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiJoint2312FusionRoute = ApiJoint2312FusionRouteImport.update({
+  id: '/api/joint2312/fusion',
+  path: '/api/joint2312/fusion',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicMetricsRoute = ApiPublicMetricsRouteImport.update({
@@ -241,10 +263,33 @@ const ApiEegEmbedFoundationSearchRoute =
     path: '/api/eeg/embed/foundation-search',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiJoint2312AnomalyDetectRoute =
+  ApiJoint2312AnomalyDetectRouteImport.update({
+    id: '/api/joint2312/anomaly/detect',
+    path: '/api/joint2312/anomaly/detect',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiJoint2312CognitiveDecodeRoute =
+  ApiJoint2312CognitiveDecodeRouteImport.update({
+    id: '/api/joint2312/cognitive/decode',
+    path: '/api/joint2312/cognitive/decode',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiJoint2312SimilaritySearchRoute =
   ApiJoint2312SimilaritySearchRouteImport.update({
     id: '/api/joint2312/similarity/search',
     path: '/api/joint2312/similarity/search',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiJoint2312SleepDecodeRoute = ApiJoint2312SleepDecodeRouteImport.update({
+  id: '/api/joint2312/sleep/decode',
+  path: '/api/joint2312/sleep/decode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiJoint2312SleepQualityRoute =
+  ApiJoint2312SleepQualityRouteImport.update({
+    id: '/api/joint2312/sleep/quality',
+    path: '/api/joint2312/sleep/quality',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicCronRecallRoute = ApiPublicCronRecallRouteImport.update({
@@ -287,15 +332,22 @@ export interface FileRoutesByFullPath {
   '/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
   '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
+  '/api/eeg/federated': typeof ApiEegFederatedRoute
+  '/api/eeg/predict': typeof ApiEegPredictRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
   '/api/evaluate/cross-subject': typeof ApiEvaluateCrossSubjectRoute
+  '/api/joint2312/fusion': typeof ApiJoint2312FusionRoute
   '/api/public/metrics': typeof ApiPublicMetricsRoute
   '/api/public/notebooks': typeof ApiPublicNotebooksRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/api/annotations/': typeof ApiAnnotationsIndexRoute
   '/api/eeg/embed/foundation': typeof ApiEegEmbedFoundationRoute
   '/api/eeg/embed/foundation-search': typeof ApiEegEmbedFoundationSearchRoute
+  '/api/joint2312/anomaly/detect': typeof ApiJoint2312AnomalyDetectRoute
+  '/api/joint2312/cognitive/decode': typeof ApiJoint2312CognitiveDecodeRoute
   '/api/joint2312/similarity/search': typeof ApiJoint2312SimilaritySearchRoute
+  '/api/joint2312/sleep/decode': typeof ApiJoint2312SleepDecodeRoute
+  '/api/joint2312/sleep/quality': typeof ApiJoint2312SleepQualityRoute
   '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
   '/api/public/staging/metrics': typeof ApiPublicStagingMetricsRoute
 }
@@ -327,15 +379,22 @@ export interface FileRoutesByTo {
   '/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
   '/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
+  '/api/eeg/federated': typeof ApiEegFederatedRoute
+  '/api/eeg/predict': typeof ApiEegPredictRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
   '/api/evaluate/cross-subject': typeof ApiEvaluateCrossSubjectRoute
+  '/api/joint2312/fusion': typeof ApiJoint2312FusionRoute
   '/api/public/metrics': typeof ApiPublicMetricsRoute
   '/api/public/notebooks': typeof ApiPublicNotebooksRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/api/annotations': typeof ApiAnnotationsIndexRoute
   '/api/eeg/embed/foundation': typeof ApiEegEmbedFoundationRoute
   '/api/eeg/embed/foundation-search': typeof ApiEegEmbedFoundationSearchRoute
+  '/api/joint2312/anomaly/detect': typeof ApiJoint2312AnomalyDetectRoute
+  '/api/joint2312/cognitive/decode': typeof ApiJoint2312CognitiveDecodeRoute
   '/api/joint2312/similarity/search': typeof ApiJoint2312SimilaritySearchRoute
+  '/api/joint2312/sleep/decode': typeof ApiJoint2312SleepDecodeRoute
+  '/api/joint2312/sleep/quality': typeof ApiJoint2312SleepQualityRoute
   '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
   '/api/public/staging/metrics': typeof ApiPublicStagingMetricsRoute
 }
@@ -370,15 +429,22 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/enterprise': typeof AuthenticatedDashboardEnterpriseRoute
   '/_authenticated/dashboard/individual': typeof AuthenticatedDashboardIndividualRoute
   '/_authenticated/dashboard/researcher': typeof AuthenticatedDashboardResearcherRoute
+  '/api/eeg/federated': typeof ApiEegFederatedRoute
+  '/api/eeg/predict': typeof ApiEegPredictRoute
   '/api/eeg/upload': typeof ApiEegUploadRoute
   '/api/evaluate/cross-subject': typeof ApiEvaluateCrossSubjectRoute
+  '/api/joint2312/fusion': typeof ApiJoint2312FusionRoute
   '/api/public/metrics': typeof ApiPublicMetricsRoute
   '/api/public/notebooks': typeof ApiPublicNotebooksRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/api/annotations/': typeof ApiAnnotationsIndexRoute
   '/api/eeg/embed/foundation': typeof ApiEegEmbedFoundationRoute
   '/api/eeg/embed/foundation-search': typeof ApiEegEmbedFoundationSearchRoute
+  '/api/joint2312/anomaly/detect': typeof ApiJoint2312AnomalyDetectRoute
+  '/api/joint2312/cognitive/decode': typeof ApiJoint2312CognitiveDecodeRoute
   '/api/joint2312/similarity/search': typeof ApiJoint2312SimilaritySearchRoute
+  '/api/joint2312/sleep/decode': typeof ApiJoint2312SleepDecodeRoute
+  '/api/joint2312/sleep/quality': typeof ApiJoint2312SleepQualityRoute
   '/api/public/cron/recall': typeof ApiPublicCronRecallRoute
   '/api/public/staging/metrics': typeof ApiPublicStagingMetricsRoute
 }
@@ -413,15 +479,22 @@ export interface FileRouteTypes {
     | '/dashboard/enterprise'
     | '/dashboard/individual'
     | '/dashboard/researcher'
+    | '/api/eeg/federated'
+    | '/api/eeg/predict'
     | '/api/eeg/upload'
     | '/api/evaluate/cross-subject'
+    | '/api/joint2312/fusion'
     | '/api/public/metrics'
     | '/api/public/notebooks'
     | '/dashboard/'
     | '/api/annotations/'
     | '/api/eeg/embed/foundation'
     | '/api/eeg/embed/foundation-search'
+    | '/api/joint2312/anomaly/detect'
+    | '/api/joint2312/cognitive/decode'
     | '/api/joint2312/similarity/search'
+    | '/api/joint2312/sleep/decode'
+    | '/api/joint2312/sleep/quality'
     | '/api/public/cron/recall'
     | '/api/public/staging/metrics'
   fileRoutesByTo: FileRoutesByTo
@@ -453,15 +526,22 @@ export interface FileRouteTypes {
     | '/dashboard/enterprise'
     | '/dashboard/individual'
     | '/dashboard/researcher'
+    | '/api/eeg/federated'
+    | '/api/eeg/predict'
     | '/api/eeg/upload'
     | '/api/evaluate/cross-subject'
+    | '/api/joint2312/fusion'
     | '/api/public/metrics'
     | '/api/public/notebooks'
     | '/dashboard'
     | '/api/annotations'
     | '/api/eeg/embed/foundation'
     | '/api/eeg/embed/foundation-search'
+    | '/api/joint2312/anomaly/detect'
+    | '/api/joint2312/cognitive/decode'
     | '/api/joint2312/similarity/search'
+    | '/api/joint2312/sleep/decode'
+    | '/api/joint2312/sleep/quality'
     | '/api/public/cron/recall'
     | '/api/public/staging/metrics'
   id:
@@ -495,15 +575,22 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/enterprise'
     | '/_authenticated/dashboard/individual'
     | '/_authenticated/dashboard/researcher'
+    | '/api/eeg/federated'
+    | '/api/eeg/predict'
     | '/api/eeg/upload'
     | '/api/evaluate/cross-subject'
+    | '/api/joint2312/fusion'
     | '/api/public/metrics'
     | '/api/public/notebooks'
     | '/_authenticated/dashboard/'
     | '/api/annotations/'
     | '/api/eeg/embed/foundation'
     | '/api/eeg/embed/foundation-search'
+    | '/api/joint2312/anomaly/detect'
+    | '/api/joint2312/cognitive/decode'
     | '/api/joint2312/similarity/search'
+    | '/api/joint2312/sleep/decode'
+    | '/api/joint2312/sleep/quality'
     | '/api/public/cron/recall'
     | '/api/public/staging/metrics'
   fileRoutesById: FileRoutesById
@@ -526,14 +613,21 @@ export interface RootRouteChildren {
   StudioRoute: typeof StudioRoute
   SyntheticRoute: typeof SyntheticRoute
   ApiHealthRoute: typeof ApiHealthRoute
+  ApiEegFederatedRoute: typeof ApiEegFederatedRoute
+  ApiEegPredictRoute: typeof ApiEegPredictRoute
   ApiEegUploadRoute: typeof ApiEegUploadRoute
   ApiEvaluateCrossSubjectRoute: typeof ApiEvaluateCrossSubjectRoute
+  ApiJoint2312FusionRoute: typeof ApiJoint2312FusionRoute
   ApiPublicMetricsRoute: typeof ApiPublicMetricsRoute
   ApiPublicNotebooksRoute: typeof ApiPublicNotebooksRoute
   ApiAnnotationsIndexRoute: typeof ApiAnnotationsIndexRoute
   ApiEegEmbedFoundationRoute: typeof ApiEegEmbedFoundationRoute
   ApiEegEmbedFoundationSearchRoute: typeof ApiEegEmbedFoundationSearchRoute
+  ApiJoint2312AnomalyDetectRoute: typeof ApiJoint2312AnomalyDetectRoute
+  ApiJoint2312CognitiveDecodeRoute: typeof ApiJoint2312CognitiveDecodeRoute
   ApiJoint2312SimilaritySearchRoute: typeof ApiJoint2312SimilaritySearchRoute
+  ApiJoint2312SleepDecodeRoute: typeof ApiJoint2312SleepDecodeRoute
+  ApiJoint2312SleepQualityRoute: typeof ApiJoint2312SleepQualityRoute
   ApiPublicCronRecallRoute: typeof ApiPublicCronRecallRoute
   ApiPublicStagingMetricsRoute: typeof ApiPublicStagingMetricsRoute
 }
@@ -757,6 +851,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnnotationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/eeg/federated': {
+      id: '/api/eeg/federated'
+      path: '/api/eeg/federated'
+      fullPath: '/api/eeg/federated'
+      preLoaderRoute: typeof ApiEegFederatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/eeg/predict': {
+      id: '/api/eeg/predict'
+      path: '/api/eeg/predict'
+      fullPath: '/api/eeg/predict'
+      preLoaderRoute: typeof ApiEegPredictRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/eeg/upload': {
       id: '/api/eeg/upload'
       path: '/api/eeg/upload'
@@ -769,6 +877,13 @@ declare module '@tanstack/react-router' {
       path: '/api/evaluate/cross-subject'
       fullPath: '/api/evaluate/cross-subject'
       preLoaderRoute: typeof ApiEvaluateCrossSubjectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/joint2312/fusion': {
+      id: '/api/joint2312/fusion'
+      path: '/api/joint2312/fusion'
+      fullPath: '/api/joint2312/fusion'
+      preLoaderRoute: typeof ApiJoint2312FusionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/metrics': {
@@ -799,11 +914,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiEegEmbedFoundationSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/joint2312/anomaly/detect': {
+      id: '/api/joint2312/anomaly/detect'
+      path: '/api/joint2312/anomaly/detect'
+      fullPath: '/api/joint2312/anomaly/detect'
+      preLoaderRoute: typeof ApiJoint2312AnomalyDetectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/joint2312/cognitive/decode': {
+      id: '/api/joint2312/cognitive/decode'
+      path: '/api/joint2312/cognitive/decode'
+      fullPath: '/api/joint2312/cognitive/decode'
+      preLoaderRoute: typeof ApiJoint2312CognitiveDecodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/joint2312/similarity/search': {
       id: '/api/joint2312/similarity/search'
       path: '/api/joint2312/similarity/search'
       fullPath: '/api/joint2312/similarity/search'
       preLoaderRoute: typeof ApiJoint2312SimilaritySearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/joint2312/sleep/decode': {
+      id: '/api/joint2312/sleep/decode'
+      path: '/api/joint2312/sleep/decode'
+      fullPath: '/api/joint2312/sleep/decode'
+      preLoaderRoute: typeof ApiJoint2312SleepDecodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/joint2312/sleep/quality': {
+      id: '/api/joint2312/sleep/quality'
+      path: '/api/joint2312/sleep/quality'
+      fullPath: '/api/joint2312/sleep/quality'
+      preLoaderRoute: typeof ApiJoint2312SleepQualityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/cron/recall': {
@@ -891,14 +1034,21 @@ const rootRouteChildren: RootRouteChildren = {
   StudioRoute: StudioRoute,
   SyntheticRoute: SyntheticRoute,
   ApiHealthRoute: ApiHealthRoute,
+  ApiEegFederatedRoute: ApiEegFederatedRoute,
+  ApiEegPredictRoute: ApiEegPredictRoute,
   ApiEegUploadRoute: ApiEegUploadRoute,
   ApiEvaluateCrossSubjectRoute: ApiEvaluateCrossSubjectRoute,
+  ApiJoint2312FusionRoute: ApiJoint2312FusionRoute,
   ApiPublicMetricsRoute: ApiPublicMetricsRoute,
   ApiPublicNotebooksRoute: ApiPublicNotebooksRoute,
   ApiAnnotationsIndexRoute: ApiAnnotationsIndexRoute,
   ApiEegEmbedFoundationRoute: ApiEegEmbedFoundationRoute,
   ApiEegEmbedFoundationSearchRoute: ApiEegEmbedFoundationSearchRoute,
+  ApiJoint2312AnomalyDetectRoute: ApiJoint2312AnomalyDetectRoute,
+  ApiJoint2312CognitiveDecodeRoute: ApiJoint2312CognitiveDecodeRoute,
   ApiJoint2312SimilaritySearchRoute: ApiJoint2312SimilaritySearchRoute,
+  ApiJoint2312SleepDecodeRoute: ApiJoint2312SleepDecodeRoute,
+  ApiJoint2312SleepQualityRoute: ApiJoint2312SleepQualityRoute,
   ApiPublicCronRecallRoute: ApiPublicCronRecallRoute,
   ApiPublicStagingMetricsRoute: ApiPublicStagingMetricsRoute,
 }

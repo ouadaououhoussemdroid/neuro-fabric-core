@@ -1,0 +1,422 @@
+{
+  "cv_stats": {
+    "per_fold": [
+      {
+        "fold": 0,
+        "test_subject": 1,
+        "accuracy": 0.6555555555555556,
+        "macro_f1": 0.2777777777775759,
+        "kappa": 0.38681318681249827,
+        "n_test": 90
+      },
+      {
+        "fold": 1,
+        "test_subject": 2,
+        "accuracy": 0.6111111111111112,
+        "macro_f1": 0.25280414150109093,
+        "kappa": 0.2164179104473253,
+        "n_test": 90
+      },
+      {
+        "fold": 2,
+        "test_subject": 3,
+        "accuracy": 0.7,
+        "macro_f1": 0.31783216783187385,
+        "kappa": 0.1695146958300161,
+        "n_test": 90
+      },
+      {
+        "fold": 3,
+        "test_subject": 4,
+        "accuracy": 0.7111111111111111,
+        "macro_f1": 0.2806545879600504,
+        "kappa": 0.3951925562152493,
+        "n_test": 90
+      },
+      {
+        "fold": 4,
+        "test_subject": 5,
+        "accuracy": 0.6111111111111112,
+        "macro_f1": 0.250741608118452,
+        "kappa": 0.28539019963649936,
+        "n_test": 90
+      },
+      {
+        "fold": 5,
+        "test_subject": 6,
+        "accuracy": 0.7222222222222222,
+        "macro_f1": 0.2699019765384481,
+        "kappa": 0.36619718309775606,
+        "n_test": 90
+      },
+      {
+        "fold": 6,
+        "test_subject": 7,
+        "accuracy": 0.6333333333333333,
+        "macro_f1": 0.346885964911983,
+        "kappa": 0.3411712511085263,
+        "n_test": 90
+      },
+      {
+        "fold": 7,
+        "test_subject": 8,
+        "accuracy": 0.6555555555555556,
+        "macro_f1": 0.34288085282919795,
+        "kappa": 0.4397590361438631,
+        "n_test": 90
+      },
+      {
+        "fold": 8,
+        "test_subject": 9,
+        "accuracy": 0.6666666666666666,
+        "macro_f1": 0.27149321266947823,
+        "kappa": 0.365154008934174,
+        "n_test": 90
+      },
+      {
+        "fold": 9,
+        "test_subject": 10,
+        "accuracy": 0.6222222222222222,
+        "macro_f1": 0.311148459383472,
+        "kappa": 0.39549585144148497,
+        "n_test": 90
+      },
+      {
+        "fold": 10,
+        "test_subject": 11,
+        "accuracy": 0.6777777777777778,
+        "macro_f1": 0.3088892735557575,
+        "kappa": 0.4145356662172819,
+        "n_test": 90
+      },
+      {
+        "fold": 11,
+        "test_subject": 12,
+        "accuracy": 0.8777777777777778,
+        "macro_f1": 0.2279518072287054,
+        "kappa": 0.16455696202419198,
+        "n_test": 90
+      },
+      {
+        "fold": 12,
+        "test_subject": 13,
+        "accuracy": 0.5222222222222223,
+        "macro_f1": 0.22359614293797497,
+        "kappa": 0.17219251336868574,
+        "n_test": 90
+      },
+      {
+        "fold": 13,
+        "test_subject": 14,
+        "accuracy": 0.7111111111111111,
+        "macro_f1": 0.46706709956667486,
+        "kappa": 0.44192702122499905,
+        "n_test": 90
+      },
+      {
+        "fold": 14,
+        "test_subject": 15,
+        "accuracy": 0.6444444444444445,
+        "macro_f1": 0.28566193311935245,
+        "kappa": 0.32835820895460377,
+        "n_test": 90
+      },
+      {
+        "fold": 15,
+        "test_subject": 16,
+        "accuracy": 0.7444444444444445,
+        "macro_f1": 0.31128982369295644,
+        "kappa": 0.5241379310335069,
+        "n_test": 90
+      },
+      {
+        "fold": 16,
+        "test_subject": 17,
+        "accuracy": 0.7,
+        "macro_f1": 0.30456140350856487,
+        "kappa": 0.47448096885730034,
+        "n_test": 90
+      },
+      {
+        "fold": 17,
+        "test_subject": 18,
+        "accuracy": 0.7111111111111111,
+        "macro_f1": 0.27153333333312646,
+        "kappa": 0.35269709543489464,
+        "n_test": 90
+      },
+      {
+        "fold": 18,
+        "test_subject": 19,
+        "accuracy": 0.5666666666666667,
+        "macro_f1": 0.22658909717713133,
+        "kappa": 0.15155910079738277,
+        "n_test": 90
+      },
+      {
+        "fold": 19,
+        "test_subject": 20,
+        "accuracy": 0.7,
+        "macro_f1": 0.30843881856519373,
+        "kappa": 0.4896030245738362,
+        "n_test": 90
+      },
+      {
+        "fold": 20,
+        "test_subject": 21,
+        "accuracy": 0.7777777777777778,
+        "macro_f1": 0.25655172413772387,
+        "kappa": 0.3142857142847448,
+        "n_test": 90
+      },
+      {
+        "fold": 21,
+        "test_subject": 22,
+        "accuracy": 0.9222222222222223,
+        "macro_f1": 0.2718128654968458,
+        "kappa": 0.1984732824407042,
+        "n_test": 90
+      },
+      {
+        "fold": 22,
+        "test_subject": 23,
+        "accuracy": 0.7333333333333333,
+        "macro_f1": 0.3044702665753235,
+        "kappa": 0.5057208237976896,
+        "n_test": 90
+      },
+      {
+        "fold": 23,
+        "test_subject": 24,
+        "accuracy": 0.6222222222222222,
+        "macro_f1": 0.3033793103445145,
+        "kappa": 0.2531120331945204,
+        "n_test": 90
+      },
+      {
+        "fold": 24,
+        "test_subject": 25,
+        "accuracy": 0.7333333333333333,
+        "macro_f1": 0.20326797385604595,
+        "kappa": 0.021739130434703127,
+        "n_test": 90
+      },
+      {
+        "fold": 25,
+        "test_subject": 26,
+        "accuracy": 0.7666666666666667,
+        "macro_f1": 0.3160360360358282,
+        "kappa": 0.5395858708880951,
+        "n_test": 90
+      },
+      {
+        "fold": 26,
+        "test_subject": 27,
+        "accuracy": 0.6777777777777778,
+        "macro_f1": 0.2953260073258021,
+        "kappa": 0.4365284974085632,
+        "n_test": 90
+      },
+      {
+        "fold": 27,
+        "test_subject": 28,
+        "accuracy": 0.5333333333333333,
+        "macro_f1": 0.3047619047616571,
+        "kappa": 0.32342938965408635,
+        "n_test": 90
+      },
+      {
+        "fold": 28,
+        "test_subject": 29,
+        "accuracy": 0.7111111111111111,
+        "macro_f1": 0.21823754789256858,
+        "kappa": 0.16368834882011243,
+        "n_test": 90
+      },
+      {
+        "fold": 29,
+        "test_subject": 30,
+        "accuracy": 0.43333333333333335,
+        "macro_f1": 0.2385611805695091,
+        "kappa": 0.19218585005252442,
+        "n_test": 90
+      },
+      {
+        "fold": 30,
+        "test_subject": 31,
+        "accuracy": 0.6444444444444445,
+        "macro_f1": 0.37896825396794054,
+        "kappa": 0.44476576055453976,
+        "n_test": 90
+      },
+      {
+        "fold": 31,
+        "test_subject": 32,
+        "accuracy": 0.7444444444444445,
+        "macro_f1": 0.40230165649489,
+        "kappa": 0.4678663239064809,
+        "n_test": 90
+      },
+      {
+        "fold": 32,
+        "test_subject": 33,
+        "accuracy": 0.7777777777777778,
+        "macro_f1": 0.3052083333331248,
+        "kappa": 0.48512585812244585,
+        "n_test": 90
+      },
+      {
+        "fold": 33,
+        "test_subject": 34,
+        "accuracy": 0.5,
+        "macro_f1": 0.20796703296683586,
+        "kappa": 0.1573033707862518,
+        "n_test": 90
+      },
+      {
+        "fold": 34,
+        "test_subject": 35,
+        "accuracy": 0.4222222222222222,
+        "macro_f1": 0.2398164372128234,
+        "kappa": 0.14096916299538517,
+        "n_test": 90
+      },
+      {
+        "fold": 35,
+        "test_subject": 36,
+        "accuracy": 0.6666666666666666,
+        "macro_f1": 0.25465838509295835,
+        "kappa": 0.15227629513305077,
+        "n_test": 90
+      },
+      {
+        "fold": 36,
+        "test_subject": 37,
+        "accuracy": 0.5555555555555556,
+        "macro_f1": 0.25160879260890623,
+        "kappa": 0.2639542015943289,
+        "n_test": 90
+      },
+      {
+        "fold": 37,
+        "test_subject": 38,
+        "accuracy": 0.6222222222222222,
+        "macro_f1": 0.2664599025252736,
+        "kappa": 0.24351050679802919,
+        "n_test": 90
+      },
+      {
+        "fold": 38,
+        "test_subject": 39,
+        "accuracy": 0.7111111111111111,
+        "macro_f1": 0.2539233576640322,
+        "kappa": 0.26136363636296833,
+        "n_test": 90
+      },
+      {
+        "fold": 39,
+        "test_subject": 40,
+        "accuracy": 0.8111111111111111,
+        "macro_f1": 0.31859582542673853,
+        "kappa": 0.5772312793576471,
+        "n_test": 90
+      },
+      {
+        "fold": 40,
+        "test_subject": 41,
+        "accuracy": 0.7888888888888889,
+        "macro_f1": 0.32453388576481135,
+        "kappa": 0.5897312859873376,
+        "n_test": 90
+      },
+      {
+        "fold": 41,
+        "test_subject": 42,
+        "accuracy": 0.5777777777777777,
+        "macro_f1": 0.2563787439610681,
+        "kappa": 0.14178168130460514,
+        "n_test": 90
+      },
+      {
+        "fold": 42,
+        "test_subject": 43,
+        "accuracy": 0.6666666666666666,
+        "macro_f1": 0.25682382133974313,
+        "kappa": 0.30015552099470416,
+        "n_test": 90
+      },
+      {
+        "fold": 43,
+        "test_subject": 44,
+        "accuracy": 0.6111111111111112,
+        "macro_f1": 0.2720797720795704,
+        "kappa": 0.3279283123527511,
+        "n_test": 90
+      },
+      {
+        "fold": 44,
+        "test_subject": 45,
+        "accuracy": 0.5777777777777777,
+        "macro_f1": 0.2461222393423718,
+        "kappa": 0.20261133131227763,
+        "n_test": 90
+      },
+      {
+        "fold": 45,
+        "test_subject": 46,
+        "accuracy": 0.7111111111111111,
+        "macro_f1": 0.5264915161462274,
+        "kappa": 0.5414462081120154,
+        "n_test": 90
+      },
+      {
+        "fold": 46,
+        "test_subject": 47,
+        "accuracy": 0.6444444444444445,
+        "macro_f1": 0.26538345864641355,
+        "kappa": 0.1852899575667609,
+        "n_test": 90
+      },
+      {
+        "fold": 47,
+        "test_subject": 48,
+        "accuracy": 0.6444444444444445,
+        "macro_f1": 0.40312570042955453,
+        "kappa": 0.30852340936314565,
+        "n_test": 90
+      },
+      {
+        "fold": 48,
+        "test_subject": 49,
+        "accuracy": 0.8555555555555555,
+        "macro_f1": 0.23404907975440695,
+        "kappa": 0.17314487632409756,
+        "n_test": 90
+      },
+      {
+        "fold": 49,
+        "test_subject": 50,
+        "accuracy": 0.7,
+        "macro_f1": 0.3049849849847776,
+        "kappa": 0.48054724241045477,
+        "n_test": 90
+      }
+    ],
+    "mean_acc_5class": 0.6717777777777778,
+    "std_acc_5class": 0.1002694781774008,
+    "mean_macro_f1": 0.290791709578907,
+    "mean_kappa": 0.32538859068938203,
+    "p_value_vs_chance_020": 2.703556932484272e-35
+  },
+  "probe_sha256": "33dde2d3801e74cce6ed33e0e83ec072df62ede9e3ca9c0187ba39f0d7673cff",
+  "dataset": "EEGMMIDB (S001-S050, spectral-proxy sleep labels)",
+  "n_subjects": 50,
+  "n_trials": 4500,
+  "notes": [
+    "Sleep stage labels derived from band-power spectral features (\u03b4/\u03b8/\u03b1/\u03b2/\u03b3 ratios)",
+    "RidgeClassifier 2312-D \u2192 5 (W, N1, N2, N3, REM), train-only fit (no leakage)",
+    "50-fold LOSO, session-aligned, seed=42",
+    "When real Sleep-EDF data is available, labels will be replaced with hypnogram ground truth",
+    "Acc=0.6718 (PASS \u22650.50)"
+  ]
+}

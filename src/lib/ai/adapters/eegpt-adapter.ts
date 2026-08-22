@@ -25,7 +25,7 @@ import {
 import type { EEGModelAdapter } from "./types";
 import { NotImplementedError } from "../types";
 import type { EmbeddingOutput, ModelDescriptor, ModelInput, PredictionOutput } from "../types";
-import { getExecutionProviders } from "./webgpu-flag";
+import { getExecutionProviders } from "./brain-flag";
 
 const EEGPT_ARTIFACT = "/models/eegpt-encoder-int8.onnx";
 

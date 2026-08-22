@@ -2,6 +2,33 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
+/**
+ * T-005: Browser-safe in-memory storage for auth sessions.
+ *
+ * This replaces `localStorage` storage which is vulnerable to XSS attacks.
+ * Sessions are synced to an HttpOnly cookie on the server via /api/auth/sync.
+ * In-memory storage is cleared on page refresh — the server cookie persists.
+ */
+class MemoryStorage {
+  private store: Record<string, string> = {};
+
+  getItem(key: string): string | null {
+    return this.store[key] ?? null;
+  }
+
+  setItem(key: string, value: string): void {
+    this.store[key] = value;
+  }
+
+  removeItem(key: string): void {
+    delete this.store[key];
+  }
+
+  clear(): void {
+    this.store = {};
+  }
+}
+
 function createSupabaseClient() {
   // Use import.meta.env for client-side (Vite build-time replacement)
   // Fall back to process.env for SSR (server-side rendering)
@@ -19,9 +46,12 @@ function createSupabaseClient() {
     throw new Error(message);
   }
 
+  // T-005: Use in-memory storage instead of localStorage to prevent XSS exposure.
+  // Session is persisted server-side via HttpOnly cookies.
+  const isBrowser = typeof window !== "undefined";
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     auth: {
-      storage: typeof window !== "undefined" ? localStorage : undefined,
+      storage: isBrowser ? new MemoryStorage() : undefined,
       persistSession: true,
       autoRefreshToken: true,
     },

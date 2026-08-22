@@ -1,0 +1,82 @@
+{
+  "benchmark_suite": "M48/M49 Production Benchmark",
+  "timestamp": "2026-08-21T15:38:05.010446+00:00",
+  "config": {
+    "iterations": 100,
+    "warmup": 5,
+    "signal": {
+      "channels": 22,
+      "samples": 1000,
+      "sample_rate_hz": 250,
+      "duration_sec": 4
+    },
+    "federated": {
+      "num_clients": 10,
+      "input_dim": 32,
+      "output_dims": {
+        "sleep-staging": 5,
+        "sleep-quality": 1,
+        "cognitive-workload": 1,
+        "anomaly-detection": 1
+      }
+    }
+  },
+  "experiments": {
+    "m48_predictive_coding": {
+      "engine": "predictive-coding (M48)",
+      "iterations": 100,
+      "warmup": 5,
+      "signal_config": {
+        "channels": 22,
+        "samples": 1000,
+        "sample_rate_hz": 250,
+        "duration_ms": 4000
+      },
+      "total_benchmark_ms": 9698.79,
+      "latency_per_call_ms": 96.99,
+      "throughput_calls_per_sec": 10.31,
+      "test_count": 1,
+      "all_passed": true,
+      "path": "LSTM ONNX (primary) \u2192 AR(p) CPU fallback",
+      "notes": "Benchmark runs the production vitest suite; per-call latency is approximate (total_ms / iterations). Real LSTM inference requires onnxruntime-node server runtime."
+    },
+    "m48_ar_fallback": {
+      "engine": "predictive-coding AR(p) CPU fallback (M48)",
+      "iterations": 5,
+      "signal_config": {
+        "channels": 22,
+        "samples": 1000,
+        "sample_rate_hz": 250
+      },
+      "total_benchmark_ms": 9208.63,
+      "latency_per_call_ms": 1841.73,
+      "throughput_calls_per_sec": 0.54,
+      "test_count": 1,
+      "path": "AR(p=16) gradient descent + autoregressive prediction",
+      "notes": "No ONNX runtime required. Pure CPU linear algebra on synthetic EEG."
+    },
+    "m49_federated_learning": {
+      "engine": "federated-learning (M49)",
+      "iterations": 100,
+      "warmup": 5,
+      "client_config": {
+        "num_clients": 10,
+        "input_dim": 32,
+        "output_dims": {
+          "sleep-staging": 5,
+          "sleep-quality": 1,
+          "cognitive-workload": 1,
+          "anomaly-detection": 1
+        },
+        "sample_count_per_client": 100
+      },
+      "total_benchmark_ms": 9264.14,
+      "latency_per_round_ms": 92.64,
+      "throughput_rounds_per_sec": 10.79,
+      "test_count": 1,
+      "all_passed": true,
+      "path": "FedAvg (sample-weighted) + L2 clipping (maxNorm=1.0) + DP noise (\u03b5=2, \u03b4=1e-5)",
+      "notes": "Benchmark runs the production vitest suite; per-round latency is approximate (total_ms / iterations). DP noise is applied via Gaussian mechanism with Box-Muller transform."
+    }
+  }
+}

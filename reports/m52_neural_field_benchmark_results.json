@@ -1,0 +1,107 @@
+{
+  "timestamp": "2026-08-21T18:12:55.354676+00:00",
+  "config": {
+    "num_nodes": 8,
+    "sim_steps": 1000,
+    "dt": 0.1,
+    "duration_ms": 1000,
+    "max_nodes": 256
+  },
+  "benchmarks": {
+    "jansen_rit_simulation": {
+      "latency_ms": {
+        "mean": 211.0728,
+        "p50": 182.5785,
+        "p95": 437.3336,
+        "p99": 600.4952
+      },
+      "all_passed": true,
+      "iterations": 50,
+      "result_sample": {
+        "duration_ms": 152.31609999318607,
+        "steps": 1000,
+        "nodes": 8,
+        "convergence": 39.58099888473051,
+        "lfp_samples": 8000,
+        "mean_activity": 112.09952843806873
+      }
+    },
+    "wilson_cowan_simulation": {
+      "latency_ms": {
+        "mean": 98.4968,
+        "p50": 85.7335,
+        "p95": 198.1176,
+        "p99": 296.8178
+      },
+      "all_passed": true,
+      "iterations": 50,
+      "result_sample": {
+        "duration_ms": 185.69929999648593,
+        "steps": 1000,
+        "nodes": 8,
+        "convergence": 0.002136334382214963,
+        "lfp_samples": 8000,
+        "mean_activity": 0.016397309503809927
+      }
+    },
+    "network_scaling": {
+      "all_passed": true,
+      "iterations": 1,
+      "result_sample": {
+        "nodes_4": {
+          "duration_ms": 38.82379998685792,
+          "convergence": 176.13938348706353,
+          "samples_per_sec": 5151.479249009658
+        },
+        "nodes_8": {
+          "duration_ms": 104.84440001891926,
+          "convergence": 180.97832627066833,
+          "samples_per_sec": 1907.5887692991694
+        },
+        "nodes_16": {
+          "duration_ms": 467.1184000035282,
+          "convergence": 186.5859860140484,
+          "samples_per_sec": 428.1569726186966
+        },
+        "nodes_32": {
+          "duration_ms": 2154.6324000228196,
+          "convergence": 189.58699190129602,
+          "samples_per_sec": 92.82325838870788
+        },
+        "nodes_64": {
+          "duration_ms": 3256.9538000097964,
+          "convergence": 191.1802245498819,
+          "samples_per_sec": 61.40707307527618
+        }
+      }
+    },
+    "convergence_stability": {
+      "all_passed": true,
+      "iterations": 10,
+      "result_sample": {
+        "mean_convergence": 182.005186,
+        "std_convergence": 0.704289,
+        "cv": 0.0039
+      }
+    }
+  },
+  "summary": {
+    "jansen_rit_simulation": {
+      "status": "pass",
+      "mean_latency_ms": 211.0728,
+      "p95_latency_ms": 437.3336
+    },
+    "wilson_cowan_simulation": {
+      "status": "pass",
+      "mean_latency_ms": 98.4968,
+      "p95_latency_ms": 198.1176
+    },
+    "network_scaling": {
+      "status": "pass"
+    },
+    "convergence_stability": {
+      "status": "pass"
+    }
+  },
+  "all_passed": true
+}

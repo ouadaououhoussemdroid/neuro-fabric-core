@@ -75,6 +75,7 @@ vi.mock("@/lib/ai/inference/foundation.server", () => {
 
 // EEG pipeline stubs (selectCbraModChannels / resample / preprocess).
 vi.mock("@/lib/eeg/channels", () => ({
+  PROD_CHANNEL_COUNT: 22,
   CBRAMOD_CHANNELS_19: Array.from({ length: 19 }, (_, i) => `ch${i}`),
   selectCbraModChannels: (s: { channels: string[]; data: number[][]; sampleRate: number }) => ({
     channels: s.channels.slice(0, 19),

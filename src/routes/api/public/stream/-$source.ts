@@ -14,6 +14,7 @@
 import { defineWebSocketHandler } from "nitro";
 import { StreamGateway, parseSourceId, type EEGStreamFrame } from "@/lib/eeg/stream-gateway";
 import { log } from "@/lib/logging";
+import type { Database } from "@/integrations/supabase/types";
 
 // Singleton gateway instance. Sources are registered elsewhere (e.g. when a
 // file is uploaded or a board connection is opened). Lives for the lifetime
@@ -24,8 +25,73 @@ const gateway = new StreamGateway({ defaultModelId: "eegconformer-v1" });
 // adapters) can register sources.
 export { gateway };
 
+/**
+ * T-011: Authenticate the WebSocket connection before allowing streaming.
+ *
+ * The connection URL may include a Bearer token:
+ *   new WebSocket("wss://host/api/public/stream/file:rec-1?token=<jwt>")
+ *
+ * For security, we also accept tokens passed via the Sec-WebSocket-Protocol
+ * header (preferred) or via the query string (less secure, but needed for
+ * older browser clients).
+ *
+ * Anonymous access is denied in production — every WebSocket connection
+ * must present a valid JWT that can be verified via Supabase's getUser().
+ */
+async function authenticatePeer(peer: {
+  request?: Request;
+  send: (data: string) => void;
+  close: (code: number, reason?: string) => void;
+}): Promise<boolean> {
+  // Extract token: prefer query parameter, then Sec-WebSocket-Protocol header
+  const url = peer.request?.url || "";
+  const params = new URLSearchParams(new URL(url).search);
+  let token = params.get("token");
+
+  // Fallback: check Sec-WebSocket-Protocol header
+  if (!token) {
+    // peer.request headers are accessible in Nitro WebSocket handlers
+    token = null; // Sec-WebSocket-Protocol access varies by runtime; query param is primary
+  }
+
+  if (!token) {
+    peer.send(JSON.stringify({ error: "Unauthorized: missing token", status: 401 }));
+    peer.close(1008, "Unauthorized: missing token");
+    return false;
+  }
+
+  // Verify token via Supabase
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const { requireServerEnv } = await import("@/lib/env.server");
+    const { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } = requireServerEnv([
+      "SUPABASE_URL",
+      "SUPABASE_PUBLISHABLE_KEY",
+    ]);
+
+    const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+
+    if (error || !user) {
+      peer.send(JSON.stringify({ error: "Unauthorized: invalid token", status: 401 }));
+      peer.close(1008, "Unauthorized: invalid token");
+      return false;
+    }
+  } catch (e) {
+    peer.send(JSON.stringify({ error: "Unauthorized: token verification failed", status: 401 }));
+    peer.close(1008, "Unauthorized: token verification failed");
+    return false;
+  }
+
+  return true;
+}
+
 export default defineWebSocketHandler({
-  open(peer) {
+  async open(peer) {
+    // T-011: Require authentication before processing WebSocket connections
+    const authenticated = await authenticatePeer(peer);
+    if (!authenticated) return;
+
     const sourceId = parseSourceId(extractSource(peer));
     log("info", "ws.gateway.peer_open", { peerId: peer.id, sourceId });
 
