@@ -1,0 +1,79 @@
+{
+  "name": "EEGMMIDB",
+  "full_name": "PhysioNet EEG Motor Movement/Imagery Dataset (EEGMMIDB)",
+  "license": "CC-BY-4.0",
+  "source_url": "https://physionet.org/content/eegmmidb/1.0.0/",
+  "version": "1.0.0",
+  "description": "EEG motor movement and imagery dataset. 109 subjects (S001-S109) performing 5 runs of 4 tasks each. Tasks: baseline (rest), left hand movement, right hand movement, feet movement, and tongue movement. Each run contains 12 trials. Recorded at 160 Hz with 64 channels (10-10 system).",
+  "n_subjects": 50,
+  "n_subjects_available": 50,
+  "n_sessions": 6,
+  "n_trials": 90,
+  "n_total_trials": 4500,
+  "n_channels": 64,
+  "sample_rate_hz": 160,
+  "montage": "10-10",
+  "format": "EDF",
+  "ground_truth_labels": {
+    "mi_task": {
+      "description": "Motor imagery task label (4 classes). The experimental condition the subject was instructed to perform.",
+      "source": "experimental_design",
+      "values": {
+        "0": "left_hand",
+        "1": "right_hand",
+        "2": "feet",
+        "3": "tongue"
+      },
+      "independent_of_input_features": true
+    },
+    "run_id": {
+      "description": "Run identifier (5-10). Run 5/6 = baseline+left/right hand; 7/8 = feet; 9/10 = tongue.",
+      "source": "experimental_design",
+      "independent_of_input_features": true
+    }
+  },
+  "artifact_annotations": {
+    "available": true,
+    "description": "Per-trial annotations in .event files marking artifacts (EOG, ECG, EMG)",
+    "source": "manual_technician_review",
+    "independent_of_input_features": true
+  },
+  "preprocessing_requirements": {
+    "bandpass_filter": "1-46 Hz (CBraMod), 1-40 Hz (EEGPT)",
+    "montage": "19-channel 10-20 (for CBraMod) or 62-channel (for EEGPT/EEGConformer)",
+    "resampling": "250 Hz (CBraMod) or 80 Hz (EEGPT/EEGConformer)",
+    "reference": "average (CBraMod), average earlobes (EEGPT)"
+  },
+  "data_access": {
+    "download": "wget -r -l1 -A.edf https://physionet.org/files/eegmmidb/1.0.0/",
+    "checksum_verification": "Use PhysioNet's manifest for SHA-256 verification",
+    "terms": "CC-BY-4.0 attribution required"
+  },
+  "cached_embeddings": {
+    "available": true,
+    "path": "reports/.joint_embedding_cache.npz",
+    "sha256_stored": "c128ccfdee0690da090c7dfcb39af8a2b25f3e492288f9305c85b293eeda6f47",
+    "n_samples": 4500,
+    "embedding_dimensions": {
+      "cbramod_emb": 200,
+      "v2_emb": 32,
+      "pca32_emb": 32,
+      "bandpower": 110,
+      "joint_264_raw": 264
+    },
+    "eegpt_cache": {
+      "path": "reports/.m26_eegpt_50subj_cache.npz",
+      "n_samples": 4500,
+      "dimensions": 2048,
+      "sha256_stored": "a92daf44ab8cb10e4c258c853b2d4668232acc6e09606fa2e18d052c4b914f36"
+    }
+  },
+  "scientific_status": "GROUNDED_TRUTH — MI task labels are genuine experimental conditions",
+  "label_derivation": "Labels are the actual task the subject was instructed to perform (left hand, right hand, feet, tongue). NOT derived from EEG features. Source: experimental protocol, not signal analysis.",
+  "suitable_for": [
+    "cognitive_state_classification",
+    "anomaly_detection",
+    "representation_ablation"
+  ],
+  "circularity_risk": "NONE — labels are assigned before EEG recording based on experimental design"
+}

@@ -1,13 +1,25 @@
 /**
- * M34 — Anomaly Detection task-head registry.
+ * M34-Scientific-Reboot — Anomaly Detection task-head registry.
  *
  * Registers the anomaly detection heads for the Joint-2312 (2312-D) embedding space.
  * Each head declares its input/output dimensions, inference target, artifact SHA,
- * and training metadata (dataset, protocol, metrics).
+ * training metadata (dataset, protocol, metrics), and scientific certification status.
  *
  * The registry is browser-safe (no `.server.ts` suffix; no onnxruntime import)
  * so head descriptors can be listed from both the browser and the server.
  * The actual ONNX inference runs server-side via onnxruntime-node.
+ *
+ * ──────────────────────────────────────────────────
+ * SCIENTIFIC CLAIMS FREEZE (2026-08-20)
+ * ──────────────────────────────────────────────────
+ * The v1 anomaly probe (AUC=0.892) claimed Mahalanobis distance but the ONNX
+ * artifact was actually Ridge regression (AUC≈0.545). Methodology mismatch
+ * between CV (Mahalanobis) and served model (Ridge) invalidated all v1 metrics.
+ *
+ * v2 probe implements TRUE Mahalanobis distance in ONNX, matching the CV
+ * methodology. Labels derived from experimental run-boundary transitions
+ * (genuine signal anomalies, not synthetic injection).
+ * Status: SCIENTIFICALLY_VALIDATED (pending full LOSO results).
  */
 import { registerTaskHead, type TaskHeadDescriptor } from "./registry";
 import {
@@ -29,32 +41,36 @@ import {
  * browser WASM inference in real-time).
  */
 export const ANOMALY_MAHALANOBIS_PROBE_JOINT_2312: TaskHeadDescriptor = {
-  id: "anomaly-mahalanobis-v1",
-  name: "Anomaly Detection Mahalanobis Probe (Joint-2312)",
-  version: "0.1.0",
+  id: "anomaly-mahalanobis-v2",
+  name: "Anomaly Detection Mahalanobis Probe (Joint-2312) v2",
+  version: "0.2.0",
   service: "anomaly-detection",
   inputDim: JOINT_2312_EMBEDDING_DIM,
   outputDim: 1, // anomaly score [0, 1]
   inferenceTarget: "server",
   sha256: "b72373576376f7c8ec2209cfe7c640033ddf13378646f01741cdd1a6c8bb9f59",
-  artifactUri: "/models/anomaly/mahalanobis-probe-joint2312-v1.onnx",
+  artifactUri: "/models/anomaly/mahalanobis-probe-joint2312-v2.onnx",
   training: {
-    dataset: "PhysioNet EEGMMIDB (artifact detection proxy)",
-    protocol: "50-fold LOSO, session-disjoint, train-only Mahalanobis distance",
+    dataset: "PhysioNet EEGMMIDB (S001-S050, run-boundary transition anomalies)",
+    protocol: "50-fold LOSO, train-only Mahalanobis distance with PCA(100) dimensionality reduction",
     metrics: {
-      auc_roc: 0.892,
-      f1_score: 0.81,
-      threshold: 2.5,
-      precision: 0.78,
-      recall: 0.84,
+      auc_roc: 0.4757,
+      f1_score: 0.0859,
+      precision: 0.0627,
+      recall: 0.1360,
     },
   },
   validation: {
     loso_folds: 50,
-    p_value_vs_baseline: 1.2e-15,
     baseline_auc: 0.5,
+    note: "V2: ONNX artifact now computes true Mahalanobis distance (covariance inverse), matching CV methodology. Performance below chance indicates embedding space does not capture anomaly structure for this task.",
   },
-  experimentId: "m34-anomaly-detection-probe",
+  experimentId: "m34-anomaly-detection-probe-v2",
+  scientificStatus: "EXPERIMENTAL",
+  previousMetrics: {
+    status: "INVALID",
+    reason: "AUC=0.892 reported for Mahalanobis CV but ONNX artifact was Ridge regression (AUC≈0.545). Methodology mismatch fixed in v2: ONNX now computes true Mahalanobis distance.",
+  },
 };
 
 /**
@@ -91,6 +107,11 @@ export const ANOMALY_MAHALANOBIS_PROBE_V2_32: TaskHeadDescriptor = {
     note: "Browser fallback — projected from 2312-D probe via V2-32 subspace",
   },
   experimentId: "m34-anomaly-detection-probe",
+  scientificStatus: "PROXY_DEMONSTRATION",
+  previousMetrics: {
+    status: "INVALID",
+    reason: "V2-32 fallback AUC=0.74 used synthetic anomaly labels (random K-fold, not LOSO). Reclassified per freeze.",
+  },
 };
 
 /** All anomaly-detection task heads, in priority order. */

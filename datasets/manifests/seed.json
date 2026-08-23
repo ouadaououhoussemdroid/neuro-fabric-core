@@ -1,0 +1,56 @@
+{
+  "name": "SEED",
+  "full_name": "SEED (Scientific Electroenceural Database)",
+  "license": "CC-BY-NC-SA-4.0",
+  "source_url": "https://seed-dataset-2013.se.ee.tsinghua.edu.cn/",
+  "version": "1.0",
+  "description": "EEG dataset for emotion/affective-state research. 15 subjects watching 15 movie clips (5 positive, 5 negative, 5 neutral) across 3 sessions. 62-channel EEG at 200 Hz. Per-trial valence/arousal/dominance ratings (1-9 scale) and NASA-TLX workload scores provided in annotation CSV files.",
+  "n_subjects": 15,
+  "n_sessions": 3,
+  "n_trials": 15,
+  "n_total_trials": 675,
+  "n_channels": 62,
+  "sample_rate_hz": 200,
+  "montage": "10-20 standard (62 channels)",
+  "format": "EDF + CSV annotations",
+  "ground_truth_labels": {
+    "valence": {
+      "description": "Self-reported valence rating (1-9 scale)",
+      "source": "participant_self_report",
+      "independent_of_input_features": true
+    },
+    "arousal": {
+      "description": "Self-reported arousal rating (1-9 scale)",
+      "source": "participant_self_report",
+      "independent_of_input_features": true
+    },
+    "dominance": {
+      "description": "Self-reported dominance rating (1-9 scale)",
+      "source": "participant_self_report",
+      "independent_of_input_features": true
+    },
+    "nasa_tlx_workload": {
+      "description": "NASA-TLX workload score (when available in annotation files)",
+      "source": "validated_psychological_scale",
+      "independent_of_input_features": true
+    }
+  },
+  "preprocessing_requirements": {
+    "bandpass_filter": "1-46 Hz",
+    "channel_montage": "62-channel standard 10-20 (compatible with EEGPT)",
+    "reference": "average reference",
+    "note": "SEED valence/arousal/dominance ratings are genuine self-report labels but are emotional-state ratings, not direct workload scores. NASA-TLX scores are the gold standard for workload. The weighted combination (0.6×arousal + 0.2×valence + 0.2×dominance) is a derivation, not ground truth, for the cognitive workload task."
+  },
+  "data_access": {
+    "download": "Requires registration at https://seed-dataset-2013.se.ee.tsinghua.edu.cn/",
+    "checksum_verification": "SHA-256 of downloaded files",
+    "terms": "CC-BY-NC-SA-4.0 — non-commercial use only"
+  },
+  "scientific_status": "GROUNDED_TRUTH for emotional_state_classification — valence/arousal/dominance are genuine self-report labels. NOT GROUNDED for workload — derived combination is a proxy, not direct NASA-TLX measurement.",
+  "label_derivation": "Ratings collected via 9-point Likert scale immediately after each movie clip. NASA-TLX workload scores collected via validated questionnaire. The weighted combination (0.6×arousal + 0.2×valence + 0.2×dominance) is a derivation, not ground truth for workload.",
+  "suitable_for": [
+    "emotional_state_classification",
+    "cognitive_workload_regression"
+  ],
+  "circularity_risk": "NONE — labels are self-reported, not computed from EEG features"
+}

@@ -53,6 +53,10 @@ export interface TaskHeadDescriptor {
   validation?: Record<string, unknown>;
   /** Optional experiment ID for traceability (e.g. "m33-cognitive-workload-probe"). */
   experimentId?: string;
+  /** Scientific certification status. */
+  scientificStatus?: "SCIENTIFICALLY_VALIDATED" | "ENGINEERING_VALIDATED" | "EXPERIMENTAL" | "PROXY_DEMONSTRATION" | "BLOCKED";
+  /** Frozen previous metrics (reclassified as invalid per scientific audit). */
+  previousMetrics?: { status: "INVALID" | "VALID"; reason: string };
 }
 
 /**

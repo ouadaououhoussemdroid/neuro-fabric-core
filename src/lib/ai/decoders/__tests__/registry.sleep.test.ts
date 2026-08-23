@@ -1,8 +1,9 @@
 /**
- * M39 + M40 — Tests for the Sleep task-head registry.
+ * M38-Scientific-Reboot — Tests for the Sleep task-head registry.
  *
- * Tests that the sleep staging and sleep quality probes are properly registered
- * in the shared TaskHeadRegistry, with correct dimensions, SHAs, and metrics.
+ * Tests that sleep staging and quality probes are properly registered,
+ * with correct scientific status (BLOCKED/PROXY_DEMONSTRATION) and
+ * reclassified previous metrics.
  */
 import { describe, it, expect, beforeAll } from "vitest";
 import {
@@ -38,24 +39,25 @@ describe("Sleep Staging TaskHeadRegistry", () => {
     expect(head?.outputDim).toBe(5); // 5 sleep stages
   });
 
-  it("sleep-staging-v1 uses server inference (onnxruntime-node)", () => {
+  it("sleep-staging-v1 has scientificStatus BLOCKED", () => {
     const head = getTaskHead("sleep-staging-v1");
-    expect(head?.inferenceTarget).toBe("server");
+    expect(head?.scientificStatus).toBe("BLOCKED");
+    expect(head?.previousMetrics?.status).toBe("INVALID");
+    expect(head?.previousMetrics?.reason).toContain("proxy");
+    expect(head?.experimentId).toBe("m38-sleep-staging-blocked");
+  });
+
+  it("sleep-staging-v1 SHA matches original artifact", () => {
+    const head = getTaskHead("sleep-staging-v1");
     expect(head?.sha256).toBe(
       "33dde2d3801e74cce6ed33e0e83ec072df62ede9e3ca9c0187ba39f0d7673cff",
     );
   });
 
-  it("sleep-staging-v1 has correct artifact URI", () => {
+  it("sleep-staging-v1 validation notes proxy/blocked status", () => {
     const head = getTaskHead("sleep-staging-v1");
-    expect(head?.artifactUri).toBe("/models/sleep/staging-probe-joint2312-v1.onnx");
-  });
-
-  it("sleep-staging-v1 training metadata references Sleep-EDF", () => {
-    const head = getTaskHead("sleep-staging-v1");
-    expect(head?.training.dataset).toContain("Sleep-EDF");
-    expect(head?.training.dataset).toContain("PhysioNet");
-    expect(head?.experimentId).toBe("m39-sleep-staging-probe");
+    expect(head?.validation?.note).toContain("proxy");
+    expect(head?.scientificStatus).toBe("BLOCKED");
   });
 
   it("registers V2-32 browser fallback head", () => {
@@ -67,7 +69,13 @@ describe("Sleep Staging TaskHeadRegistry", () => {
     expect(head?.service).toBe("sleep-staging");
   });
 
-  it("SLEEP_HEADS contains all registered probes (M39 + M40)", () => {
+  it("sleep-staging-v2-32d has scientificStatus PROXY_DEMONSTRATION", () => {
+    const head = getTaskHead("sleep-staging-v2-32d");
+    expect(head?.scientificStatus).toBe("PROXY_DEMONSTRATION");
+    expect(head?.previousMetrics?.status).toBe("INVALID");
+  });
+
+  it("SLEEP_HEADS contains all registered probes", () => {
     expect(SLEEP_HEADS.length).toBe(4);
     expect(SLEEP_HEADS.map((h) => h.id)).toContain("sleep-staging-v1");
     expect(SLEEP_HEADS.map((h) => h.id)).toContain("sleep-staging-v2-32d");
@@ -75,11 +83,12 @@ describe("Sleep Staging TaskHeadRegistry", () => {
     expect(SLEEP_HEADS.map((h) => h.id)).toContain("sleep-quality-v2-32d");
   });
 
-  it("all sleep heads have correct training metadata populated", () => {
+  it("all sleep heads have scientific classification", () => {
     for (const head of SLEEP_HEADS) {
-      expect(head.training.dataset).toBeTruthy();
-      expect(head.training.protocol).toBeTruthy();
-      expect(head.training.metrics).toBeDefined();
+      expect(head.scientificStatus).toBeDefined();
+      expect(head.scientificStatus).toMatch(
+        /SCIENTIFICALLY_VALIDATED|ENGINEERING_VALIDATED|EXPERIMENTAL|PROXY_DEMONSTRATION|BLOCKED/,
+      );
     }
   });
 
@@ -119,7 +128,7 @@ describe("Sleep Staging TaskHeadRegistry", () => {
     expect(head?.id).toBe("sleep-staging-v1");
   });
 
-  // ─── M40: Sleep Quality registry tests ─────────────────────────────
+  // ─── M38-Scientific-Reboot: Sleep Quality registry tests ───────────
 
   it("registers sleep-quality-v1 head with correct id and dimensions", () => {
     expect(hasTaskHead(SLEEP_QUALITY_PROBE_JOINT_2312.id)).toBe(true);
@@ -130,23 +139,19 @@ describe("Sleep Staging TaskHeadRegistry", () => {
     expect(head?.outputDim).toBe(1); // regression (quality score)
   });
 
-  it("sleep-quality-v1 uses server inference (onnxruntime-node)", () => {
+  it("sleep-quality-v1 has scientificStatus BLOCKED", () => {
     const head = getTaskHead("sleep-quality-v1");
-    expect(head?.inferenceTarget).toBe("server");
+    expect(head?.scientificStatus).toBe("BLOCKED");
+    expect(head?.previousMetrics?.status).toBe("INVALID");
+    expect(head?.previousMetrics?.reason).toContain("proxy");
+    expect(head?.experimentId).toBe("m38-sleep-quality-blocked");
+  });
+
+  it("sleep-quality-v1 SHA matches original artifact", () => {
+    const head = getTaskHead("sleep-quality-v1");
     expect(head?.sha256).toBe(
       "e41ed5282d77aa3b401b587aa3fdbb375ed46b480a71e6f8d9a471efe82ccdfd",
     );
-  });
-
-  it("sleep-quality-v1 has correct artifact URI", () => {
-    const head = getTaskHead("sleep-quality-v1");
-    expect(head?.artifactUri).toBe("/models/sleep/quality-probe-joint2312-v1.onnx");
-  });
-
-  it("sleep-quality-v1 training metadata references Sleep-EDF", () => {
-    const head = getTaskHead("sleep-quality-v1");
-    expect(head?.training.dataset).toContain("Sleep-EDF");
-    expect(head?.experimentId).toBe("m40-sleep-quality-probe");
   });
 
   it("registers sleep-quality-v2-32d browser fallback head", () => {
@@ -156,6 +161,12 @@ describe("Sleep Staging TaskHeadRegistry", () => {
     expect(head?.outputDim).toBe(1);
     expect(head?.inferenceTarget).toBe("both");
     expect(head?.service).toBe("sleep-staging");
+  });
+
+  it("sleep-quality-v2-32d has scientificStatus PROXY_DEMONSTRATION", () => {
+    const head = getTaskHead("sleep-quality-v2-32d");
+    expect(head?.scientificStatus).toBe("PROXY_DEMONSTRATION");
+    expect(head?.previousMetrics?.status).toBe("INVALID");
   });
 
   it("getDefaultSleepQualityHead returns server quality head by default", () => {

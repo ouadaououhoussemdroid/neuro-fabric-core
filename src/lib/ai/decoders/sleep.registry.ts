@@ -1,14 +1,26 @@
 /**
- * M39 + M40 — Sleep task-head registry.
+ * M38-Scientific-Reboot — Sleep task-head registry.
  *
  * Registers the sleep staging (classification) and sleep quality (regression)
  * heads for the Joint-2312 (2312-D) embedding space. Each head declares its
- * input/output dimensions, inference target, artifact SHA, and training
- * metadata (dataset, protocol, metrics).
+ * input/output dimensions, inference target, artifact SHA, training
+ * metadata (dataset, protocol, metrics), and scientific certification status.
  *
  * The registry is browser-safe (no `.server.ts` suffix; no onnxruntime import)
  * so head descriptors can be listed from both the browser and the server.
  * The actual ONNX inference runs server-side via onnxruntime-node.
+ *
+ * ──────────────────────────────────────────────────
+ * SCIENTIFIC CLAIMS FREEZE (2026-08-20)
+ * ──────────────────────────────────────────────────
+ * v1 sleep staging (acc=0.6718) and sleep quality (R²=0.8193) probes used
+ * band-power-derived proxy labels. Since the input features ARE band-power
+ * features, this created circular supervision. All v1 metrics are FROZEN as
+ * INVALID.
+ *
+ * Sleep-EDF data is not available in the repository. Services are marked
+ * BLOCKED until genuine ground-truth PSG annotations are available.
+ * Status: BLOCKED (sleep staging), BLOCKED (sleep quality).
  */
 import { registerTaskHead, type TaskHeadDescriptor } from "./registry";
 import {
@@ -52,7 +64,12 @@ export const SLEEP_STAGING_PROBE_JOINT_2312: TaskHeadDescriptor = {
     loso_folds: 5,
     note: "Trained RidgeClassifier on EEGMMIDB Joint-2312 embeddings with spectral-proxy sleep labels (5-fold LOSO). When real Sleep-EDF data is available, labels will be updated to ground-truth hypnograms.",
   },
-  experimentId: "m39-sleep-staging-probe",
+  experimentId: "m38-sleep-staging-blocked",
+  scientificStatus: "BLOCKED",
+  previousMetrics: {
+    status: "INVALID",
+    reason: "acc=0.6718 used proxy labels (band-power heuristics) derived from the same band-power features used as inputs. Registry experimentId pointed to seed run (m39) not training run (m43). Sleep-EDF PSG annotations not available in repository. BLOCKED until genuine ground-truth data is available.",
+  },
 };
 
 /**
@@ -86,7 +103,12 @@ export const SLEEP_STAGING_PROBE_V2_32: TaskHeadDescriptor = {
     loso_folds: 5,
     note: "Browser fallback — trained RidgeClassifier on V2-32 EEGMMIDB embeddings (5-fold LOSO)",
   },
-  experimentId: "m39-sleep-staging-probe",
+  experimentId: "m38-sleep-staging-blocked",
+  scientificStatus: "PROXY_DEMONSTRATION",
+  previousMetrics: {
+    status: "INVALID",
+    reason: "V2-32 fallback acc=0.5193 used EEGMMIDB proxy sleep labels. Reclassified per freeze.",
+  },
 };
 
 /**
@@ -123,7 +145,12 @@ export const SLEEP_QUALITY_PROBE_JOINT_2312: TaskHeadDescriptor = {
     loso_folds: 5,
     note: "Trained Ridge regression on EEGMMIDB Joint-2312 embeddings with spectral-proxy quality labels (5-fold LOSO). When real Sleep-EDF data is available, labels will be updated to PSG-derived quality scores.",
   },
-  experimentId: "m40-sleep-quality-probe",
+  experimentId: "m38-sleep-quality-blocked",
+  scientificStatus: "BLOCKED",
+  previousMetrics: {
+    status: "INVALID",
+    reason: "R²=0.8193 used proxy labels (linear combination of band powers) derived from the same band-power features used as inputs. Registry experimentId pointed to seed run (m40, R²=0.0) not training run (m43, R²=0.8193). Sleep-EDF PSG annotations not available. BLOCKED until genuine ground-truth data is available.",
+  },
 };
 
 /**
@@ -157,7 +184,12 @@ export const SLEEP_QUALITY_PROBE_V2_32: TaskHeadDescriptor = {
     loso_folds: 5,
     note: "Browser fallback — trained Ridge regression on V2-32 EEGMMIDB embeddings (5-fold LOSO)",
   },
-  experimentId: "m40-sleep-quality-probe",
+  experimentId: "m38-sleep-quality-blocked",
+  scientificStatus: "PROXY_DEMONSTRATION",
+  previousMetrics: {
+    status: "INVALID",
+    reason: "V2-32 fallback R²=-1.6404 worse than mean predictor. Proxy labels. Reclassified per freeze.",
+  },
 };
 
 /** All sleep task heads (staging + quality), in priority order. */

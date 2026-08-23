@@ -12,6 +12,14 @@
  * **Why server-only (.server.ts):** the 2312-D Mahalanobis model runs via
  * onnxruntime-node. The browser path (V2-32 → lightweight detector) is handled
  * by `src/lib/ai/decoders/anomaly.browser.ts`.
+ *
+ * **⚠️ SCIENTIFIC STATUS (2026-08-20):** The v1 anomaly probe (AUC=0.892)
+ * claimed Mahalanobis distance but the ONNX artifact was Ridge regression
+ * (AUC≈0.545). Methodology mismatch between CV and served model. The v1
+ * metric is FROZEN as INVALID per `reports/SCIENTIFIC_CLAIMS_FREEZE.md`.
+ * The v2 probe implements TRUE Mahalanobis distance in ONNX, matching CV.
+ * Labels are derived from experimental run-boundary transitions (genuine
+ * signal anomalies, not synthetic injection).
  */
 import { randomUUID } from "node:crypto";
 import {

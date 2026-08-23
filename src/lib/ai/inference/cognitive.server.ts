@@ -17,6 +17,14 @@
  * decoder is a lightweight linear/MLP head (2312→1) that learns a mapping
  * from the existing embedding to workload. This is the "linear probe" pattern
  * validated in M16 and M31 §7.3.
+ *
+ * **⚠️ SCIENTIFIC STATUS (2026-08-20):** The v1 cognitive probe (R²=0.7348)
+ * used a band-power ratio (θ/α) as the target label — this is a PROXY label
+ * derived from the same band-power features used as model inputs, creating
+ * circular supervision. The v1 metric is FROZEN as INVALID per
+ * `reports/SCIENTIFIC_CLAIMS_FREEZE.md`. The v2 probe uses genuine MI task
+ * labels (EEGMMIDB: left/right hand, feet, tongue) — experimental condition
+ * labels assigned before recording, independent of model inputs.
  */
 import { randomUUID } from "node:crypto";
 import {

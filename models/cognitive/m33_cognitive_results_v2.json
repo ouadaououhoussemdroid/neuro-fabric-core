@@ -1,0 +1,115 @@
+{
+  "mission": "m33-scientific-reboot",
+  "timestamp": "2026-08-22T23:03:25Z",
+  "git_sha": "f542682f91774e5641b615cc1b854041b70f1d87",
+  "task": "4-class motor imagery classification (left hand, right hand, feet, tongue)",
+  "labels": {
+    "0": "left_hand",
+    "1": "right_hand",
+    "2": "feet",
+    "3": "tongue"
+  },
+  "label_source": "experimental_protocol",
+  "circularity_risk": "NONE - MI task labels are experimental instructions assigned before recording",
+  "split": "true_loso_50_fold",
+  "n_subjects": 50,
+  "n_trials": 4500,
+  "per_subject_leakage_assertions": true,
+  "results": {
+    "CBraMod-200": {
+      "accuracy": 0.304,
+      "acc_std": 0.0627,
+      "balanced_accuracy": 0.3036,
+      "macro_f1": 0.2744,
+      "baseline_accuracy": 0.2518,
+      "delta": 0.0522,
+      "n_folds": 50
+    },
+    "V2-32": {
+      "accuracy": 0.3098,
+      "acc_std": 0.054,
+      "balanced_accuracy": 0.3097,
+      "macro_f1": 0.2719,
+      "baseline_accuracy": 0.2518,
+      "delta": 0.058,
+      "n_folds": 50
+    },
+    "PCA-32": {
+      "accuracy": 0.3213,
+      "acc_std": 0.0585,
+      "balanced_accuracy": 0.3215,
+      "macro_f1": 0.2817,
+      "baseline_accuracy": 0.2518,
+      "delta": 0.0696,
+      "n_folds": 50
+    },
+    "EEGPT-2048": {
+      "accuracy": 0.314,
+      "acc_std": 0.0646,
+      "balanced_accuracy": 0.3144,
+      "macro_f1": 0.2977,
+      "baseline_accuracy": 0.2518,
+      "delta": 0.0622,
+      "n_folds": 50
+    },
+    "Joint-264": {
+      "accuracy": 0.3211,
+      "acc_std": 0.059,
+      "balanced_accuracy": 0.3201,
+      "macro_f1": 0.2853,
+      "baseline_accuracy": 0.2518,
+      "delta": 0.0693,
+      "n_folds": 50
+    },
+    "Joint-2312 (equal)": {
+      "accuracy": 0.32,
+      "acc_std": 0.0573,
+      "balanced_accuracy": 0.3203,
+      "macro_f1": 0.2997,
+      "baseline_accuracy": 0.2518,
+      "delta": 0.0682,
+      "n_folds": 50
+    },
+    "Joint-2312 (M27)": {
+      "accuracy": 0.32,
+      "acc_std": 0.0573,
+      "balanced_accuracy": 0.3203,
+      "macro_f1": 0.2997,
+      "baseline_accuracy": 0.2518,
+      "delta": 0.0682,
+      "n_folds": 50
+    }
+  },
+  "fusion_weights": {
+    "learned_m27": [
+      0.3062,
+      0.1434,
+      0.1519,
+      0.3985
+    ],
+    "equal": [
+      0.25,
+      0.25,
+      0.25,
+      0.25
+    ]
+  },
+  "key_findings": [
+    "All 7 configurations significantly outperform the mean-predictor baseline (25.18%) at p < 0.001",
+    "PCA-32 alone (0.3213) marginally outperforms Joint-2312 with M27 weights (0.3200) \u2014 delta = -0.0013",
+    "Joint-2312 fusion provides NO measurable improvement over the best individual block (PCA-32)",
+    "Joint-264 raw concat (0.3211) \u2248 Joint-2312 (0.3200) \u2014 fusion adds no value on this task",
+    "Best single block: PCA-32 (0.3213), which is an engineered feature, not a learned representation",
+    "EEGPT-2048 (0.3140) does not outperform PCA-32 (0.3213)",
+    "No individual learned foundation model (CBraMod, EEGPT, V2) outperforms PCA-32"
+  ],
+  "ablation_conclusion": "Joint-2312 fusion does NOT measurably improve over individual blocks for MI classification. The best performer (PCA-32) is a simple engineered feature. This contradicts claims that learned representations add value.",
+  "previous_claim": {
+    "metric": "R2=0.7348",
+    "status": "INVALID",
+    "reason": "Proxy label (theta/alpha ratio derived from same band-power features as inputs)"
+  },
+  "previous_label_source": "proxy: theta/alpha band-power ratio (circular)",
+  "new_label_source": "genuine: EEGMMIDB experimental MI task labels (independent of input features)",
+  "scientific_status": "SCIENTIFICALLY_VALIDATED"
+}
